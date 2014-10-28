@@ -1,0 +1,9 @@
+cache/*
+symfony/*
+lib/model/om/*
+lib/model/map/*
+test/*
+lib/vendor/*
+lib/_vendor/*
+web/tmp/*
+plugins/*

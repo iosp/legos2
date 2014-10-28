@@ -1,0 +1,139 @@
+@charset "utf-8";
+
+/**
+ * In dieser Datei werden alle Definitionen hinterlegt, die das Menü betreffen.
+ */
+
+/*
+####
+# Navigation Bar
+####
+ */
+#mega_menu {
+	list-style: none;
+}
+
+#mega_menu li {
+	float: left;
+	text-align: center;
+	position: relative;
+	padding: 3px 10px 4px 10px;
+	margin-left: -1px;
+	margin-top: 0px;
+	border: 1px solid #CCCCCC;
+	border-bottom: none;
+	border-top: 3px solid #CCCCCC;
+}
+
+#mega_menu li:hover,#mega_menu li.active {
+	border-top: 3px solid #AAAAAA;
+}
+
+#mega_menu a:visited,#mega_menu a:hover {
+	text-decoration: none;
+	color: #555555;
+}
+
+/*
+####
+# Drop Down
+####
+ */
+.dropdown_1column,.dropdown_2columns,.dropdown_3columns,.dropdown_4columns,.dropdown_5columns
+	{
+	margin: 4px auto;
+	float: left;
+	position: absolute;
+	left: -999em; /* Hides the drop down */
+	text-align: left;
+	padding: 10px 5px 10px 5px;
+	border: 1px solid #CCCCCC;
+	background: #F4F4F4;
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF),
+		to(#EEEEEE));
+	z-index: 999;
+}
+
+/* Die folgenden Breiten sind empirisch festgelegt. Bei neuen Menüeinträgen
+   muss zunächst geschaut werden, ob die Breiten noch passen. */
+.dropdown_1column {
+	width: 155px;
+}
+
+.dropdown_2columns {
+	width: 310px;
+}
+
+.dropdown_3columns {
+	width: 470px;
+}
+
+.dropdown_4columns {
+	width: 620px;
+}
+
+.dropdown_5columns {
+	width: 775px;
+}
+
+#mega_menu li:hover .dropdown_1column,#mega_menu li:hover .dropdown_2columns,#mega_menu li:hover .dropdown_3columns,#mega_menu li:hover .dropdown_4columns,#mega_menu li:hover .dropdown_5columns
+	{
+	left: -1px;
+	top: auto;
+}
+
+/*
+####
+# Columns
+####
+ */
+.col_1,.col_2,.col_3,.col_4,.col_5 {
+	display: inline;
+	float: left;
+	position: relative;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+/*
+####
+# Drop down content styling
+####
+ */
+#mega_menu a {
+	display: block;
+}
+
+#mega_menu li:hover div a:hover {
+	color: #FFBA17;
+}
+
+#mega_menu a.drop {
+	cursor: default;
+}
+
+#mega_menu li ul {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 12px 0;
+}
+
+#mega_menu li ul li {
+	position: relative;
+	text-align: left;
+	line-height: 15px;
+	padding: 0;
+	margin: 3px 0;
+	float: none;
+	width: 145px;
+	border: none;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+#mega_menu li ul li:hover {
+	border: none;
+	padding: 0;
+	margin: 3px 0;
+	border-bottom: 1px solid #CCCCCC;
+}

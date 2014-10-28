@@ -1,0 +1,280 @@
+body {
+	margin:0;
+	padding:0;
+}
+#feedback-content {
+	margin:0 auto 0;
+	background:white;
+	font-family:arial;
+	padding:0 0px;
+}
+#feedback-content ol {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+#feedback-content ol li {
+	padding:0;
+	margin:0;
+	list-style: none;
+}
+#feedback-content ul {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+#feedback-content ul li {
+	padding:0;
+	margin:0;
+	list-style: none;
+}
+#feedback-content li.validation-area {
+	display:block;
+	float:right;
+	white-space: nowrap;
+	width:100px;
+}
+#feedback-content li.field-area {
+	display:block;
+	margin-right:100px;
+}
+#feedback-content li.field-area span.input-text {
+	background:#ffe;
+	border:1px solid #999;
+	display:block;
+	padding:5px 5px;
+}
+#feedback-content span.validation {
+	background:#eee;
+	color:white;
+	display:block;
+	float:left;
+	font-size:10px;
+	font-family: verdana;
+	margin:0px 5px;
+	padding:4px 10px 4px 10px;
+	position:relative; 
+}
+#feedback-content span.validation.required {
+	background:#eca;
+}
+#feedback-content span.validation.optional {
+	background:#cea;
+}
+#feedback-content form {
+}
+#feedback-content h2 {
+	font-family:georgia;
+	font-weight:normal;
+	margin-top:0;
+}
+#feedback-content p {
+	font-size:17px;
+	line-height:1.6em;
+	margin-bottom:15px;
+	width:100%;
+}
+#feedback-content input {
+	outline:none;
+}
+#feedback-content label.text {
+	display:block;
+	font-size:14px;
+	margin:15px 0 4px;
+	color:#333;
+}
+#feedback-content label.captcha {
+	font-size:14px;
+	color:#333;
+	font-weight:bold;
+}
+#feedback-content input.text {
+	background:#ffe;
+	border:0;
+	color:#809;
+	font-size:14px;
+	padding:0;
+	margin:0;
+	width:100%;
+}
+#feedback-content input.captcha {
+	background:#ffe;
+	border:1px solid #999;
+	color:#809;
+	font-size:14px;
+	width:40px;
+	text-align:center;
+}
+#feedback-content textarea {
+	border:0;
+	background:#ffe;
+	color:#809;
+	display:block;
+	font-size:14px;
+	height:150px;
+	margin:0;
+	outline:none;
+	padding:0;
+	resize:none;
+	width:100%;
+}
+#feedback-content input.submit {
+	background: #464;
+	border: 0;
+	color:white;
+	cursor:pointer; 
+	display:block;
+	margin-top:30px;
+	padding: 10px 30px;
+	float:left;
+}
+#feedback-content input.submit:hover {
+	background:#696;
+}
+#feedback-content input.submit:active {
+	background:#585;
+}
+#feedback-form {
+	margin-top:30px;
+}
+#overlay-close-button {
+	background: #464;
+	border: 0;
+	color:white;
+	cursor:pointer; 
+	display:block;
+	padding: 10px 30px;
+	float:left;
+}
+#overlay-close-button:hover {
+	background:#696;
+}
+#overlay-close-button:active {
+	background:#585;
+}
+#overlay-donate-button {
+	background: #999;
+	border: 0;
+	color:white;
+	cursor:pointer; 
+	display:block;
+	padding: 10px 30px;
+	float:left;
+	border-radius: 3px;
+}
+#overlay-donate-button:hover {
+	background:#696;
+}
+#overlay-donate-button:active {
+	background:#585;
+}
+#write-another-button {
+	font-size:13px;
+	float:left;
+	margin:13px 0 0 8px;
+	color:#ccc;
+}
+#write-another-button a {
+	color:#999;
+	text-decoration:none;
+}
+#write-another-button a:hover {
+	color:#999;
+	text-decoration:underline;
+}
+#close-button {
+	font-size:13px;
+	float:left;
+	margin:40px 0 0 8px;
+	color:#ccc;
+}
+#close-button a {
+	color:#999;
+	text-decoration:none;
+}
+#close-button a:hover {
+	color:#999;
+	text-decoration:underline;
+}
+#ajax-loader {
+	float:left;
+	margin-left:5px;
+}
+
+#overlay {
+  display: table;
+  margin: 20px auto;
+  min-height: 100px;
+  min-width: 600px;
+  position: relative;
+  padding: .2em 26px;
+  width: 78%;
+}
+#overlay-titlebar {
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  z-index: 100;
+  max-width:960px;
+  margin:0 auto;
+}
+#overlay-content {
+  background: #fff;
+  clear: both;
+  color: #000;
+  padding: 30px;
+  position: relative;
+  max-width:940px;
+  margin:0 auto;
+}
+
+#overlay-title-wrapper {
+  overflow: hidden;
+}
+#overlay-title {
+  color: #fff;
+  float: left; /* LTR */
+  font-size: 20px;
+  font-family:verdana;
+  margin: 0;
+  padding: 0.3em 0;
+}	
+#overlay-close-wrapper {
+  position: absolute;
+  right: 0; /* LTR */
+}
+#overlay-close,
+#overlay-close:hover {
+  background: transparent url(images/close.png) no-repeat; /* LTR */
+  -moz-border-radius-topleft: 0; /* LTR */
+  -webkit-border-top-left-radius: 0; /* LTR */
+  border-top-left-radius: 0; /* LTR */
+  display: block;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  /* Replace with position:fixed to get a scrolling close button. */
+  position: absolute;
+  width: 26px;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ 
+.clearfix {
+	display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+	display: block;
+}
+ 
+* html .clearfix {
+	height: 1%;
+}

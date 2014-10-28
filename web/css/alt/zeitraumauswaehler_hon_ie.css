@@ -1,0 +1,158 @@
+@charset "utf-8";
+
+/*************************************************************
+ *	Gestaltung des Zeitraum-Forms für HON. Kompatibel zu IE6, IE7,IE8 und FF.
+ */
+<!--
+[if IE]>.wochentag label {
+	font-size: 11px;
+	color: #535353;
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.wochentag_auswaehler_head {
+	display: block;
+	width: 100%;
+	text-align: center;
+	color: #FFFFFF;
+	background-color: #000849;
+	font-weight: bold;
+}
+
+.wochentag {
+	display: inline-block;
+	height: 104px;
+	width: 220px;
+	background-color: #E9EAED;
+	margin-left: 30px;
+	padding: 0px 0px 4px 0px;
+}
+
+.wochentag ul {
+	margin: 0px 0px 0px 0px;
+}
+
+.wochentag ul li {
+	list-style: none;
+	width: 90px;
+	float: left;
+	margin-top: 0px;
+	border: 0px;
+}
+
+.wochentag ul li input {
+	border: 0px;
+	padding: 0px 0px 0px 0px;
+}
+
+#zeit {
+	background-color: #E9EAED;
+	width: 800px;
+	padding-bottom: 5px;
+	float: left;
+}
+
+#header {
+	background-color: #000849;
+	display: block;
+	text-align: center;
+	color: #FFFFFF;
+	font-weight: bold;
+	margin: 0;
+}
+
+#zeitraumart {
+	vertical-align: middle;
+}
+
+#zeit label {
+	color: #535353;
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+}
+
+#zeitraumart ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+#zeitraum ul li label {
+	display: block;
+}
+
+#zeitraumart ul li {
+	display: inline-block;
+	width: 33%;
+	float: left;
+	text-align: center;
+	display: block;
+}
+
+#zeit_datum {
+	display: inline-block;
+	float: left;
+	width: 33%;
+	padding-left: 5px;
+}
+
+#zeit_woche {
+	display: inline-block;
+	float: left;
+	width: 33%;
+}
+
+#zeit_monat {
+	display: inline-block;
+	width: 33%;
+	float: left;
+}
+
+#optionen {
+	padding-left: 5px;
+}
+
+#optionen ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+#optionen ul li {
+	display: inline;
+	float: left;
+	text-align: center;
+}
+
+#zeit_datum label {
+	display: inline-block;
+	width: 3em;
+}
+
+#zeit_woche label {
+	display: inline-block;
+	width: 5em;
+}
+
+#zeit_monat label {
+	display: inline-block;
+	width: 4.8em;
+}
+
+#footer {
+	padding-left: 5px;
+}
+
+.clear {
+	clear: both;
+	font-size: 0.1em;
+	height: 0.1em;
+}
+<!
+[
+endif
+]
+-->

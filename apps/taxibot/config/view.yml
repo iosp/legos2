@@ -1,0 +1,39 @@
+default:
+  http_metas:
+    content-type: text/html; charset=utf-8
+    X-UA-Compatible: IE=9 # Prevent IE9 from entering compatibility view, which breaks correct rendering of LEGOS
+
+  metas:
+    title:        Legos
+    robots:       index, follow
+    description:  symfony project
+    keywords:     symfony, project
+    language:     de
+
+  stylesheets:
+    - global.css
+    - page.css
+    - helper.css
+    - menu.css
+    - screen.css
+    - jquery.toastmessage.css
+    - AuswahlHelper.css
+    - dataTable.css
+
+  javascripts:
+    - jquery.min.js
+    - jquery-ui.custom.min.js
+    - jquery.toastmessage.js
+    - jquery.dataTables.min.js
+    - make_dataTable.js
+    - autowidth.js
+    - highcharts.js
+    
+
+  has_layout:     true
+  layout:         layout
+  popup:          popup
+
+  components:
+    menu:          [startseite, menu]
+    hilfe:         [startseite, hilfe]

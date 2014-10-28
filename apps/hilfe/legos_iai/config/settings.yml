@@ -1,0 +1,43 @@
+prod:
+  .settings:
+    no_script_name:         false
+    logging_enabled:        false
+
+dev:
+  .settings:
+    error_reporting:        <?php echo (E_ALL | E_STRICT)."\n" ?>
+    web_debug:              true
+    cache:                  false
+    no_script_name:         false
+    etag:                   false
+
+test:
+  .settings:
+    error_reporting:        <?php echo ((E_ALL | E_STRICT) ^ E_NOTICE)."\n" ?>
+    cache:                  false
+    web_debug:              false
+    no_script_name:         false
+    etag:                   false
+
+all:
+  .actions:
+    login_module:           startseite     # To be called when a non-authenticated user
+    login_action:           login     # Tries to access a secure page
+    
+  .settings:
+    # Form security secret (CSRF protection)
+    csrf_secret:            c6691328ccb8ea6bace5c8eb106ee9a0bb2b6841
+
+    # Output escaping settings
+    escaping_strategy:      true
+    escaping_method:        ESC_SPECIALCHARS
+
+    validation_error_prefix:    ''
+    validation_error_suffix:    ''
+    
+    # Enable the database manager
+    use_database:           true
+    # Helpers included in all templates by default
+    standard_helpers:       [Menu, Partial, Cache, Form]
+    # i18n
+    default_culture:        en        # Default user culture

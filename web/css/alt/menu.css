@@ -1,0 +1,432 @@
+/* Die Form des gesamten Menüs festlegen */
+.menu {
+	padding-top: 0px;
+	background: #000849;
+	width: 100%;
+	height: 26px;
+	position: relative;
+	z-index: 80;
+	margin-bottom: 3px;
+}
+
+/* Bulletpoints, Rahmen und Abstände abschalten */
+.menu ul {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+
+/* Aussehen der einzelnen Menüpunkte */
+.menu a,.menu a:visited {
+	display: block;
+	font-size: 11px;
+	text-decoration: none;
+	color: white;
+	width: auto;
+	border: 1px solid white;
+	border-width: 0px 1px 0px 0px;
+	padding: 5px 13px 6px 13px;
+}
+
+/* Position der Untermenüs abhängig vom entsprechenden Menüpunkt machen */
+.menu li {
+	float: left;
+	width: auto;
+	position: relative;
+}
+
+/* Die Tabelle, die für den IE6 benötigt wird, unsichtbar machen */
+.menu table {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-collapse: collapse;
+	border: 0px;
+}
+
+/* Aussehen und Position der Untermenüs */
+.menu ul ul {
+	visibility: hidden;
+	position: absolute;
+	height: 0;
+	top: 21px;
+	left: -10px;
+	width: 160px;
+	border-top: 2px solid white;
+}
+
+/* Aussehen der einzelnen Untermenüpunkte */
+.menu ul ul a,.menu ul ul a:visited {
+	background: #000849;
+	color: white;
+	height: auto;
+	line-height: 1em;
+	padding: 5px 10px;
+	width: 158px;
+	border-width: 0 1px 1px 1px;
+}
+
+/* Aussehen bei ausgewählten Menü */
+.menu a:hover,.menu ul ul a:hover {
+	color: #161D4F;
+	background-color: #F7B213;
+}
+
+.menu :hover>a,.menu ul ul:hover>a {
+	color: #161D4F;
+	background-color: #F7B213;
+}
+
+/* Das Untermenü sichtbar machen beim Überfahren des entsprechenden Menüpunktes oder eben des Untermenüs */
+.menu ul li:hover ul,.menu ul a:hover ul {
+	visibility: visible;
+}
+
+/********* Ab hier Quellcode für das Menü  Wird der wirklich alles benötigt? *****/
+/* Navigation Bar */
+#menu1 {
+	list-style: none;
+}
+
+#menu1 li {
+	float: left;
+	text-align: center;
+	position: relative;
+	padding: 2px 10px 5px 10px;
+	margin-left: -1px;
+	margin-top: 0px;
+	border: 1px solid #CCCCCC;
+	border-bottom: none;
+	border-top: 3px solid #DDDDDD;
+}
+
+#menu1 .aktuell {
+	border-top: 3px solid #000066 !important
+}
+
+#menu1 li:hover,#menu1 li.active {
+	border-top: 3px solid #AAAAAA;
+}
+
+#menu1 li a {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #555555;
+	outline: 0;
+	text-decoration: none;
+}
+
+#menu1 li .drop {
+	padding-right: 21px;
+	background: url("../images/drop.png") no-repeat right 7px;
+}
+
+#menu1 li:hover .drop {
+	background: url("../images/drop.png") no-repeat right 7px;
+}
+
+/* Drop Down */
+.dropdown_1column,.dropdown_2columns,.dropdown_3columns,.dropdown_4columns,.dropdown_5columns
+	{
+	margin: 5px auto;
+	float: left;
+	position: absolute;
+	left: -999em; /* Hides the drop down */
+	text-align: left;
+	padding: 10px 5px 10px 5px;
+	border: 1px solid #CCCCCC;
+	/*border-top:none;  */
+	/* Gradient background */
+	background: #F4F4F4;
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF),
+		to(#EEEEEE));
+}
+
+.dropdown_1column {
+	width: 140px;
+}
+
+.dropdown_2columns {
+	width: 180px;
+}
+
+.dropdown_3columns {
+	width: 420px;
+}
+
+.dropdown_4columns {
+	width: 660px;
+}
+
+.dropdown_5columns {
+	width: 700px;
+}
+
+#menu1 li:hover .dropdown_1column,#menu1 li:hover .dropdown_2columns,#menu1 li:hover .dropdown_3columns,#menu1 li:hover .dropdown_4columns,#menu1 li:hover .dropdown_5columns
+	{
+	left: -1px;
+	top: auto;
+}
+
+/* Columns */
+.col_1,.col_2,.col_3,.col_4,.col_5 {
+	display: inline;
+	float: left;
+	position: relative;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.col_1 {
+	width: 150px;
+}
+
+.col_2 {
+	width: 270px;
+}
+
+.col_3 {
+	width: 410px;
+}
+
+.col_4 {
+	width: 550px;
+}
+
+.col_5 {
+	width: 690px;
+}
+
+/* Right alignment */
+#menu1 .menu_right {
+	float: rightright;
+	margin-right: 0px;
+}
+
+/* Drop Down Content Stylings */
+#menu1 p,#menu1 h2,#menu1 h3,#menu1 ul li {
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 21px;
+	font-size: 12px;
+	text-align: left;
+}
+
+#menu1 h2 {
+	font-size: 21px;
+	font-weight: 400;
+	letter-spacing: -1px;
+	margin: 7px 0 14px 0;
+	padding-bottom: 14px;
+	border-bottom: 1px solid #666666;
+}
+
+#menu1 h3 {
+	font-size: 14px;
+	margin: 7px 0 14px 0;
+	padding-bottom: 7px;
+	border-bottom: 1px solid #888888;
+}
+
+#menu1 p {
+	line-height: 18px;
+	margin: 0 0 10px 0;
+}
+
+#menu1 li:hover div a {
+	font-size: 12px;
+	color: #555555;
+}
+
+#menu1 li:hover div a:hover {
+	color: #FF9A1E;
+}
+
+.strong {
+	font-weight: bold;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.imgshadow {
+	background: #FFFFFF;
+	padding: 4px;
+	border: 1px solid #777777;
+	margin-top: 5px;
+	-moz-box-shadow: 0px 0px 5px #666666;
+	-webkit-box-shadow: 0px 0px 5px #666666;
+	box-shadow: 0px 0px 5px #666666;
+}
+
+.img_left { /* Image sticks to the left */
+	width: auto;
+	float: left;
+	margin: 5px 15px 5px 5px;
+}
+
+#menu1 li .black_box {
+	background-color: #333333;
+	color: #eeeeee;
+	text-shadow: 1px 1px 1px #000;
+	padding: 4px 6px 4px 6px;
+	/* Rounded Corners */
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	/* Shadow */
+	-webkit-box-shadow: inset 0 0 3px #000000;
+	-moz-box-shadow: inset 0 0 3px #000000;
+	box-shadow: inset 0 0 3px #000000;
+}
+
+#menu1 li ul {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 12px 0;
+}
+
+#menu1 li ul li {
+	font-size: 12px;
+	position: relative;
+	padding: 0;
+	margin: 0;
+	float: none;
+	text-align: left;
+	width: 170px;
+	border: none;
+	border-bottom: 1px solid #BBBBBB;
+}
+
+#menu1 li ul li:hover {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	border-bottom: 1px solid #BBBBBB;
+}
+
+#menu1 li .greybox li {
+	background: #F4F4F4;
+	border: 1px solid #bbbbbb;
+	margin: 0px 0px 4px 0px;
+	padding: 4px 6px 4px 6px;
+	width: 116px;
+	/* Rounded Corners */
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+#menu1 li .greybox li:hover {
+	background: #ffffff;
+	border: 1px solid #aaaaaa;
+	padding: 4px 6px 4px 6px;
+	margin: 0px 0px 4px 0px;
+}
+
+#picker_zeitraum div {
+	float: left;
+}
+
+#hinweispfeil {
+	position: fixed;
+	top: 250px;
+	z-index: 0;
+}
+
+ul,li {
+	font-size: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+ul#menu {
+	background: #FFFFFF;
+	color: #000000;
+	margin: 0;
+	padding: 0.5em 0em;
+}
+
+ul#menu li {
+	display: inline;
+	margin: 0em;
+	position: relative;
+}
+
+ul#menu h2,ul#menu h3 {
+	font-size: 100%;
+	font-weight: normal;
+	display: inline;
+}
+
+ul#menu li a {
+	color: #555555;
+	text-decoration: none;
+	padding: 2 2 2 2;
+	border: 1px;
+	border-color: #555555;
+}
+
+ul#menu li a:hover {
+	text-decoration: underline;
+}
+
+ul#menu li.mega a {
+	background: transparent url(arrow.gif) center right no-repeat;
+	padding: 5px 10px 5px 10px;
+	border: solid 1px #555555;
+	border-width: 1px 1px 0px 1px;
+}
+
+ul#menu li.mega a:hover {
+	text-decoration: underline;
+}
+
+ul#menu div {
+	display: none;
+}
+
+ul#menu li.mega div {
+	border: 1px solid #dda;
+	width: 18em;
+	position: absolute;
+	top: 1.6em;
+	left: 0em;
+	padding: 0px;
+	background: #ffffff;
+	color: #930;
+}
+
+ul#menu li.hovering div {
+	display: block;
+}
+
+ul#menu li.mega div a {
+	color: #300;
+	padding: 20px 20px 20px 0px;
+	border-style: none;
+}
+
+ul#menu li.mega div li {
+	border-style: none;
+	color: #555555;
+	padding: 10px;
+}
+
+ul#menu li div a.more {
+	color: #390;
+	font-weight: bold;
+}
+
+ul#menu div h3 {
+	color: #aa8;
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+ul#menu div p {
+	margin: 0 0 0 0;
+	padding: 0;
+}

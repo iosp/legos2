@@ -1,0 +1,366 @@
+@charset "utf-8";
+
+/*******************************************************
+ *	Gestaltung des AuswahlHelper-Forms
+ *
+ *******************************************************/
+
+/**  Allgemeine Angaben der ganzen Box  */
+#auswahlfilter {
+	position: fixed;
+	margin: 0px;
+	padding: 0px;
+	top: 140px;
+	left: 0px;
+	list-style: none;
+	z-index: 100;
+	display: block;
+	min-width: 200px;
+	/*  height: 400px;*/
+	text-align: center;
+	float: left;
+}
+
+#optionen_header {
+	background-color: #FFBA17;
+	color: #000066;
+	font-size: 14px;
+	text-align: left;
+	padding: 5px 5px 5px 5px;
+	margin-bottom: 5px;
+}
+
+.optionen_title {
+	text-align: left;
+	color: #333333;
+	margin: 5px 0px 5px 5px;
+}
+
+.optionen_block {
+	text-align: left;
+	/*border-bottom: 1px solid #CCCCCC;*/
+	padding-bottom: 5px;
+	min-height: 50px;
+	margin: 30px 5px 5px 5px;
+}
+
+.option-line{
+	float: left;
+	width: 80px;
+	border-bottom: 1px solid #CCCCCC;
+	margin: 0 15px;
+	margin-top: 5px;
+}
+
+.option-line-and{
+	float: left;
+}
+
+.option-line-or{
+	float: left;
+	width: 200px;
+	border-bottom: 1px solid #CCCCCC;
+	margin: 0 15px;
+	margin-top: 5px;
+}
+
+.optionen_block label,.optionen_block select {
+	/* Erlaubt width-Änderung von labels */
+	display: inline-block;
+}
+
+#inhalt {
+	width: 280px;
+	float: left;
+	min-height: 300px;
+	background-color: #FFFFFF;
+	border: 1px solid #AFAFAF;
+}
+
+#tabs {
+	border: none;
+}
+
+#fahne {
+	float: left;
+	vertical-align: bottom;
+}
+
+#fahne_raus {
+	float: left;
+	vertical-align: bottom;
+}
+
+#pin_submit {
+	border: 0;
+	margin-top: 0;
+}
+
+/**  Zeitraumauswähler   */
+.datepicker,.daterangepicker {
+	background: url("/images/icon_datepicker.gif") no-repeat scroll right
+		center transparent;
+	cursor: pointer;
+	width: 120px;
+}
+
+.ui-daterangepicker .ui-datepicker-header {
+	background: #FFBA17;
+}
+
+/**  Filteroptionen 	*/
+.optionen {	
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.optionen_fahrzeugauswahl {
+	height: 30px;
+}
+
+.optionen_vorgangsart {
+	text-align: left;
+	height: 70px;
+}
+
+.option_block .checkbox_list {
+	text-align: left;
+}
+
+.option_actionbuttons {
+	float: right;
+	padding: 10px;
+}
+
+.auswahlZahl {
+	width: 20pt;
+}
+
+/** Fahrzeug-Auswahl */
+#feedback {
+	font-size: 1.4em;
+}
+
+#selectable .ui-selecting {
+	background: #FECA40;
+}
+
+#selectable .ui-selected {
+	background: #FFBA17;
+	color: black;
+}
+
+#selectable {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#selectable li {
+	margin: 3px;
+	padding: 0.4em;
+	height: 18px;
+}
+
+/** Eigene Anpassungen von JQuery UI für den Auswahlfilter */
+
+/* Component containers
+----------------------------------*/
+.ui-widget {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 1em;
+}
+
+.ui-widget-content {
+	border: 1px solid #aaaaaa;
+	background: #ffffff url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50%
+		repeat-x;
+	color: #222222;
+}
+
+.ui-widget-content a {
+	color: #535353;
+}
+
+.ui-widget-header {
+	border: 1px solid #CCCCCC;
+	color: #535353 !important;
+}
+
+.ui-widget-header a {
+	color: #000066;
+}
+
+/* Interaction states
+ Gelbe Hervorhebungsfunktion
+----------------------------------*/
+.ranges .ui-state-default,.ranges .ui-widget-header .ui-state-default {
+	border: 1px solid #cccccc;
+	font-weight: normal;
+}
+
+.ranges .ui-widget-content .ui-state-default {
+	background: url("images/ui-bg_flat_75_ffffff_40x100.png") repeat-x 50%
+		50% #ffffff;
+	border: 1px solid #cccccc;
+	color: #708090;
+	font-weight: normal;
+}
+
+.ranges .ui-state-default a,.ranges .ui-state-default a:link,.ranges .ui-state-default a:visited
+	{
+	color: #AAAAAA;
+	text-decoration: none;
+}
+
+.ranges .ui-widget-content .ui-state-hover {
+	background: url("images/ui-bg_flat_75_ffba17_40x100.png") repeat-x 50%
+		50% #FFBA17;
+	border: 1px solid #000066;
+	color: #000066;
+	font-weight: normal;
+}
+
+.ranges .ui-state-hover,.ranges .ui-widget-header .ui-state-hover,.ranges .ui-state-focus,.ranges .ui-widget-content .ui-state-focus,.ranges .ui-widget-header.ranges .ui-state-focus
+	{
+	border: 1px solid #000066;
+	color: #000066;
+	font-weight: normal;
+}
+
+.ranges .ui-state-hover a,.ranges .ui-state-hover a:hover,.ranges .ui-state-active a,.ranges .ui-state-active a:link,.ranges .ui-state-active a:visited
+	{
+	color: #000066;
+	text-decoration: none;
+}
+
+.ranges .ui-state-active {
+	border: 1px solid #cccccc;
+	color: #000066;
+	font-weight: normal;
+}
+
+.ranges .ui-widget-content .ui-state-active {
+	background: url("images/ui-bg_flat_65_ffba17_40x100.png") repeat-x 50%
+		50% #FFBA17;
+	border: 1px solid #ccccccc;
+	color: #000066;
+	font-weight: normal;
+}
+
+.ranges .ui-widget-header .ui-state-active {
+	border: 1px solid #ccccccc;
+	color: #000066;
+	font-weight: normal;
+}
+
+/* Interaction Cues
+----------------------------------*/
+.ranges .ui-state-highlight,.ranges .ui-widget-header .ui-state-highlight
+	{
+	border: 1px solid #FFBA17;
+	color: #535353;
+}
+
+.ranges .ui-widget-content .ui-state-highlight {
+	background: url("images/ui-bg_flat_55_fbf9ee_40x100.png") repeat-x 50%
+		50% #fbf9ee;
+	border: 1px solid #FFBA17;
+	color: #535353;
+}
+
+.ranges .ui-state-highlight a,.ranges .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a
+	{
+	color: #535353;
+}
+
+.ranges .ui-priority-primary,.ranges .ui-widget-content .ui-priority-primary,.ranges .ui-widget-header .ui-priority-primary
+	{
+	font-weight: bold;
+}
+
+.ranges .ui-priority-secondary,.ranges .ui-widget-content .ui-priority-secondary,.ranges .ui-widget-header .ui-priority-secondary
+	{
+	font-weight: normal;
+	filter: Alpha(Opacity = 70);
+	opacity: 0.7;
+}
+
+.ranges .ui-state-disabled,.ranges .ui-widget-content .ui-state-disabled,.ranges .ui-widget-header .ui-state-disabled
+	{
+	filter: Alpha(Opacity = 35);
+	opacity: 0.35;
+}
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.ranges .ui-icon {
+	width: 16px;
+	height: 16px;
+	background-image: url("images/ui-icons_000066_256x240.png");
+} /* Links/Rechts-Buttons im Kalender */
+.ranges .ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all .ui-datepicker-prev-hover,.ranges .ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all .ui-datepicker-next-hover
+	{
+	border: 1px solid #FFBA17;
+} /*Hover Links/Rechts-Button */
+
+/*
+ * Für Buttons, z.B. Wochentagsauswahl
+ */
+#auswahlfilter .optionen_block .ui-state-default,#auswahlfilter .optionen_block .ui-widget-content .ui-state-default,#auswahlfilter .optionen_block .ui-widget-header .ui-state-default
+	{
+	border: 1px solid #aaaaaa;
+	background: url("images/ui-bg_glass_65_ffffff_1x400.png") repeat-x
+		scroll 50% 50% #FFFFFF;
+	font-weight: normal;
+	color: #555555;
+}
+
+#auswahlfilter .optionen_block .ui-state-hover,#auswahlfilter .optionen_block .ui-widget-content .ui-state-hover,#auswahlfilter .optionen_block .ui-widget-header .ui-state-hover,#auswahlfilter .optionen_block .ui-state-focus,#auswahlfilter .optionen_block .ui-widget-content .ui-state-focus,#auswahlfilter .optionen_block .ui-widget-header .ui-state-focus
+	{
+	border: 1px solid #aaaaaa;
+	background: url(images/ui-bg_glass_75_ffffff_1x400.png) repeat-x 50% 50%
+		#FFFFFF;
+	font-weight: normal;
+}
+
+/*
+ * Für Select-Boxen, z.B. Kalenderwochen
+ */
+#auswahlfilter select {
+	background: none;
+}
+
+/* Für die Fahrzeugauswahl */
+.ui-dialog-titlebar {
+	background-image: url("images/ui-bg_glass_75_dadada_1x400.png");
+	color: #ffffff !important;
+}
+
+/* Buttons für Dialogbox */
+.dialogButtons .ui-state-active.ui-button:before {
+	content: "";
+}
+
+.dialogButtons .ui-button:before {
+	content: "";
+}
+
+.dialogButtons .ui-button {
+	padding: 0.5em 1em;
+}
+
+/*
+ * Slider für zum Beispiel Zeitfensterauswahl in HON
+ */
+#auswahlfilter .optionen_block .ui-slider-horizontal .ui-state-default {
+	position: absolute;
+	background-color: #ffba17 !important;
+	background-image: url("images/ui-bg_flat_75_ffba17_40x100.png");
+}
+
+.optionen_auswahl_uhrzeit {
+	width: 70%;
+}

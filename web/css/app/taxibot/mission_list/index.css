@@ -1,0 +1,77 @@
+#buttons .disabled{
+	background: #BBBBBB;
+}
+.mission-button{ 
+	height: 30px;
+	width: 150px;
+	margin-bottom: 25px;
+	border: black 1px solid;
+	display: flex;
+	align-items: center;	
+	font-size: 17px;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+#mode_table_container{
+	min-height: 350px;
+}
+
+.yellow-button{
+	border: black 1px solid;
+	height: 30px;
+	width: 20px;
+	margin-right: 10px;
+	background: #FFBA17;
+}
+
+#mission-confirm{
+	margin-top:80px;
+}
+
+.checkbox-row{
+	margin-right:3px;
+}
+
+.undisplay-indicator{
+	display: none;
+}
+.button-clicked{
+	background: gray;
+}
+.dataTables_length{
+	height: 35px;
+}
+
+.th-edit-icon{
+	margin-left: 15px
+}
+
+.operaional-select{
+	border: red 0 solid;
+	background: transparent;
+	cursor: pointer;
+}
+
+.th-operational{
+	width: 0;
+}
+
+.td-edit-text{
+	cursor: text;
+}
+#time_interval_table_container{
+	height: 80px;
+	margin-left: 15px;
+}
+
+.filter-border{
+	border:#212121 1px solid;
+}
+
+.remove-arrow{
+  -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+

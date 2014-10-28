@@ -1,0 +1,1 @@
+<?php echo $our_string; ?>

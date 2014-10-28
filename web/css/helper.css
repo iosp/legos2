@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+/**
+ * In dieser Datei werden css-Hilfsklassen definiert, mit deren Hilfe z.B. Inhalte angeordnet
+ * werden können.
+ */
+.links {
+	float: left;
+}
+
+.rechts {
+	text-align: right;
+}
+
+/* z.B. für Pfeile vor Links */
+.pfeil {
+	background-image: url("/images/link_pfeil.png");
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-left: 10px;
+}
+
+.clear {
+	clear: both;
+}

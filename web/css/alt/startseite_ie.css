@@ -1,0 +1,6 @@
+@charset "utf-8";
+
+.startseite_appblock {
+	display: inline;
+	/* this is to make inline-block work on block elements versions <IE8 */
+}

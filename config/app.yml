@@ -1,0 +1,32 @@
+# default values
+all:
+  loadvalues:
+    overload:           5.8                     
+  import:
+    pfad_taxibot:      /home/user/workspace/csv-files/taxibot
+    datei_taxibot:     taxibot_OrderList.csv
+    pfad_taxibot_log:  /home/user/workspace/csv-files/taxibot
+    path_stack_log:    /home/user/workspace/csv-files/taxibot
+    data_stack_log:    logger_output1.txt
+    datei_taxibot_log: taxibot_log.csv
+    taxibot_logfile:   /home/user/workspace/legos2/log/import_taxibot.log
+    debug:             /home/user/workspace/legos2/log/debug.log
+  export:
+    path:              tmp 
+  lib:
+    general:            /home/user/workspace/legos2/lib
+    #helper:            /srv/www/legos2/lib/helper
+    helper:            /home/user/workspace/legos2/lib/helper    
+# URLs der Applikationen - wird benötigt zum Erstellen von Links
+prod:
+  url:
+    portal:               /portal.php
+    verwaltung:           /verwaltung.php
+    hilfe:                /hilfe.php
+    taxibot:              /taxibot.php
+dev:
+  url:
+    portal:               /portal_dev.php 
+    verwaltung:           /verwaltung_dev.php 
+    hilfe:                /hilfe_dev.php
+    taxibot:              /taxibot_dev.php

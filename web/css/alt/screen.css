@@ -1,0 +1,278 @@
+@charset "utf-8";
+
+/************************
+* Definitionen für das Grundlayout
+*
+*************************/
+body {
+	margin: 0px;
+	margin-bottom: 15px;
+	background-image: url(../images/bg.jpg);
+	background-repeat: repeat-x;
+	background-color: #e8e7e7;
+}
+
+#page {
+	background-color: #ffffff;
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+	border: solid 1px #b3b2b2;
+	padding-bottom: 10px;
+	min-height: 400px;
+}
+
+#application_header {
+	height: 15px;
+	background-color: #000066;
+	color: #ffffff;
+	font-family: Verdana;
+	font-weight: bold;
+	padding-left: 5px;
+	vertical-align: middle;
+}
+
+#topnavi a {
+	color: #999999;
+	font-family: Verdana;
+	text-decoration: none;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#application_header a:hover {
+	color: #FFB300;
+}
+
+#topnavi {
+	font-size: 10px;
+	font-family: Verdana;
+	color: #999999;
+	font-weight: normal;
+	padding-top: 7px;
+}
+
+#topnavi a {
+	color: #999999;
+	font-family: Verdana;
+	text-decoration: none;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#puffer {
+	height: 42px;
+}
+
+#menu_area {
+	margin-top: -2px;
+	background-color: #ffffff;
+	vertical-align: bottom;
+	border-bottom: solid 1px #CCCCCC;
+	z-index: 999
+}
+
+#logo {
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 26px;
+	color: #444444;
+}
+
+#content_header {
+	font-family: Verdana;
+	font-size: 9px;
+	color: #444444;
+	white-space: nowrap;
+	padding-right: 10px;
+	height: 18px;
+}
+
+#menu_logo_tab {
+	border: 0px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: auto;
+}
+
+#menu_zelle {
+	width: 755px;
+}
+
+#menu {
+	float: left;
+}
+
+#puffer_zelle {
+	height: 1px;
+}
+
+#content {
+	overflow: auto;
+	font-family: Verdana;
+	font-size: 11px;
+	padding: 0px 10px 10px 10px;
+	min-height: 400px;
+}
+
+#footer {
+	border-top: solid 1px #C5C5C5;
+	padding-top: 5px;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-right: 10px;
+	font-family: Verdana;
+	font-size: 11px;
+	color: #C5C5C5;
+}
+
+/*
+* Ende Definitionen für das Grundgerüst
+*/
+
+/**************
+*  Allgemeine Definitionen
+* 
+**************/
+.clear {
+	clear: both;
+}
+
+div.link {
+	background: url(../images/link_pfeil.png) left 5px no-repeat;
+	padding-left: 10px;
+}
+
+a:link,a:visited {
+	font-family: Verdana;
+	text-decoration: none;
+	font-weight: normal;
+	color: #555555;
+	margin: 0px;
+	cursor: hand;
+}
+
+a:active,a:hover {
+	font-family: Verdana;
+	text-decoration: none;
+	font-weight: normal;
+	color: #FF9A1E;
+	margin: 0px;
+	/* Auskommentiert, weil der jQuery-Datepicker sonst springt.
+	 margin-top:3px;*/
+}
+
+.links {
+	float: left;
+}
+
+.rechts {
+	text-align: right;
+}
+
+.gelb {
+	color: #FFB300;
+	float: left;
+}
+
+.unten {
+	vertical-align: bottom;
+}
+
+/*
+* Ende allgemeine Definitionen
+*/
+
+/*
+ * Farbliche Hervorhebung für das Javascript clickable_highlighting.js 
+ */
+.highlighted {
+	background-color: #F7B213 !important;
+}
+
+#starter {
+	width: auto;
+	border: solid 1px #b3b2b2;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#starter thead,.content_title_bar {
+	background-color: #000066;
+	color: #ffffff;
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+	margin: 3px 3px 3px 3px;
+	padding: 3px 3px 3px 3px;
+}
+
+#starter_unten thead {
+	background-color: #666666;
+	color: #ffffff;
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.content_title {
+	float: left;
+}
+
+#login {
+	padding: 0;
+	margin-left: 20px;
+	padding-left: 20px;
+	padding-right: 5px;
+	margin-top: 10px;
+	border: 1px solid #555555;
+	background: url(../images/submit_farbe.png) repeat-y;
+	background-color: #ffffff;
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+	color: #555555;
+	height: 20px;
+}
+
+.login_box_body {
+	color: #555555;
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+	padding-left: 20px;
+}
+
+#zell_login {
+	background-color: #E5E5E5;
+	width: 200px;
+}
+
+.inner {
+	border-style: none;
+}
+
+.inner li {
+	border-style: none;
+}
+
+div.box {
+	border: 1px solid #CCC;
+	background-color: white;
+	overflow-x: hidden;
+	margin-bottom: 10px;
+}
+
+div.box {
+	border-top: 0 solid;
+	margin-bottom: 20px;
+}
+
+div.box .header {
+	background: url(de/img/icons.gif) 0 -155px repeat-x #F2F2F2;
+	border-bottom: 1px solid #CCC;
+	color: #333;
+	font-size: 12px;
+	line-height: 17px;
+	padding: 4px 10px 5px;
+}

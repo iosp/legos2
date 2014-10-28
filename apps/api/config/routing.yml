@@ -1,0 +1,40 @@
+# You can find more information about this file on the symfony website:
+# http://www.symfony-project.org/reference/1_4/en/10-Routing
+
+  
+towingActivity_show:
+  url: /towingActivity/:order_id/:timestamp.:sf_format
+  param: { module: towingActivity, action: show, sf_format: json }
+  class: sfPropelRoute
+  options: { model: TowingActivity, type: object }
+  requirements: { sf_method: GET, sf_format: (xml|json|yml), order_id: \w+\.?\w+ }
+  
+schleppvorgang_create:
+  url: /towingActivity.:sf_format
+  param: { module: towingActivity, action: create, sf_format: json }
+  class: sfPropelRoute
+  options: { model: towingActivity, type: object }
+  requirements: { sf_method: POST, sf_format: (xml|json|yml) }
+  
+schleppvorgang_update:
+  url: /towingActivity/:order_id/:timestamp.:sf_format
+  param: { module: towingActivity, action: update, sf_format: json }
+  class: sfPropelRoute
+  options: { model: towingActivity, type: object }
+  requirements: { sf_method: PUT, sf_format: (xml|json|yml), order_id: \w+\.?\w+ }
+  
+  
+  
+  # default rules
+homepage:
+  url:   /
+  param: { module: default, action: index }
+
+# generic rules
+# please, remove them by adding more specific rules
+default_index:
+  url:   /:module
+  param: { action: index }
+
+default:
+  url:   /:module/:action/*

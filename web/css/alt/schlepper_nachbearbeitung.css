@@ -1,0 +1,18 @@
+/**************************************************************************
+ * Schleppernachbearbeitung
+ */
+table.inline-edit {
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+table.inline-edit td {
+	margin: 0;
+	padding: 0 1px 0 1px;
+	border: 2px solid #FFFFFF;
+}
+
+.fehlerhafte_daten {
+	background-color: #F7B213;
+}

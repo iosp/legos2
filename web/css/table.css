@@ -1,0 +1,54 @@
+@charset "utf-8";
+
+/**
+ * CSS für normale Tabellen, die nicht mit dataTables aufgehübscht werden. Grundsätzlich
+ * sollten alle Tabellen, die Auswertungsergebnisse u.ä. enthalten dataTables nutzen.
+ * 
+ * Normale Tabellen, die die Styles dieser css-Datei nutzen sollten nur in Ausnahmefällen,
+ * wie z.B. in bestimmten Modulen der Verwaltung genutzt werden.
+ */
+
+/*
+####
+# Tabellen
+####
+*/
+table.normal {
+	empty-cells: show;
+	margin: 5px 5px 5px 0px;
+	border: 1px solid #DDDDDD;
+	border-spacing: 0px;
+}
+
+table.normal th {
+	text-align: left;
+	color: white;
+	background-color: #555555;
+	padding: 5px 5px 5px 3px;
+}
+
+table.normal td {
+	padding: 3px;
+	vertical-align: top;
+}
+
+table.normal td.border_bottom {
+	border-bottom: 1px solid #CCCCCC;
+}
+
+table.normal tr:hover td {
+	background-color: #FFBA17;
+}
+
+table.normal tr,table.normal tr.gerade,table.flat tr,table.flat tr.gerade
+	{
+	background-color: #EEEEEE;
+}
+
+table.normal tr.ungerade,table.flat tr.ungerade {
+	background-color: #FFFFFF;
+}
+
+table.normal input,table.normal select {
+	font-size: 1em;
+}

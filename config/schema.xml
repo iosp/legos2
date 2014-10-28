@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<database defaultIdMethod="native" name="propel">
+	<!-- ############################### # Benutzerverwaltung & System # ############################### -->
+
+	<table name="auth_gruppe" phpName="Gruppe"
+		description="Hier sind alle Benutzergruppen des Systems gespeichert">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="name" type="VARCHAR" size="255" required="true" />
+		<column name="beschreibung" type="VARCHAR" size="255" />
+	</table>
+	<table name="auth_modul" phpName="Modul"
+		description="Hier sind alle Module von Legos aufgelistet">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="name" type="VARCHAR" size="255" />
+	</table>
+	<table name="auth_gruppe_modul" phpName="Gruppe_Modul"
+		description="N x M Verbindungen von Gruppen und Modulen">
+		<column name="gruppe_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<column name="modul_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<foreign-key foreignTable="auth_gruppe">
+			<reference local="gruppe_id" foreign="id" />
+		</foreign-key>
+		<foreign-key foreignTable="auth_modul">
+			<reference local="modul_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="auth_gruppe_werkstattkunde" phpName="Gruppe_Werkstattkunde"
+		description="N X M Verbindungen von Gruppen und Kunden des Bereichs Werkstatt-Kunde">
+		<column name="gruppe_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<column name="werkstattkunde_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<foreign-key foreignTable="auth_gruppe">
+			<reference local="gruppe_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="auth_benutzer" phpName="Benutzer"
+		description="Hier sind alle Benutzer des Systems gespeichert">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="login" type="VARCHAR" size="255" required="true" />
+		<column name="passwort" type="VARCHAR" size="255" required="false"
+			description="Gehashtes Passwort (MD5) ohne Salt (alte Version)." />
+		<column name="salt_string" type="VARCHAR" size="275"
+			description="Salt-String des jeweiligen Benutzers, der vor'm Hashen an das Passwort angehängt wird." />
+		<column name="passwort_salted" type="VARCHAR" size="64"
+			description="Gehashtes Salt+Passwort (SHA256)." />
+		<column name="name" type="VARCHAR" size="255" required="true" />
+		<column name="beschreibung" type="VARCHAR" size="255" />
+		<column name="last_login" type="VARCHAR" size="255"
+			description="Wird bei jedem Login gesetzt" />
+		<column name="login_count" type="VARCHAR" size="255"
+			description="Wird bei jedem Login hochgezählt" />
+	</table>
+	<table name="auth_benutzer_gruppe" phpName="Benutzer_Gruppe"
+		description="N x M Verbindungen von Benutzern und Gruppen">
+		<column name="gruppe_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<column name="benutzer_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<foreign-key foreignTable="auth_gruppe">
+			<reference local="gruppe_id" foreign="id" />
+		</foreign-key>
+		<foreign-key foreignTable="auth_benutzer">
+			<reference local="benutzer_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="auth_benutzer_modul" phpName="Benutzer_Modul"
+		description="N x M Verbindungen von Benutzern und Modulen">
+		<column name="modul_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<column name="benutzer_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<foreign-key foreignTable="auth_modul">
+			<reference local="modul_id" foreign="id" />
+		</foreign-key>
+		<foreign-key foreignTable="auth_benutzer">
+			<reference local="benutzer_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<!-- ####################################### # Tables for taxibot training 
+		modules # ####################################### -->
+	<table name="taxibot_tractor" phpName="TaxibotTractor"
+		description="Table of taxibot tractors">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="tractor_id" type="INTEGER" required="true" />
+		<column name="name" type="VARCHAR" size="255"
+			description="Name of the tractor as given in csv-file." />
+		<column name="creation_date" type="TIMESTAMP" defaultExpr="CURRENT_TIMESTAMP"
+			description="Date, when the tractor was added to the database." />
+		<column name="pcm_hours" type="FLOAT" description="Total time of pcm mode" />
+		<column name="dcm_hours" type="FLOAT" description="Total time of dcm mode" />
+	</table>
+
+	<table name="taxibot_activity" phpName="TaxibotActivity"
+		allowPkInsert="true" description="Taxibot towing activities.">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="csv_file_date" type="DATE"
+			description="This dataset is taken from that days csv-file." />
+		<column name="tractor_id" type="INTEGER"
+			description="Foreign key to the tractor-table." />
+		<column name="trip" type="INTEGER" description="Trip number of the flight." />
+		<column name="ac_registration" type="VARCHAR" size="255"
+			description="Registration code of the AC." />
+		<column name="position_from" type="VARCHAR" size="255"
+			description="Origin position of the aircraft." />
+		<column name="position_to" type="VARCHAR" size="255"
+			description="Destination position of the aircraft." />
+		<column name="departure" type="TIMESTAMP" description="Timestamp when tractor departs." />
+		<column name="ready" type="TIMESTAMP"
+			description="Timestamp when tractor is ready for towing." />
+		<column name="completed" type="TIMESTAMP"
+			description="Timestamp when towing activity was completed." />
+		<column name="checked" type="BOOLEAN" required="true" default="0"
+			description="True, if activity was manually checked." />
+		<foreign-key foreignTable="taxibot_tractor">
+			<reference local="tractor_id" foreign="tractor_id" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_log" phpName="TaxibotLog" description="TaxibotLog">
+		<column name="log_id" type="INTEGER" primaryKey="true"
+			required="true" />
+		<column name="log_file" type="INTEGER" description="Log File Information" />
+		<column name="tractor_id" type="INTEGER"
+			description="Foreign key to the tractor-table." />
+		<column name="load" type="FLOAT" description="Weight" />
+		<column name="date" type="TIMESTAMP" description="date" />
+		<column name="load_validity" type="BOOLEAN" description="" />
+		<column name="load_exceeded" type="BOOLEAN" description="" />
+		<foreign-key foreignTable="taxibot_tractor">
+			<reference local="tractor_id" foreign="tractor_id" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_table" phpName="TaxibotTable" description="TaxibotTable">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="nlg_long_force" type="FLOAT" description="Measured load for the AC" />
+		<column name="exceeding_amount" type="FLOAT"
+			description="Load outside FATIGUE envelope" />
+		<column name="aircraft_number" type="INTEGER"
+			description="AC Tail number - Field No. 55" />
+		<column name="tractor_id" type="INTEGER"
+			description="Foreign key to the tractor-table." />
+		<column name="flight_number" type="VARCHAR" size="255"
+			description="Fields 60 - 67" />
+		<column name="aircraft_type" type="INTEGER" description="mod_enum_acType" />
+		<column name="time" type="TIMESTAMP" description="UTC time Fields 1 - 6" />
+		<column name="driver_name" type="VARCHAR" size="255"
+			description="From LEOS" />
+		<column name="aircraft_weight" type="FLOAT" description="Tons Field 49" />
+		<column name="aircraft_center_gravity" type="FLOAT"
+			description="mac percent field 51" />
+		<column name="latitude" type="FLOAT" description="degrees field 8" />
+		<column name="longitude" type="FLOAT" description="degrees field 9" />
+	</table>
+	<table name="taxibot_alert" phpName="TaxibotAlert" description="TaxibotAlert">
+		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+		<column name="alert" type="VARCHAR" size="255" required="true"/>		
+	</table>
+	<table name="taxibot_cancel" phpName="TaxibotCancel" description="TaxibotCancel">
+		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+		<column name="alert" type="VARCHAR" size="255" required="true"/>
+		<column name="time" type="TIMESTAMP" description="Time of cancel event" required="true" />
+	</table>
+	
+	<table name="taxibot_vector" phpName="TaxibotVector" description="TaxibotVector">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="utc_time" type="TIMESTAMP" description="UTC Date and Time"
+			required="true" />
+		<column name="mili_sec" type="INTEGER"
+			description="miliseconds past from last integral second" required="true" />
+		<column name="utc_validity" type="BOOLEAN"
+			description="DGPS1 UTC-time status validity" required="true" />
+		<column name="latitude" type="FLOAT" description="Latitude (Inertial Sys)"
+			required="true" />
+		<column name="longitude" type="FLOAT" description="Longitude (Inertial Sys)"
+			required="true" />
+		<column name="position_validity" type="BOOLEAN" description="Position Validity"
+			required="true" />
+		<column name="velocity_north" type="FLOAT" description="Vx (Inertial Sys)"
+			required="true" />
+		<column name="velocity_east" type="FLOAT" description="Vy (Inertial Sys)"
+			required="true" />
+		<column name="velocity_validity" type="BOOLEAN" description="Velocity Validity"
+			required="true" />
+		<column name="acceleration_north" type="FLOAT" description="Ax (Inertial Sys)"
+			required="true" />
+		<column name="acceleration_east" type="FLOAT" description="Ay (Inertial Sys)"
+			required="true" />
+		<column name="acceleration_z" type="FLOAT" description="Az (Inertial Sys)"
+			required="true" />
+		<column name="azimuth" type="FLOAT" description="Azimuth"
+			required="true" />
+		<column name="azimuth_validity" type="BOOLEAN" description="Azimuth Validity"
+			required="true" />
+		<column name="mfl" type="VARCHAR"
+			description="MFL (in DM1 format: Failures, Safety events,..); "
+			required="true" />
+		<column name="vertical_link_front_right" type="FLOAT"
+			description="Vertical Link FR" required="true" />
+		<column name="vertical_link_rear_left" type="FLOAT"
+			description="Vertical Link RL" required="true" />
+		<column name="vertical_link_rear_right" type="FLOAT"
+			description="Vertical Link RR" required="true" />
+		<column name="vertical_link_front_left" type="FLOAT"
+			description="Vertical Link FL" required="true" />
+		<column name="lateral_link_front_right" type="FLOAT"
+			description="Lateral Link FR" required="true" />
+		<column name="lateral_link_rear_left" type="FLOAT" description="Lateral Link RL"
+			required="true" />
+		<column name="lateral_link_rear_right" type="FLOAT"
+			description="Lateral Link RR" required="true" />
+		<column name="lateral_link_front_left" type="FLOAT"
+			description="Lateral Link FL" required="true" />
+		<column name="damper_load1" type="VARCHAR" description="Damper Load #1"
+			required="true" />
+		<column name="damper_load2" type="VARCHAR" description="Damper Load #2"
+			required="true" />
+		<column name="damper_displacement" type="VARCHAR" description="Damper Displacement"
+			required="true" />
+		<column name="damper_velocity" type="VARCHAR" description="Damper Velocity"
+			required="true" />
+		<column name="vertical_link_front_right_validity" type="BOOLEAN"
+			description="Vertical Link FR Validity" required="true" />
+		<column name="vertical_link_rear_left_validity" type="BOOLEAN"
+			description="Vertical Link RL Validity" required="true" />
+		<column name="vertical_link_rear_right_validity" type="BOOLEAN"
+			description="Vertical Link RR Validity" required="true" />
+		<column name="vertical_link_front_left_validity" type="BOOLEAN"
+			description="Vertical Link FL Validity" required="true" />
+		<column name="lateral_link_front_right_validity" type="BOOLEAN"
+			description="Lateral Link FR Validity" required="true" />
+		<column name="lateral_link_rear_left_validity" type="BOOLEAN"
+			description="Lateral Link RL Validity" required="true" />
+		<column name="lateral_link_rear_right_validity" type="BOOLEAN"
+			description="Lateral Link RR Validity" required="true" />
+		<column name="lateral_link_front_left_validity" type="BOOLEAN"
+			description="Lateral Link FL Validity" required="true" />
+		<column name="damper_load1_validity" type="VARCHAR"
+			description="Damper Load #1 Validity" required="true" />
+		<column name="damper_load2_validity" type="VARCHAR"
+			description="Damper Load #2 Validity" required="true" />
+		<column name="damper_status" type="VARCHAR"
+			description="Damper Displacement and Velocity Sensor Status"
+			required="true" />
+		<column name="gate1_position" type="VARCHAR" description="Cradle clamping load #1"
+			required="true" />
+		<column name="gate2_position" type="VARCHAR" description="Cradle clamping load #2"
+			required="true" />
+		<column name="clamping_gate_position" type="VARCHAR"
+			description="Clamping gate position" required="true" />
+		<column name="clamping_gate_pressure" type="VARCHAR"
+			description="Clamping gate pressure" required="true" />
+		<column name="aircraft_type" type="VARCHAR" description="A/C type"
+			required="true" />
+		<column name="aircraft_type_validity" type="VARCHAR" description="Aircraft 
+			Type Validity" required="true"/> 
+		<column name="aircraft_weight" type="FLOAT" description="A/C weight" 
+			required="true"/> 
+		<column name="aircraft_weight_validity" type="BOOLEAN" description="A/C 
+			weight Validity" required="true"/> 
+		<column name="aircraft_cg" type="FLOAT" description="A/C C.G." required="true"/> 
+		<column name="aircraft_cg_validity" type="BOOLEAN" description="A/C C.G. Validity" required="true"/> 
+		<column name="mission_id" type="INTEGER" description="Mission ID" required="true" />
+		<column name="mission_type" type="VARCHAR" description="Mission Type" required="true"/> 
+		<column name="aircraft_tail_number" type="VARCHAR" description="A/C Tail No." required="true" />
+		<column name="cellulr_ip" type="VARCHAR" description="Cellular IP Addrtractor_idess - a.b.c.d (reference to Tractor ID)" required="true"/> -->
+		<column name="flight_number" type="VARCHAR" description="Flight Number"  required="true"/> 
+		<column name="wheel_angle_feedback_front_right" type="FLOAT"
+			description="WM Angle FR" required="true" />
+		<column name="wheel_angle_feedback_front_left" type="FLOAT"
+			description="WM Angle FL" required="true" />
+		<column name="wheel_angle_feedback_rear_right" type="FLOAT"
+			description="WM Angle RR" required="true" />
+		<column name="wheel_angle_feedback_rear_left" type="FLOAT"
+			description="WM Angle RL" required="true" />
+		<column name="wheel_angle_feedback_front_right_validity" type="BOOLEAN"
+			description="WM Angle FR Validity" required="true" />
+		<column name="wheel_angle_feedback_front_left_validity" type="BOOLEAN"
+			description="WM Angle FL Validity" required="true" />
+		<column name="wheel_angle_feedback_rear_right_validity" type="BOOLEAN"
+			description="WM Angle RR Validity" required="true" />
+		<column name="wheel_angle_feedback_rear_left_validity" type="BOOLEAN"
+			description="WM Angle RL Validity" required="true" />
+		<column name="pilot_command_angle" type="FLOAT" description="Pilot command angle"
+			required="true" />
+		<column name="pilot_command_angle_validity" type="BOOLEAN"
+			description="Pilot command angle validity" required="true" />
+		<column name="driving_mode" type="BOOLEAN"
+			description="Driving Mode - true: DCM, false:PCM" required="true" />
+		<column name="actual_wheel_speed" type="FLOAT"
+			description="Actual Wheel Speed (LLC)" required="true" />
+		<column name="desired_speed" type="FLOAT" description="Desired Speed (HLC)"
+			required="true" />
+		<column name="actual_wheel_speed_validity" type="BOOLEAN"
+			description="Actual Wheel Speed Validity" required="true" />
+		<column name="nlg_steering_angle" type="FLOAT"
+			description="NLG Steering Angle (HLC)" required="true" />
+		<column name="nlg_steering_angle_validity" type="BOOLEAN"
+			description="NLG Steering Angle Validity" required="true" />
+		<column name="turret_angle" type="float" description="Turret Angle"
+			required="true" />
+		<column name="turret_angle_validity" type="BOOLEAN"
+			description="Turret Angle Validity" required="true" />	
+		<column name="nlg_logitudal_force" type="FLOAT"
+			description="NLG longitudinal force (HLC) along steer-demand axis "
+			required="true" />
+		<column name="nlg_logitudal_force_validity" type="VARCHAR"
+			description="NLG longitudinal force Validity (HLC)" required="true" />		
+		<column name="nlg_lateral_force" type="FLOAT" description="NLG lateral force (HLC)  "
+			required="true" />			
+		<column name="nlg_logitudal_force_tug" type="FLOAT"
+			description="NLG longitudinal force  along tug axis (HLC)" required="true" />		
+		<column name="traction_demand" type="FLOAT" description="Traction Demand"
+			required="true" />
+		<column name="pilot_break_detection_unfiltered" type="BOOLEAN"
+			description="Pilot-Break Detection (Unfiltered)" required="true" />
+		<column name="pilot_break_detection_filtered" type="BOOLEAN"
+			description="Pilot-Break Detection (Filtered)" required="true" />
+		<column name="pilot_break_estimation" type="FLOAT"
+			description="Pilot-Break Estimation" required="true" />
+		<column name="is_exceeding" type="BOOLEAN"
+			description="nlg longitudal force exceeds permited value" required="true" />				
+		<column name="tractor_id" type="INTEGER"
+			description="Foreign key to the tractor-table." />			
+		<column name="total_right_engine_hours" type="FLOAT"
+			description="total_right_engine_hours" required="true" />
+		<column name="total_left_engine_hours" type="FLOAT"
+			description="total left engine hours" required="true" />
+		<column name="loading_step" type="VARCHAR"
+			description="Loading Step" required="true" />
+		<column name="total_fuel_used_engine_right" type="FLOAT"
+			description="total fuel used engine right" required="true" />
+		<column name="total_fuel_used_engine_left" type="FLOAT"
+			description="total fuel used engine left" />				
+		<foreign-key foreignTable="taxibot_tractor"> <reference local="tractor_id" 
+			foreign="tractor_id"/>
+		 </foreign-key> 
+		<foreign-key foreignTable="aircraft_type">
+			<reference local="aircraft_type" foreign="name" />
+		</foreign-key>
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="mission_id" />
+		</foreign-key>
+		<foreign-key foreignTable="aircraft">
+			<reference local="aircraft_tail_number" foreign="tail_number" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_stack" phpName="TaxibotStack" description="TaxibotStack">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="utc_time" type="TIMESTAMP" description="UTC Date and Time"
+			required="true" />
+		<column name="mili_sec" type="INTEGER"
+			description="miliseconds past from last integral second" required="true" />
+		<column name="utc_validity" type="BOOLEAN"
+			description="DGPS1 UTC-time status validity" required="true" />
+		<column name="latitude" type="FLOAT" description="Latitude (Inertial Sys)"
+			required="true" />
+		<column name="longitude" type="FLOAT" description="Longitude (Inertial Sys)"
+			required="true" />
+		<column name="position_validity" type="BOOLEAN" description="Position Validity"
+			required="true" />
+		<column name="velocity_north" type="FLOAT" description="Vx (Inertial Sys)"
+			required="true" />
+		<column name="velocity_east" type="FLOAT" description="Vy (Inertial Sys)"
+			required="true" />
+		<column name="velocity_validity" type="BOOLEAN" description="Velocity Validity"
+			required="true" />
+		<column name="acceleration_north" type="FLOAT" description="Ax (Inertial Sys)"
+			required="true" />
+		<column name="acceleration_east" type="FLOAT" description="Ay (Inertial Sys)"
+			required="true" />
+		<column name="acceleration_z" type="FLOAT" description="Az (Inertial Sys)"
+			required="true" />
+		<column name="azimuth" type="FLOAT" description="Azimuth"
+			required="true" />
+		<column name="azimuth_validity" type="BOOLEAN" description="Azimuth Validity"
+			required="true" />
+		<column name="mfl" type="VARCHAR"
+			description="MFL (in DM1 format: Failures, Safety events,..); "
+			required="true" />
+		<column name="vertical_link_front_right" type="FLOAT"
+			description="Vertical Link FR" required="true" />
+		<column name="vertical_link_rear_left" type="FLOAT"
+			description="Vertical Link RL" required="true" />
+		<column name="vertical_link_rear_right" type="FLOAT"
+			description="Vertical Link RR" required="true" />
+		<column name="vertical_link_front_left" type="FLOAT"
+			description="Vertical Link FL" required="true" />
+		<column name="lateral_link_front_right" type="FLOAT"
+			description="Lateral Link FR" required="true" />
+		<column name="lateral_link_rear_left" type="FLOAT" description="Lateral Link RL"
+			required="true" />
+		<column name="lateral_link_rear_right" type="FLOAT"
+			description="Lateral Link RR" required="true" />
+		<column name="lateral_link_front_left" type="FLOAT"
+			description="Lateral Link FL" required="true" />
+		<column name="damper_load1" type="VARCHAR" description="Damper Load #1"
+			required="true" />
+		<column name="damper_load2" type="VARCHAR" description="Damper Load #2"
+			required="true" />
+		<column name="damper_displacement" type="VARCHAR" description="Damper Displacement"
+			required="true" />
+		<column name="damper_velocity" type="VARCHAR" description="Damper Velocity"
+			required="true" />
+		<column name="vertical_link_front_right_validity" type="BOOLEAN"
+			description="Vertical Link FR Validity" required="true" />
+		<column name="vertical_link_rear_left_validity" type="BOOLEAN"
+			description="Vertical Link RL Validity" required="true" />
+		<column name="vertical_link_rear_right_validity" type="BOOLEAN"
+			description="Vertical Link RR Validity" required="true" />
+		<column name="vertical_link_front_left_validity" type="BOOLEAN"
+			description="Vertical Link FL Validity" required="true" />
+		<column name="lateral_link_front_right_validity" type="BOOLEAN"
+			description="Lateral Link FR Validity" required="true" />
+		<column name="lateral_link_rear_left_validity" type="BOOLEAN"
+			description="Lateral Link RL Validity" required="true" />
+		<column name="lateral_link_rear_right_validity" type="BOOLEAN"
+			description="Lateral Link RR Validity" required="true" />
+		<column name="lateral_link_front_left_validity" type="BOOLEAN"
+			description="Lateral Link FL Validity" required="true" />
+		<column name="damper_load1_validity" type="VARCHAR"
+			description="Damper Load #1 Validity" required="true" />
+		<column name="damper_load2_validity" type="VARCHAR"
+			description="Damper Load #2 Validity" required="true" />
+		<column name="damper_status" type="VARCHAR"
+			description="Damper Displacement and Velocity Sensor Status"
+			required="true" />
+		<column name="gate1_position" type="VARCHAR" description="Cradle clamping load #1"
+			required="true" />
+		<column name="gate2_position" type="VARCHAR" description="Cradle clamping load #2"
+			required="true" />
+		<column name="clamping_gate_position" type="VARCHAR"
+			description="Clamping gate position" required="true" />
+		<column name="clamping_gate_pressure" type="VARCHAR"
+			description="Clamping gate pressure" required="true" />
+		<column name="aircraft_type" type="VARCHAR" description="A/C type"
+			required="true" />
+		<!-- <column name="aircraft_type_validity" type="VARCHAR" description="Aircraft 
+			Type Validity" required="true"/> -->
+		<!-- <column name="aircraft_weight" type="FLOAT" description="A/C weight" 
+			required="true"/> -->
+		<!-- <column name="aircraft_weight_validity" type="BOOLEAN" description="A/C 
+			weight Validity" required="true"/> -->
+		<!-- <column name="aircraft_cg" type="FLOAT" description="A/C C.G." required="true"/> -->
+		<!-- <column name="aircraft_cg_validity" type="BOOLEAN" description="A/C 
+			C.G. Validity" required="true"/> -->
+		<column name="mission_id" type="INTEGER" description="Mission ID"
+			required="true" />
+		<!-- <column name="mission_type" type="VARCHAR" description="Mission Type" 
+			required="true"/> -->
+		<column name="aircraft_tail_number" type="VARCHAR" description="A/C Tail No."
+			required="true" />
+		<!-- <column name="cellulr_ip" type="VARCHAR" description="Cellular IP 
+			Addrtractor_idess - a.b.c.d (reference to Tractor ID)" required="true"/> -->
+		<!-- <column name="flight_number" type="VARCHAR" description="Flight Number" 
+			required="true"/> -->
+		<column name="wheel_angle_feedback_front_right" type="FLOAT"
+			description="WM Angle FR" required="true" />
+		<column name="wheel_angle_feedback_front_left" type="FLOAT"
+			description="WM Angle FL" required="true" />
+		<column name="wheel_angle_feedback_rear_right" type="FLOAT"
+			description="WM Angle RR" required="true" />
+		<column name="wheel_angle_feedback_rear_left" type="FLOAT"
+			description="WM Angle RL" required="true" />
+		<column name="wheel_angle_feedback_front_right_validity" type="BOOLEAN"
+			description="WM Angle FR Validity" required="true" />
+		<column name="wheel_angle_feedback_front_left_validity" type="BOOLEAN"
+			description="WM Angle FL Validity" required="true" />
+		<column name="wheel_angle_feedback_rear_right_validity" type="BOOLEAN"
+			description="WM Angle RR Validity" required="true" />
+		<column name="wheel_angle_feedback_rear_left_validity" type="BOOLEAN"
+			description="WM Angle RL Validity" required="true" />
+		<column name="pilot_command_angle" type="FLOAT" description="Pilot command angle"
+			required="true" />
+		<column name="pilot_command_angle_validity" type="BOOLEAN"
+			description="Pilot command angle validity" required="true" />
+		<column name="driving_mode" type="BOOLEAN"
+			description="Driving Mode - true: DCM, false:PCM" required="true" />
+		<column name="actual_wheel_speed" type="FLOAT"
+			description="Actual Wheel Speed (LLC)" required="true" />
+		<column name="desired_speed" type="FLOAT" description="Desired Speed (HLC)"
+			required="true" />
+		<column name="actual_wheel_speed_validity" type="BOOLEAN"
+			description="Actual Wheel Speed Validity" required="true" />
+		<column name="nlg_steering_angle" type="FLOAT"
+			description="NLG Steering Angle (HLC)" required="true" />
+		<column name="nlg_steering_angle_validity" type="BOOLEAN"
+			description="NLG Steering Angle Validity" required="true" />
+		<column name="turret_angle" type="float" description="Turret Angle"
+			required="true" />
+		<column name="turret_angle_validity" type="BOOLEAN"
+			description="Turret Angle Validity" required="true" />
+		<column name="nlg_logitudal_force" type="FLOAT"
+			description="NLG longitudinal force (HLC) - THE CRITICAL FIELD !!!"
+			required="true" />
+		<column name="nlg_logitudal_force_validity" type="VARCHAR"
+			description="NLG longitudinal force Validity (HLC)" required="true" />
+		<column name="traction_demand" type="FLOAT" description="Traction Demand"
+			required="true" />
+		<column name="pilot_break_detection_unfiltered" type="BOOLEAN"
+			description="Pilot-Break Detection (Unfiltered)" required="true" />
+		<column name="pilot_break_detection_filtered" type="BOOLEAN"
+			description="Pilot-Break Detection (Filtered)" required="true" />
+		<column name="pilot_break_estimation" type="FLOAT"
+			description="Pilot-Break Estimation" required="true" />
+		<column name="is_exceeding" type="BOOLEAN"
+			description="nlg longitudal force exceeds permited value" required="true" />
+
+		<!-- <foreign-key foreignTable="taxibot_tractor"> <reference local="tractor_id" 
+			foreign="tractor_id"/> </foreign-key> -->
+		<foreign-key foreignTable="aircraft_type">
+			<reference local="aircraft_type" foreign="name" />
+		</foreign-key>
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="mission_id" />
+		</foreign-key>
+		<foreign-key foreignTable="aircraft">
+			<reference local="aircraft_tail_number" foreign="tail_number" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_trail" phpName="TaxibotTrail"
+		description="TaxibotTrail">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="latitude" type="VARCHAR" size="20"  description="Latitude (Inertial Sys)"
+			required="true" />
+		<column name="longitude" type="VARCHAR" size="20" description="Longitude (Inertial Sys)"
+			required="true" />
+		<column name="time" type="TIMESTAMP" required="true" />
+		<column name="mission_id" type="INTEGER" description="Mission ID"
+			required="true" />
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_mission" phpName="TaxibotMission"
+		description="TaxibotMission">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="mission_id" type="INTEGER" required="true" />
+		<column name="mission_type" type="VARCHAR" description="Mission Type"
+			required="true" />
+		<column name="aircraft_tail_number" type="VARCHAR" description="Tail Number"
+			required="true" />
+		<column name="aircraft_type" type="VARCHAR" description="Aircraft Type"
+			required="true" />
+		<column name="start_time" type="TIMESTAMP" required="true" />
+		<column name="end_time" type="TIMESTAMP" required="true" />
+		<column name="flight_number" type="VARCHAR" description="Flight Number"
+			required="true" />
+		<column name="aircraft_weight" type="FLOAT" description="A/C weight"
+			required="true" />
+		<column name="aircraft_cg" type="FLOAT" description="A/C C.G."
+			required="true" />
+		<column name="tractor_id" type="INTEGER"
+			description="Foreign key to the tractor-table." required="true" />
+		<column name="driver_name" type="VARCHAR" description="Flight Number"
+			required="true" />
+	
+		<column name="cellulr_ip" type="VARCHAR"
+			description="Cellular IP Address -  a.b.c.d (reference to Tractor ID)"
+			required="true" />
+		
+		<column name="pcm_start" type="TIMESTAMP" required="true" />
+		<column name="pcm_end" type="TIMESTAMP" required="true" />
+		<column name="dcm_start" type="TIMESTAMP" required="true" />
+		<column name="dcm_end" type="TIMESTAMP" required="true" />
+		<column name="pushback_start" type="TIMESTAMP" required="true" />
+		<column name="pushback_end" type="TIMESTAMP" required="true" />
+		<column name="left_engine_fuel_dcm" type="FLOAT" required="true" />
+		<column name="right_engine_fuel_dcm" type="FLOAT" required="true" />
+		<column name="left_engine_fuel_pcm" type="FLOAT" required="true" />
+		<column name="right_engine_fuel_pcm" type="FLOAT" required="true" />
+		<column name="left_engine_fuel_pushback" type="FLOAT" required="true" />
+		<column name="right_engine_fuel_pushback" type="FLOAT" required="true" />
+		<column name="left_engine_fuel_maint" type="FLOAT" required="true" />
+		<column name="right_engine_fuel_maint" type="FLOAT" required="true" />		
+		<column name="left_engine_hours_pcm" type="FLOAT" required="true" />
+		<column name="right_engine_hours_pcm" type="FLOAT" required="true" />
+		<column name="left_engine_hours_dcm" type="FLOAT" required="true" />
+		<column name="right_engine_hours_dcm" type="FLOAT" required="true" />
+		<column name="left_engine_hours_maint" type="FLOAT" required="true" />
+		<column name="right_engine_hours_maint" type="FLOAT" required="true" />
+		<column name="blf_name" type="VARCHAR" size="255" />
+		<column name="join_after_mission_id" type="INTEGER" />
+		<column name="operational_scenario" type="INTEGER" />
+		
+		<foreign-key foreignTable="taxibot_tractor">
+			<reference local="tractor_id" foreign="tractor_id" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_exceed_event" phpName="TaxibotExceedEvent"
+		description="TaxibotExceedEvent">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="exceed_type" type="VARCHAR" description="Event Type"
+			required="true" />
+		<column name="start_time" type="TIMESTAMP" description="Event Start Time"
+			required="true" />
+		<column name="end_time" type="TIMESTAMP" description="Event End Time"
+			required="true" />
+		<column name="duration" type="TIME" description="Event Duration" />
+		<column name="mission_id" type="INTEGER" description="Mission ID"
+			required="true" />
+		<column name="latitude" type="VARCHAR" size="20" description="Latitude (Inertial Sys)"
+			required="true" />
+		<column name="longitude" type="VARCHAR" size="20"  description="Longitude (Inertial Sys)"
+			required="true" />
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="aircraft" phpName="Aircraft" description="Aircraft">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="tail_number" type="VARCHAR" description="Tail Number"
+			required="true" />
+		<column name="type" type="VARCHAR" description="Aircraft Type"
+			required="true" />
+		<foreign-key foreignTable="aircraft_type">
+			<reference local="type" foreign="name" />
+		</foreign-key>
+	</table>
+	<table name="aircraft_type" phpName="AircraftType" description="AircraftType">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="name" type="VARCHAR" description="Name" required="true" />
+		<column name="hlc_id" type="INTEGER"  required="true" />
+		<column name="long_fatigue_limit_value" type="FLOAT" escription="longitudal fatigue limit (kn)"
+			required="true" />		
+		<column name="long_static_limit_value" type="FLOAT" description="longitudal static limit (kn)"
+			required="true" />
+		<column name="lat_static_limit_value" type="FLOAT" description="lateral static limit (kn)"
+			required="true" />
+	</table>
+	<table name="taxibot_failure" phpName="TaxibotFailure" description="TaxibotFailure">
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />
+		<column name="name" type="VARCHAR" description="Name" required="true" />
+		
+		<column name="dates" type="VARCHAR"
+			required="true" />
+		<column name="taxibot_number" type="INTEGER"
+			required="true" />
+		<column name="failure_family" type="VARCHAR"
+			required="true" />
+		<column name="mode_of_operation" type="VARCHAR"
+			required="true" />
+		<column name="mission" type="INTEGER"
+			required="true" />
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission" foreign="id" />
+		</foreign-key>
+	</table>
+	
+	<!-- 
+		####################################################
+		# Tables for IAI-API #
+		####################################################
+	-->
+	<table name="towing_activity" phpName="TowingActivity" allowPkInsert="true" description="Table for a client to read or write data.">
+		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+		<column name="order_id" type="VARCHAR" size="255" description="The RTC order ID from the towing. With timestamp the virtual primary key"/>
+		<column name="timestamp" type="TIMESTAMP" description="Set from the Client. With order ID the virtual primary key"/>
+		<column name="tractor_id" type="INTEGER"/>
+		<column name="driver_id" type="VARCHAR" size="255" description="ID of the driver"/>
+		<column name="engine_temperature" type="INTEGER"/>
+		<column name="tire_pressure" type="INTEGER"/>
+		<foreign-key foreignTable="taxibot_tractor">
+			<reference local="tractor_id" foreign="tractor_id"/>
+		</foreign-key></table>
+</database>

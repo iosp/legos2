@@ -1,0 +1,2 @@
+<?php echo image_tag('/sf/sf_default/images/icons/tools48.png', array('alt' => 'website unavailable', 'class' => 'sfTMessageIcon', 'size' => '48x48'))?>
+<h1>Das Legos2-System ist zur Zeit nicht verfügbar.</h1>

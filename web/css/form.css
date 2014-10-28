@@ -1,0 +1,76 @@
+@charset "utf-8";
+
+/**
+ * In dieser Datei werden alle Definitionen hinterlegt, die schöne Formulare machen.
+ */
+
+/*
+####
+# Der Rahmen
+####
+*/
+.form {
+	display: inline-block;
+	background-color: #EEEEEE;
+	border: 1px solid #DDDDDD;
+	width: auto;
+}
+
+.form_header {
+	display: block;
+	width: 100%;
+	text-align: left;
+	color: #FFFFFF;
+	background-color: #555555;
+	font-weight: bold;
+	padding: 2px 0px;
+}
+
+.form input,.form select {
+	font-size: 1em;
+}
+
+.form_content {
+	padding: 2px;
+	text-align: left !important;
+}
+
+.form_content input,.form_content select {
+	min-width: 100px;
+}
+
+/*
+####
+# Labels
+####
+*/
+.form label {
+	font-weight: bold;
+	vertical-align: top;
+	margin-top: 2px;
+	text-align: left !important;
+	display: inline-block; /* Needed for autowidth jquery-plugin */
+}
+
+/*
+####
+# Buttons
+####
+*/
+.form .abfragebutton {
+	/* Ergänzung zur Klassendefinition '.abfragebutton' in screen.css */
+	
+}
+
+/*
+####
+# Error boxes
+####
+*/
+.form .error_box {
+	border: 1px solid #FF0000;
+}
+
+.form .error_box .error_list {
+	margin: 5px 0px;
+}

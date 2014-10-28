@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0048)http://feedback.writecodeonline.com/feedback.php -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Feedback</title>
+	<script type="text/javascript" async="" src="ga.js"></script><script>
+	document.domain = "writecodeonline.com";
+	</script>
+	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="jquery.corner.js"></script>
+	<script type="text/javascript" src="feedback.js"></script>
+	<link rel="stylesheet" type="text/css" href="feedback.css">
+	<!-- google analytics -->
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-1919327-9']);
+	  _gaq.push(['_trackPageview']);
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+	<!-- google analytics -->	
+</head>
+<body class="page-feedback">
+
+	<div id="overlay">
+		<div id="overlay-titlebar" class="clearfix">
+			<div id="overlay-title-wrapper" class="clearfix">
+			  <h1 id="overlay-title">Feedback</h1>
+			</div>
+			<div id="overlay-close-wrapper">
+		      <a id="overlay-close" href="http://feedback.writecodeonline.com/feedback.php#" class="overlay-close"></a>
+		    </div>
+		</div>
+		<div id="overlay-content">
+			
+			<div id="feedback-content" class="clearfix">
+				<h2>Hi! What's on your mind?</h2>
+				<p>Thank you for using WriteCodeOnline. Any thoughts, comments, ideas, or observations you have are very welcome. Use the form below to get in touch.</p>
+				<form id="feedback-form" action="http://feedback.writecodeonline.com/handler.php" method="post">
+					<input type="hidden" name="captcha-token" value="YTozOntpOjA7aToxO2k6MTtpOjY7aToyO2k6MTQxNDQxMzMzNTt9">
+					<input type="hidden" id="feedback-page" name="feedback-page" value=""> 
+					<ol><li class="name-field">
+						<ul>
+						<li class="label-area"> <label class="text"><strong>Your name</strong> (optional but appreciated)</label> </li>
+						<li class="validation-area"> <span class="validation optional" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">OPTIONAL</span> </li>
+						<li class="field-area"> <span class="input-text"><input type="text" class="text" name="name"></span></li>
+						</ul>
+					</li><li>
+						<ul>
+						<li class="label-area"> <label class="text"><strong>Where are you from?</strong> (also optional, just curious)</label> </li>
+						<li class="validation-area"> <span class="validation optional" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">OPTIONAL</span> </li>
+						<li class="field-area"> <span class="input-text"><input type="text" class="text" name="wherefrom"></span></li>
+						</ul>
+					</li><li>
+						<ul>
+						<li class="label-area"> <label class="text"><strong>Your email address</strong> (if you'd like a response)</label> </li>
+						<li class="validation-area"> <span class="validation optional" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">OPTIONAL</span> </li>
+						<li class="field-area"> <span class="input-text"><input type="text" class="text" name="email"></span></li>
+						</ul>
+					</li><li>
+						<ul>
+						<li class="label-area"> <label class="text"><strong>Your message</strong></label> </li>
+						<li class="validation-area"> <span class="validation required" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">REQUIRED</span> </li>
+						<li class="field-area"> <span class="input-text"><textarea name="message"></textarea></span></li>
+						</ul>
+					</li><li>
+						<ul>
+						<li class="label-area"> <label class="text">Just to be sure you're human...</label> </li>
+						<li class="validation-area"> <span class="validation required" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">REQUIRED</span> </li>
+						<li class="field-area"> <label class="captcha">What is 1 + 6?</label> <input type="text" class="captcha" name="captcha"> </li>
+						</ul>
+					</li><li class="clearfix">
+						<ul>
+						<li class="field-area"> 
+							<input type="submit" class="submit" style="border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;"> 
+							<div id="close-button">( <a href="">close</a> )</div>
+							<div id="ajax-loader" style="display:none;margin-top:32px;"><img src="ajax-loader.gif"></div>
+						</li>
+						</ul>				
+					</li></ol>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+	<script type="text/javascript">
+		var disable_submit = false;
+		$('#feedback-form').bind('submit',function(){
+			if (disable_submit) { return; }
+			$('#feedback-page').val( window.parent.location );	
+			$('#close-button').hide();
+			$('#ajax-loader').show();
+			disable_submit = true;
+			$.ajax({
+				url:$('#feedback-form').attr('action'),
+				data:$('#feedback-form').serialize(),
+				type:'post',
+				success:function(data){
+					var obj = $.parseJSON(data);
+					$('#close-button').show();
+					$('#ajax-loader').hide();
+					if (obj.status=='ok') {
+						window.location = obj.redirect;
+					}
+					else if (obj.status=='fail') {
+						alert(obj.message);
+					} 
+					else {
+						alert(obj.status+': '+data);
+					}
+				},
+				error:function(xhr,data){
+					alert(data);
+				},
+				complete:function(){
+					disable_submit = false;
+				}
+			});
+			return false;
+		});
+		$('.validation').corner('right');	
+		$('#overlay-close, #close-button').click(function(){
+			window.parent.overlay_close();
+			return false;
+		});
+		$('.submit').corner('3px');	
+	</script>
+
+</body></html>

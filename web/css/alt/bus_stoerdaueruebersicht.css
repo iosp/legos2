@@ -1,0 +1,70 @@
+@charset "utf-8";
+
+/*******************************************************
+ *	Modul Stördauerübersicht - Filter
+ */
+#stoerung {
+	padding-left: 10px;
+	float: left;
+	padding-right: 30px;
+}
+
+#stoerung ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+#stoerung ul label {
+	padding: 5;
+}
+
+#stoerung ul li {
+	text-align: left;
+}
+
+#airline {
+	font-weight: bold;
+}
+
+#auswertungsart {
+	clear: left;
+	padding-left: 10px;
+	padding-right: 30px;
+	float: left;
+}
+
+#auswertungsart ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+#auswertungsart ul label {
+	padding: 5;
+}
+
+#auswertungsart ul li {
+	display: inline;
+	text-align: left;
+}
+
+#vorgangsarten_link {
+	padding-left: 10px;
+}
+
+#button_alle {
+	float: left;
+	padding-top: 10px;
+	vertical-align: bottom;
+}
+
+#filter_optionen {
+	float: left;
+}
+
+.clear {
+	clear: both;
+	font-size: 0.1;
+	height: 0.1;
+}

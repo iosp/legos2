@@ -1,0 +1,9 @@
+all:
+  stylesheets:
+    - dataTable.css
+    - form.css
+
+  javascripts:
+    - jquery.dataTables.min.js
+    - make_dataTable.js
+    - autowidth.js

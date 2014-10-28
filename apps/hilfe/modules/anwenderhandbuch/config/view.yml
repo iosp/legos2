@@ -1,0 +1,6 @@
+all:
+  stylesheets:
+    - table.css
+
+  javascripts:
+    - clickable_highlighting.js

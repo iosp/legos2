@@ -1,0 +1,67 @@
+@charset "utf-8";
+
+/************
+ * Tabelle für Startseite.
+ */
+.startseite_appblock {
+	display: -moz-inline-box; /* For FF<3 */
+	-moz-box-orient: vertical; /* For FF<3 */
+	display: inline-block;
+	/* IE <8 needs this tripped back to display: inline; to make it work on block elements - see startseite_ie.css */
+	vertical-align: top;
+	/* explicitly declare your preference as Moz inline-box auto aligns to top */
+}
+
+table.startseite tr {
+	background-color: #EFEFEF;
+	/* Für IE 6 ist das Hovern wie folgt gelöst */
+	/* hover:expression(this.onmouseover=new Function("this.style.background='#F7B213';"),this.onmouseout=new Function("this.style.background='#E9EAED';"));*/
+}
+
+table.startseite tr:hover {
+	/* background-color: #FF9900; */
+	
+}
+
+table.startseite th {
+	background-color: #000066;
+	font-size: 11px;
+	font-family: Verdana;
+	color: #FFFFFF;
+	vertical-align: middle;
+	border: 0px;
+}
+
+/* Bei Tabellenüberschriften nicht hovern. */
+table.startseite.th:hover {
+	background-color: #000849;
+}
+
+table.startseite td,table.startseite td.bildheader {
+	font-size: 11px;
+	vertical-align: top;
+	font-weight: normal;
+	padding: 0px 0px 0px 0px;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	border: 0px;
+}
+
+table.startseite td.menue_eintrag {
+	color: #555555;
+	font-size: 10px;
+	vertical-align: top;
+	font-weight: normal;
+	font-decoration: none;
+	padding: 2px 4px 2px 4px;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	border: 0px;
+}
+
+table.startseite a {
+	/* font-size:			10px;
+	text-decoration:	none;
+	color:				#555555;	*/
+	
+}

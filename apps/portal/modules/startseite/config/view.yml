@@ -1,0 +1,9 @@
+all:
+  stylesheets:
+    - dataTable.css
+    
+  javascripts:
+    - jquery.min.js
+    - jquery-ui.custom.min.js
+    - jquery.dataTables.min.js
+    - make_dataTable.js

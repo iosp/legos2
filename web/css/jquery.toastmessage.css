@@ -1,0 +1,123 @@
+.toast-container {
+	position: absolute;
+	width: 250px;
+	z-index: 5;
+}
+
+.toast-item {
+	display: block;
+	position: relative;
+	background: #FFBA17;
+	opacity: 0.9;
+	padding: 5px 0px;
+	margin-top: 5px;
+	color: #555555;
+}
+
+.toast-item p {
+	font-size: 10px;
+	margin: 7px 0px;
+}
+
+.toast-item-close {
+	background: url(/images/icons/toast_close.png) no-repeat;
+	width: 11px;
+	height: 11px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+
+.toast-item-image {
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin: 5px;
+}
+
+.toast-item-image-notice {
+	background: url(/images/icons/toast_notice.png) no-repeat;
+}
+
+.toast-item-image-success {
+	background: url(/images/icons/toast_success.png) no-repeat;
+}
+
+.toast-item-image-warning {
+	background: url(/images/icons/toast_warning.png) no-repeat;
+}
+
+.toast-item-image-error {
+	background: url(/images/icons/toast_error.png) no-repeat;
+}
+
+/**
+ * toast types
+ *
+ * pattern: toast-type-[value]
+ * where 'value' is the real value of the plugin option 'type'
+ *
+ */
+.toast-type-notice {
+	color: #555555;
+}
+
+.toast-type-success {
+	color: #555555;
+}
+
+.toast-type-warning {
+	color: #555555;
+	border-color: #FCBD57;
+}
+
+.toast-type-error {
+	color: #555555;
+	border-color: #B32B2B;
+}
+
+/**
+ * positions
+ *
+ * pattern: toast-position-[value]
+ * where 'value' is the real value of the plugin option 'position'
+ *
+ */
+.toast-position-top-left {
+	position: fixed;
+	margin-left: 20px;
+}
+
+.toast-position-top-center {
+	position: fixed;
+	left: 50%;
+	margin-left: -125px;
+}
+
+.toast-position-top-right {
+	position: fixed;
+	margin-left: 905px;
+}
+
+.toast-position-middle-left {
+	position: fixed;
+	left: 20px;
+	top: 50%;
+	margin-top: -40px;
+	margin-left: 20px;
+}
+
+.toast-position-middle-center {
+	position: fixed;
+	left: 50%;
+	margin-left: -140px;
+	margin-top: -40px;
+	top: 50%;
+}
+
+.toast-position-middle-right {
+	position: fixed;
+	margin-left: 905px;
+	margin-top: -40px;
+	top: 50%;
+}

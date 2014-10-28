@@ -1,0 +1,19 @@
+# default rules
+homepage:
+  url:   /
+  param: { module: startseite, action: index }
+  
+login:
+  url:   /login
+  param: { module: login, action: login }
+
+logout:
+  url:   /logout
+  param: { module: login, action: logout }
+
+default_index:
+  url:   /:module
+  param: { action: index }
+
+default:
+  url:   /:module/:action/*

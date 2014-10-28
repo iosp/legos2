@@ -1,0 +1,9 @@
+all:
+  stylesheets:
+    - form.css
+    - table.css
+
+  javascripts:
+    - autowidth.js
+    - clickable_highlighting.js
+    

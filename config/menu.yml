@@ -1,0 +1,35 @@
+55:
+  top: IAI-Training
+  applikation: training
+  modules:
+    activities:             Activities
+60:
+  top: Management
+  applikation: verwaltung
+  modules:
+    benutzerverwaltung:          User Administration
+    gruppenuebersicht:           Group Overview
+    gruppenverwaltung:           Group Administration
+    passwortaendern:             Change Password
+    
+70:
+  top: Taxibot
+  applikation: taxibot
+  modules:
+    mission_list:               Mission List
+    operating_hours:            Operating Hours
+    mission:                    Mission
+    maintenance_tow:            Maintenance Tow
+    failure_history:            Failure History
+    limit_exceed:               Limit Exceed
+    map:                        Map
+    fatigue_history:            Fatigue History
+    accumulative_data:          Accumulative Data
+    data_management:            Setting
+    
+80:
+  top: Help
+  applikation: hilfe
+  modules:
+    anwenderhandbuch:            User Manual
+

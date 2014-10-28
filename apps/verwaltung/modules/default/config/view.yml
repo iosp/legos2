@@ -1,0 +1,7 @@
+default:
+  stylesheets:
+    - global.css
+    - page.css
+    - helper.css
+    - menu.css
+    - screen.css

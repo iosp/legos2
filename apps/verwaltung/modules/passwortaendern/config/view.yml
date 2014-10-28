@@ -1,0 +1,7 @@
+all:
+  stylesheets:
+    - form.css
+
+  javascripts:
+    - autowidth.js
+    

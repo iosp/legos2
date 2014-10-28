@@ -1,0 +1,14 @@
+#homePageLimitExceed{
+	max-width:600px;
+	float:left;
+	margin-left: 70px;
+}
+
+th{
+	width: 100px;
+}
+
+.table-title{
+	margin-left: 30px;
+	font-size: 20px;
+}

@@ -1,0 +1,182 @@
+##
+# Benutzerverwaltung
+##
+Benutzer:
+  benutzer_admin:
+    login:           admin
+    passwort:        admin
+    name:            Admin
+    beschreibung:    Admin
+
+  benutzer_taxibot:
+    login:           taxibot
+    passwort:        taxibot
+    name:            Taxibot
+    beschreibung:    Taxibot
+
+
+Gruppe:
+  gruppe_admin:
+    name:            admin
+    beschreibung:    Administratorgruppe
+  gruppe_leos:
+    name:            leos
+    beschreibung:    Usergruppe
+Benutzer_Gruppe:
+  bernd:
+    gruppe_id:     gruppe_admin
+    benutzer_id:   benutzer_admin
+  bernd1:
+    gruppe_id:     gruppe_leos
+    benutzer_id:   benutzer_taxibot
+
+Modul:
+ 
+  modul_verwaltung_passwortaendern:
+    name:          verwaltung-passwortaendern
+  modul_verwaltung_benutzer:
+    name:          verwaltung-benutzerverwaltung
+  modul_verwaltung_gruppe:
+    name:          verwaltung-gruppenverwaltung
+  modul_verwaltung_gruppenuebersicht:
+    name:          verwaltung-gruppenuebersicht
+  modul_verwaltung_modul:
+    name:          verwaltung-modulverwaltung
+  modul_taxibot_log_history:
+    name:          taxibot-log_history
+  modul_taxibot_operating_hours:
+    name:          taxibot-operating_hours
+  modul_taxibot_failure_history:
+    name:          taxibot-failure_history
+  modul_taxibot_fatigue_history:
+    name:          taxibot-fatigue_history
+  modul_taxibot_limit_exceed:
+    name:          taxibot-limit_exceed 
+  modul_taxibot_import:
+    name:          taxibot-import
+  modul_taxibot_mission:
+    name:          taxibot-mission  
+  modul_taxibot_maintenance_tow:
+    name:          taxibot-maintenance_tow
+  modul_taxibot_map:
+    name:          taxibot-map
+  modul_hilfe_anwenderhandbuch:
+    name:          hilfe-anwenderhandbuch
+  modul_taxibot_data_management:
+    name:          taxibot-data_management
+  modul_taxibot_mission_list:
+    name:          taxibot-mission_list
+  modul_taxibot_accumulative_data:
+    name:          taxibot-accumulative_data
+    
+Gruppe_Modul:
+  admin01:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_verwaltung_benutzer
+  admin02:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_verwaltung_gruppe
+  admin03:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_verwaltung_modul
+  admin04:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_verwaltung_passwortaendern
+  admin05:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_verwaltung_gruppenuebersicht
+  admin06:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_log_history
+  admin07:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_operating_hours
+  admin08:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_import
+  admin09:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_failure_history
+  admin10:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_fatigue_history
+  admin11:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_limit_exceed
+  admin12:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_mission
+  admin13:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_maintenance_tow
+  admin14:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_map
+  admin15:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_hilfe_anwenderhandbuch
+  admin16:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_data_management
+  admin17:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_mission_list
+  admin18:
+    gruppe_id:     gruppe_admin
+    modul_id:      modul_taxibot_accumulative_data
+    
+  taxibot01:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_verwaltung_benutzer
+  taxibot02:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_verwaltung_gruppe
+  taxibot03:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_verwaltung_modul
+  taxibot04:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_verwaltung_passwortaendern
+  taxibot05:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_verwaltung_gruppenuebersicht
+  taxibot06:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_log_history
+  taxibot07:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_operating_hours
+  taxibot08:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_import
+  taxibot09:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_failure_history
+  taxibot10:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_fatigue_history
+  taxibot11:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_limit_exceed
+  taxibot12:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_mission
+  taxibot13:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_maintenance_tow
+  taxibot14:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_map
+  taxibot15:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_hilfe_anwenderhandbuch
+  taxibot16:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_data_management
+  taxibot17:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_mission_list
+  taxibot18:
+    gruppe_id:     gruppe_leos
+    modul_id:      modul_taxibot_accumulative_data                 
+

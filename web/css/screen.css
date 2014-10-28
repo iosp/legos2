@@ -1,0 +1,200 @@
+@charset "utf-8";
+
+/**
+ * In dieser Datei landen alle Sonderdefinitionen, die sonst nirgends passen und für den Bildschirm-
+ * betrachter nötig sind.
+ * 
+ */
+
+/*
+ * Farbliche Hervorhebung für das Javascript clickable_highlighting.js
+ */
+.highlighted td {
+	background-color: #FFBA17 !important;
+}
+
+/*
+ * Hervorgehobenes Feld in einer Tabelle
+ */
+.tbl_hinweis {
+	background-color: #FFBA17 !important;
+}
+
+/*
+ * Buttons ins Legos-Design bringen
+ */
+.abfragebutton {
+	background: url("/images/button_gelb.png") repeat-y scroll 0 0 #FFFFFF;
+	color: #555555;
+	font-weight: bold;
+	padding: 1px 5px 0px 20px;
+	font-size: 1em;
+	border: 1px solid #AAAAAA;
+	letter-spacing: 0;
+	margin: 1px 5px 3px;
+	vertical-align: middle;
+}
+
+/**
+  * Excelexport
+  */
+img.excelexport {
+	width: 20px;
+	height: 20px;
+}
+
+a.excelexport {
+	text-decoration: none;
+	margin-left: 600px;
+}
+
+/** 
+ * Tooltips für Tabellen
+ */
+
+/* Überschrift */
+.tooltip_header {
+	background: #EEEEEE;
+	font-weight: bold;
+	font-size: 10px;
+	border-top: 1px solid #555555;
+	border-right: 1px solid #555555;
+	border-left: 1px solid #555555;
+	padding: 3px 3px 3px 5px;
+}
+
+/* Textbereich */
+.tooltip_body {
+	background: #FFFFFF;
+	font-size: 10px;
+	border: 1px solid #555555;
+	padding: 5px 5px 5px 10px;
+}
+
+/*************
+*
+*  Ganttchart
+*/
+.ganttchart {
+	width: 98%;
+	position: absolute;
+}
+
+.zeile {
+	height: 16px;
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	border-color: transparent;
+	margin: 1px 0px 1px 0px;
+}
+
+.label {
+	width: 6%;
+	height: 16px;
+	float: left;
+}
+
+.block {
+	height: 16px;
+	float: left;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.hintergrund {
+	width: 78%;
+	position: relative;
+	left: -16px;
+	margin: 1px 0px 1px 0px;
+}
+
+.legende {
+	width: 12em;
+	border-style: solid;
+	border-color: grey;
+	border-width: 1px;
+	position: relative;
+}
+
+.legende table {
+	border-style: none;
+}
+
+/* 
+ * Applikationboxen wie auf der Portalseite
+ */
+.appblock {
+	display: inline-block;
+	vertical-align: top;
+	margin-bottom: 5px;
+	width: 160px;
+	padding: 0px 5px 5px 5px;
+	background: #EFEFEF;
+	float: left;
+}
+
+.appblock ul {
+	list-style: none outside none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.appblock ul.bildheader {
+	border: 0px none;
+	margin-left: -5px;
+}
+
+.appblock ul.applikation {
+	line-height: 15px;
+	background-color: #000066;
+	color: #FFFFFF;
+	margin: 0px -5px 0px -5px;
+	text-align: center;
+	font-weight: bold;
+}
+
+.appblock ul.modul li {
+	position: relative;
+	line-height: 15px;
+	margin: 3px 0px;
+	border-bottom: 1px solid #BBBBBB;
+}
+
+.appblock ul.modul a {
+	display: block;
+}
+
+/* Zusatz für Gruppenverwaltung */
+.gruppenverwaltung div.modul_erlaubt {
+	background-color: #3ADF00 !important;
+}
+
+.gruppenverwaltung div.modul_nicht_erlaubt {
+	background-color: #EFEFEF !important;
+}
+
+/*
+ * jEditable Formulare
+ */
+.edit input {
+	font-size: 10px;
+	color: #555555;
+}
+
+/*
+ * Text vertikale, bzw. drehen um 90 Grad
+ */
+.text_vertikal {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+/*
+ * Abstände zum Rand bei gedrehten Texten
+ */
+table .text_vertikal {
+	margin-top: 30px;
+	margin-bottom: 35px;
+}
