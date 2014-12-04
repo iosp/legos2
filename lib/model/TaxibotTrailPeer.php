@@ -1,7 +1,5 @@
 <?php
-
 require 'lib/model/om/BaseTaxibotTrailPeer.php';
-
 
 /**
  * Skeleton subclass for performing query and update operations on the 'taxibot_trail' table.
@@ -13,38 +11,40 @@ require 'lib/model/om/BaseTaxibotTrailPeer.php';
  * Tue Feb 25 13:38:03 2014
  *
  * You should add additional methods to this class to meet the
- * application requirements.  This class will only be generated as
+ * application requirements. This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    lib.model
+ * @package lib.model
  */
 class TaxibotTrailPeer extends BaseTaxibotTrailPeer {
-	public static function insertMultipleTrails($trails,$missionId)
-	{		
-		$connection = Propel::getConnection();
-		$query = 'INSERT INTO `taxibot_trail`( `latitude`, `longitude`,`time`, `mission_id`) VALUES ';	
+	public static function insertMultipleTrails($trails, $missionId) {
+		$connection = Propel::getConnection ();
+		$query = 'INSERT INTO `taxibot_trail`( `latitude`, `longitude`,`time`, `mission_id`) VALUES ';
 		
-		foreach ($trails as $trail){
-			$query.= '(';
-			$query.=  $trail->getLatitude().',';
-			$query.=  $trail->getLongitude().',';
-			$query.=  "'". $trail->getTime()."',";
-			$query.=  $missionId;
-			$query.= '),';
+		foreach ( $trails as $trail ) {
+			$query .= '(';
+			$query .= $trail->getLatitude () . ',';
+			$query .= $trail->getLongitude () . ',';
+			$query .= "'" . $trail->getTime () . "',";
+			$query .= $missionId;
+			$query .= '),';
 		}
-		$query = substr($query, 0, -1);		
-		$statement = $connection->prepare($query);
-		$statement->execute();
+		$query = substr ( $query, 0, - 1 );
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();
 	}
-	
-	public static function deleteTrailsByMissionId($missionId)
-	{
-		$connection = Propel::getConnection();
+	public static function updateMissionId($fromMissionId, $toMissionId) {
+		$connection = Propel::getConnection ();
+		$query = 'UPDATE `taxibot_trail` SET `mission_id`= ' . $toMissionId . ' WHERE `mission_id` = ' . $fromMissionId;
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();
+	}
+	public static function deleteTrailsByMissionId($missionId) {
+		$connection = Propel::getConnection ();
 		$query = 'DELETE FROM `taxibot_trail` WHERE `mission_id` = ' . $missionId;
-		$statement = $connection->prepare($query);
-		$statement->execute();
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();
 	}
-	
 	private function printArray($array) {
 		print "<pre>";
 		print_r ( $array );

@@ -17,6 +17,41 @@ require 'lib/model/om/BaseTaxibotExceedEventPeer.php';
  * @package lib.model
  */
 class TaxibotExceedEventPeer extends BaseTaxibotExceedEventPeer {
+	
+	public static function updateMissionId($fromMissionId, $toMissionId) {
+		$connection = Propel::getConnection ();
+		$query = 'UPDATE `taxibot_exceed_event` SET `mission_id`= ' . $toMissionId . ' WHERE `mission_id` = ' . $fromMissionId;
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();
+	}
+	public static function insertMultiple($items, $missionId) {
+		if(count($items) == 0){return ;}
+		$connection = Propel::getConnection ();
+		$query = 'INSERT INTO `taxibot_exceed_event`(`exceed_type`, `start_time`, `end_time`, `start_milisecond`,  `end_milisecond`,`duration`, `mission_id`, `latitude`, `longitude`) VALUES ';
+		
+		foreach ( $items as $item ) {			
+			$partquery = '(';
+			$partquery .= "'" . $item->getExceedType() . "',";
+			$partquery .= "'" . $item->getStartTime() . "',";
+			$partquery .= "'" . $item->getEndTime() . "',";
+			$partquery .= $item->getStartMilisecond() . ",";
+			$partquery .= $item->getEndMilisecond() . ",";
+			$partquery .= "'" . $item->getDuration() . "',";
+			$partquery .= $missionId . ",";
+			$partquery .= $item->getLatitude(). ",";
+			$partquery .= $item->getLongitude();
+			$partquery .= '),';
+			$query.= $partquery;	
+		}
+		/* print "<pre>";
+		//print_r ( $query );
+		print "</pre>";
+	 	die();
+		 */
+		$query = substr ( $query, 0, - 1 );
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();
+	}
 	static public function GetRecentLimitExceeds(){
 				
 		$previous_week = strtotime("-1 week +1 day"); //echo $previous_week . "</br>";
@@ -39,10 +74,10 @@ class TaxibotExceedEventPeer extends BaseTaxibotExceedEventPeer {
 			foreach ($events as $event){	
 				$recentEvents[] = array (
 						"EXCEED_TYPE" => $event->getExceedType(),
-						"AIRCRAFT_TAIL_NUMBER" => $mission->getAircraftTailNumber(),
+						"AIRCRAFT_TAIL_NUMBER" => $mission->getAircraft()->getTailNumber(),
 						"TRACTOR_NAME" => $tractor->getName(),
 						"FLIGHT_NUMBER" => $mission->getFlightNumber (),
-						"AIRCRAFT_TYPE" => $mission->getAircraftType()
+						"AIRCRAFT_TYPE" => $mission->getAircraft()->getAircraftType()->getName()
 				);
 			}
 		}

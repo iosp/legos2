@@ -65,3 +65,11 @@ img {
 	text-align: center;
 	vertical-align: middle;
 }
+
+.dataTables_filter input{
+	color: black;
+	margin-left: 8px;
+}
+.dataTables_filter label{
+	font-size: 11px;
+}

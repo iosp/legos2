@@ -37,7 +37,7 @@
 		</div>
 
 		<div id="page_content" class="container">
-		
+			<br>
 			<?php echo $sf_content?>
 			
 			<?php // Hier landet der Inhalt der Templates und  das wird auch per Ajax aktualisiert ?>
@@ -66,7 +66,7 @@
 		<br /> <br />
 
 
-
+<?php if($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR){ ?>
 		<div id="dialog-alert"  title="Taxibot Cancel Flight Alert">
 			<table class="alert_data">
 				<thead>
@@ -110,16 +110,16 @@
 				</tbody>
 			</table>
 		</div>
+		
+<?php }?>
 
 		<script type="text/javascript">			
-			window.Lahav = {};
+			window.Lahav = window.Lahav || {};
 			window.Lahav.limitExccedAlertUrl = '<?php echo url_for('limit_exceed/alert',true);  ?>';
-		</script>	
+		</script>
 		
-		
-		<?php use_javascript ( "app/cancelFlight.js" );?>
-		<?php use_javascript ( "bootstrap.min.js" );?>  
-		
+		<?php if($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR){ use_javascript ( "app/cancelFlight.js" );}?>
+		<?php use_javascript ( "bootstrap.min.js" );?>
 
 		<hr>
 		<br /> <br />

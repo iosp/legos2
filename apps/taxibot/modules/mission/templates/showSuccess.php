@@ -1,5 +1,5 @@
-<?php use_helper( 'Global', 'Javascript',  'Selection' )?>
 <?php
+use_helper ( 'Global', 'Javascript', 'Selection' );
 
 ini_set ( "memory_limit", "2048M" );
 set_time_limit ( 1500 );
@@ -13,112 +13,65 @@ echo selectionFilter ( array (
 		'Mission' 
 ), '', true, false );
 
+if ($missionId == - 1) {
+	?><h2><?php echo "No find data.. please change filter";?></h2><?php
+	return;
+}
+
+use_stylesheet ( "app/taxibot/mission/show.css" );
 ?>
 
-<style>
-<!--
-style for table
--->table.data {
-	clear: both;
-	width: 100%;
-	font-size: 10px;
-	border: 0;
-	border-spacing: 0px;
-}
-
-table.data th {
-	width: 250px;
-	height: 20px
-}
-
-table.data td {
-	width: 100px;
-	height: 20px;
-	border-right: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
-	text-align: center;
-}
-
-table.data tr,table.data tr:nth-child(even) td,table.data tr:nth-child(even) th
-	{
-	background-color: #EEEEEE;
-}
-
-table.data tr:nth-child(odd) td,table.data tr:nth-child(odd) th {
-	background-color: #FFFFFF;
-}
-
-$
-from_str
-	table.data tr:hover td,table.data tr:hover th {
-	background-color: #FFBA17;
-}
-</style>
-
-<div id="content">
-
-	<div id="filter-data" style="height: 80px;" >
-		<div id="time_interval_table_container"
-			style="float: left; margin-right: 20px">
-			<table class="time_interval" id="time_interval_table" border="1"
-				style="height: 40px">
-				<tbody>
-					<tr>
-						<th style="font-size: 15px;">Start Date </th>
-					</tr>
-					<tr>
-						<th><?php echo $startTime;?></th>
-					</tr>
-				</tbody>
-			</table>
+<div class="row">
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">Start Date</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $mission_page->DateFilter;?></h6>
+			</div>
 		</div>
-		
-		<div id="time_interval_table_container"
-			style="float: left; margin-right: 20px">
-			<table class="time_interval" id="time_interval_table" border="1"
-				style="height: 40px">
-				<tbody>
-					<tr>
-						<th style="font-size: 15px;">Flight Number </th>
-
-					</tr>
-					<tr>
-						<th><?php echo $Selected_flight_number;?></th>
-					</tr>
-				</tbody>
-			</table>
+	</div>
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">Flight Number</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $mission_page->FlightNumber;?></h6>
+			</div>
 		</div>
-
-		<div id="taxibot_number_table_container">
-			<table id="taxibot_number_table" border="1"
-				style="float: left; margin-right: 20px; height: 40px">
-				<tbody>
-					<tr>
-						<th style="font-size: 15px;">Taxibot Number</th>
-					</tr>
-					<tr>
-						<th>  <?php echo $tractorName;?> </th>
-					</tr>
-				</tbody>
-			</table>
+	</div>
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">Taxibot Number</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $mission_page->TaxibotNumber;?></h6>
+			</div>
 		</div>
-
-		<div id="blf_number_table_container">
-			<table id="blf_number_table" border="1" style="height: 40px">
-				<tbody>
-					<tr>
-						<th style="font-size: 15px;">BLF(Archive) Filename</th>
-					</tr>
-					<tr>
-						<th><?php echo $blfName;?></th>
-					</tr>
-				</tbody>
-			</table>
+	</div>
+	<div class="col-md-3">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">BLF(Archive) Filename 
+					<span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+				</h3>
+			</div>
+			<div class="panel-body">
+				<a class="blf-download" >
+					<h6 class="blf-name"><?php echo $mission_page->BlfName;?>
+					</h6>
+				</a>
+			</div>
 		</div>
-	</div>	
-	
+	</div>
+</div>
+
+<div class="row">
 	<div id="tables">
-		<div id="operating_hours_table_container" class="col-md-4" >
+		<div id="operating_hours_table_container" class="col-md-4">
 			<h5><?php echo "Mission Operating Hours"  ?></h5>
 			<table class="data" id="operating_hours" border="1">
 				<tbody>
@@ -127,63 +80,79 @@ from_str
 					</tr>
 					<tr>
 						<th>DCM Time + Unloading, Loading</th>
-						<td><?php echo $dcmTime;?></td>
+						<td><?php echo $mission_page->DcmTotalTime;?></td>
 					</tr>
+
 					<tr>
-						<th>PCM Start</th>
-						<td><?php echo $pcmStart;?></td>
-					</tr>
-					<tr>
-						<th>PCM End</th>
-						<td><?php echo $pcmEnd;?></td>
-					</tr>
-					<tr>
-						<th>PCM Time</th>
-						<td><?php echo $pcmTime;?></td>
+						<td class="pcm-container">
+							<table border="1" class="pcm-table">
+								<tr>
+									<th class="th-main"
+										rowspan=" <?php
+										
+										$pcmCount = count ( $mission_page->PcmTimes );
+										if ($pcmCount > 0) {
+											
+											echo $pcmCount + 1;
+										} else {
+											echo 2;
+										}
+										?> ">PCM</th>
+									<th>Start</th>
+									<th>End</th>
+									<th>Total</th>
+								</tr>
+								<?php foreach ($mission_page->PcmTimes as $pcm){ ?>
+								<tr>
+									<td><?php echo $pcm['start'];?></td>
+									<td><?php echo  $pcm['end'];?></td>
+									<td><?php echo $pcm['total'];?></td>
+								</tr>
+								<?php
+								}
+								if ($pcmCount == 0) {
+									?>
+								<tr>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+								 <?php } ?>
+								 
+							</table>
+						</td>
+						<td><?php echo $mission_page->PcmTotalTime;?></td>
 					</tr>
 					<tr>
 						<th>Total Mission Time</th>
-						<td><?php echo $totalTime;?></td>
+						<td><?php echo $mission_page->TotalMissionTime;?></td>
 					</tr>
-					<tr>
-						<th></th>
-						<td></td>
-	
-					</tr>
-					<tr>
-						<th>Pushback Start</th>
-						<td> <?php echo $pushbackStart ; ?> </td>
-					</tr>
-					<tr>
-						<th>Pushback End</th>
-						<td><?php echo $pushbackEnd;?></td>
-					</tr>
-					<tr>
-						<th>Pushback Time</th>
-						<td><?php echo $pushbackTime;?></td>
-					</tr>
-					<tr>
-						<th></th>
-						<td></td>
-					</tr>
+					
 				</tbody>
 				<tfoot>
 					<tr>
 						<th colspan="3" style="height: 40px"></th>
-	
+
 					</tr>
 				</tfoot>
 			</table>
-	
-			<!-- 	Export Button -->
-			<div>
-				<br /> 
-				<?php echo link_to( 'Export Data' , "mission/export?file=$exportFilename")?>
+			
+			
+			
+			<br>
+			<div class="mission-buttons">
+				<div>  
+					<a href="<?php echo "export?file=$exportFilename"?>"class="abfragebutton">Export Data</a>
+				</div>
+				<div >
+					<a href="<?php echo "../fatigue_history/force?missionId=$missionId"?>"class="abfragebutton">Forces Analysis</a>
+				</div>
+				<div >
+					<a href="<?php echo "../map/index"?>" class="abfragebutton">Show Map</a>
+				</div>
 			</div>
-	
-	
 		</div>
-		<div id="rtc_hours_table_container" class="col-md-2" > 
+		<div id="rtc_hours_table_container" class="col-md-2">
 			<table class="data" id="rtc_hours_table" style="margin-top: 35px"
 				border="1">
 				<body>
@@ -193,9 +162,6 @@ from_str
 					<th
 						style="height: 30px; width: 50px; background-color: #777777; color: #FFFFFF">RTC</th>
 				</tr>
-				<tr style="height: 15px"></tr>
-				<tr style="height: 15px"></tr>
-				<tr style="height: 16px"></tr>
 				<tr>
 					<td><?php echo '';?></td>
 				</tr>
@@ -204,10 +170,10 @@ from_str
 				</tr>
 				</body>
 			</table>
-	
-	
+
+
 		</div>
-		<div id="driver_time_stamp_table_container" class="col-md-3" >
+		<div id="driver_time_stamp_table_container" class="col-md-3">
 			<h5><?php echo "Driver Time Stamp"  ?></h5>
 			<table class="data" id="driver_time_stamp" border="1">
 				<tbody>
@@ -223,7 +189,7 @@ from_str
 						<th>AnkunftStart (Arrival at A/C)</th>
 						<td><?php echo '';?></td>
 					</tr>
-	
+
 					<tr>
 						<th>Schleppklar (Ready for Push Back)</th>
 						<td><?php echo '';?></td>
@@ -232,8 +198,8 @@ from_str
 						<th>AbfahrtStart (Start Push Back)</th>
 						<td><?php echo '';?></td>
 					</tr>
-	
-	
+
+
 					<tr>
 						<th>AnkunftZeil (End Push Back)</th>
 						<td><?php echo '';?></td>
@@ -242,7 +208,7 @@ from_str
 						<th>BeginTaxiBoting (Start PCM)</th>
 						<td><?php echo '';?></td>
 					</tr>
-	
+
 					<tr>
 						<th>Exit Hof (Exit Termina Area)</th>
 						<td><?php echo '';?></td>
@@ -251,7 +217,7 @@ from_str
 						<th>AnkunftZeilTaxiBoting (End PCM)</th>
 						<td><?php echo '';?></td>
 					</tr>
-	
+
 					<tr>
 						<th>Beendet (End Of Mission)</th>
 						<td><?php echo '';?></td>
@@ -260,12 +226,12 @@ from_str
 						<th>TaxiBotRuckfahrtbereit (TaxiBot Ready to Return)</th>
 						<td><?php echo '';?></td>
 					</tr>
-	
+
 				</tbody>
 				<tfoot>
 					<tr>
 						<th colspan="2" style="height: 40px"></th>
-	
+
 					</tr>
 				</tfoot>
 			</table>
@@ -285,82 +251,67 @@ from_str
 				</thead>
 				<tbody>
 					<tr>
-						<th>PCM</th>
-						<td><?php echo $fuelLeftPcm;?></td>
-						<td><?php echo $fuelRightPcm; ?>		</td>
+						<th class="th-main">PCM</th>
+						<td><?php echo $mission_page->LeftPcmFuel;?></td>
+						<td><?php echo $mission_page->RightPcmFuel; ?>		</td>
 					</tr>
 					<tr>
-						<th>DCM</th>
-						<td><?php echo $fuelLeftDcm;?></td>
-						<td><?php echo $fuelRightDcm; ?>	</td>
+						<th class="th-main">DCM</th>
+						<td><?php echo $mission_page->LeftDcmFuel;?></td>
+						<td><?php echo $mission_page->RightDcmFuel; ?>	</td>
 					</tr>
 					<tr>
-						<th>Total Engine</th>
-						<td><?php echo $fuelLeftTotal;?></td>
-						<td><?php echo $fuelRightTotal ; ?>		</td>
+						<th class="th-main">Total Engine</th>
+						<td><?php echo $mission_page->LeftPcmFuel + $mission_page->LeftDcmFuel;?></td>
+						<td><?php echo $mission_page->RightPcmFuel + $mission_page->RightDcmFuel; ?>		</td>
 					</tr>
-	
+
 					<tr>
-						<th>Mission Both</th>
-						<td colspan="2"> <?php echo $fuelMissionBoth;?>  </td>
+						<th class="th-main">Mission Both</th>
+						<td colspan="2"> <?php echo $mission_page->LeftPcmFuel + $mission_page->LeftDcmFuel + $mission_page->RightPcmFuel + $mission_page->RightDcmFuel;?>  </td>
 					</tr>
-	
 					<tr>
-	
 						<td colspan="3"></td>
-	
+					</tr>				
+					<tr>
+						<th class="th-main">Pushback</th>
+						<td><?php echo $mission_page->LeftPushbackFuel;?></td>
+						<td><?php echo $mission_page->RightPushbackFuel; ?>		</td>
 					</tr>
 					<tr>
-	
-						<td colspan="3"></td>
+						<th class="th-main">Pushback Both</th>
+						<td colspan="2"><?php echo $mission_page->LeftPushbackFuel + $mission_page->RightPushbackFuel;?></td>
 					</tr>
-	
-	
-	
-					<tr>
-	
-						<td colspan="3"></td>
-					</tr>
-					<tr>
-						<th>Pushback</th>
-						<td><?php echo $fuelLeftPushback;?></td>
-						<td><?php echo $fuelRightPushback; ?>		</td>
-					</tr>
-					<tr>
-						<th>Pushback Both</th>
-						<td colspan="2"><?php echo $fuelBothPushback;?></td>
-					</tr>
-	
+
 				</tbody>
 				<tfoot>
 					<tr>
 						<th colspan="3" style="height: 40px"></th>
-	
+
 					</tr>
 				</tfoot>
-	
+
 			</table>
-	
+
 		</div>
 	</div>
+
 </div>
 
+<div class="row">
+	<div class="mission-chart"></div>
+</div>
 
 <script type="text/javascript">
 
-	
 
-	
-	var mission_id = <?php if (isset($missionId)) echo $missionId; else echo -1;?>;
-
-	if(mission_id == -1){
-		
-		$('#content').empty();
-		
-		$('<p style="font-size: 16px;font-weight: bolder;color: black;">No Missions at given values</p><br/>').appendTo('#content'); 
-
-	}
-
+	window.Lahav = window.Lahav || {};
+	Lahav.missionPage = {};
+	Lahav.missionPage.items = <?php echo json_encode($mission_page->chartData);  ?>;
 	
 
 </script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/highcharts-more.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<?php use_javascript ( "app/taxibot/mission/show.js" );?>

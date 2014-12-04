@@ -17,4 +17,5 @@ require 'lib/model/om/BaseAircraftType.php';
  * @package lib.model
  */
 class AircraftType extends BaseAircraftType {
+	
 } // AircraftType

@@ -27,9 +27,9 @@ class TaxibotTractorPeer extends BaseTaxibotTractorPeer {
 		return $rs->getInt('max');
 	}
 	
-	public static  function GetTractorName($tractorId){
+	public static function GetTractorName($tractorId){
 		$criteria = new Criteria (); 
-		$criteria->add ( TaxibotTractorPeer::TRACTOR_ID, $tractorId,Criteria::EQUAL );
+		$criteria->add ( TaxibotTractorPeer::ID, $tractorId,Criteria::EQUAL );
 		$tractor = TaxibotTractorPeer::doSelectOne ( $criteria );
 		
 		if (is_null($tractor))
@@ -67,7 +67,7 @@ class TaxibotTractorPeer extends BaseTaxibotTractorPeer {
 		}
 	
 		return $results;
-	}
+	} 
 	
 	/**
 	 * This function returns a tractor object for a given tractor name.
@@ -88,22 +88,9 @@ class TaxibotTractorPeer extends BaseTaxibotTractorPeer {
 		 * Create a new tractor entry
 		*/
 		if (! $tractor) {
-			$c = new Criteria ();
-			$tractors = self::doSelect ( $c );
-			$lastTractor = end ( $tractors );
-				
-			if ($lastTractor == null) {
-				$max = 1;
-			} else {
-				$max = $lastTractor->getTractorId ();
-			}
-				
 			$tractor = new TaxibotTractor ();
 			$tractor->setName ( $tractorName );
 			$tractor->setCreationDate ( date ( 'Y-m-d H:i:s' ) );
-			$tractor->setTractorId ( $max + 1 );
-			$tractor->setPcmHours ( 0 );
-			$tractor->setDcmHours ( 0 );
 			$tractor->save ();
 		}
 		return $tractor;

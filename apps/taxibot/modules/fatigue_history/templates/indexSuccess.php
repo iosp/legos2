@@ -8,6 +8,6 @@
 echo selectionFilter ( array (
 		'Tag' 
 ), null, $route, array (
-		'Taxibot' 
+		'Taxibot', 'FatigueHistory' 
 ), '' );
 ?>

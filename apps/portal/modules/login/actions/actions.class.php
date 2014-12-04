@@ -8,15 +8,18 @@
  * @version    SVN: $Id: actions.class.php,v 1.3.2.1 2009-02-02 09:03:54 jgoebel Exp $
  */
 class loginActions extends sfActions {
-	public function executeLogin(sfWebRequest $request) {
+	public function executeLogin(sfWebRequest $request) {	
+		//Kint::trace();	 
 		$this->form = new LoginForm ();
+		
 		// Wenn der Aufruf nach dem Versenden des Formulars erfolgt, so sollen die eingegebenen Daten verarbeiteten werden
-		if ($request->isMethod ( 'post' ) || $request->isMethod ( 'put' )) {
+		if ($request->isMethod ( 'post' ) || $request->isMethod ( 'put' )) {			
 			// binde die eingegebenen Daten des Formulars
-			$this->form->bind ( $request->getParameter ( $this->form->getName () ) );
 			
+			$this->form->bind ( $request->getParameter ( $this->form->getName () ) ); 
+			 //dd( $request->getParameter ( $this->form->getName () ) );
 			// wenn der Formular ordentlich ausgefuellt ist und nur gueltige Angaben enthaelt, dann...
-			if ($this->form->isValid ()) {
+			if ($this->form->isValid ()) {								 
 				/*
 				 * User zur ursprünglichen Seite zurück schicken. Dazu die URI aus der Session nehmen, die in der jeweiligen Startseiten-Action gesetzt wird.
 				 */

@@ -16,13 +16,13 @@ abstract class BaseAircraftForm extends BaseFormPropel
     $this->setWidgets(array(
       'id'          => new sfWidgetFormInputHidden(),
       'tail_number' => new sfWidgetFormInputText(),
-      'type'        => new sfWidgetFormPropelChoice(array('model' => 'AircraftType', 'add_empty' => false, 'key_method' => 'getName')),
+      'type_id'     => new sfWidgetFormPropelChoice(array('model' => 'AircraftType', 'add_empty' => false)),
     ));
 
     $this->setValidators(array(
       'id'          => new sfValidatorChoice(array('choices' => array($this->getObject()->getId()), 'empty_value' => $this->getObject()->getId(), 'required' => false)),
       'tail_number' => new sfValidatorString(array('max_length' => 255)),
-      'type'        => new sfValidatorPropelChoice(array('model' => 'AircraftType', 'column' => 'name')),
+      'type_id'     => new sfValidatorPropelChoice(array('model' => 'AircraftType', 'column' => 'id')),
     ));
 
     $this->widgetSchema->setNameFormat('aircraft[%s]');

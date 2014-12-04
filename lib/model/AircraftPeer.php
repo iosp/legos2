@@ -17,4 +17,41 @@ require 'lib/model/om/BaseAircraftPeer.php';
  * @package lib.model
  */
 class AircraftPeer extends BaseAircraftPeer {
+	static public function GetTailNumbers() {
+		$c = new Criteria ();
+		$c->clearSelectColumns ();
+		$c->setDistinct ();
+		$c->addSelectColumn ( self::TAIL_NUMBER );
+		$rs = self::doSelectStmt ( $c );
+		$results = array ();
+		
+		while ( $row = $rs->fetch ( PDO::FETCH_BOTH ) ) {
+			$results [] = $row ['TAIL_NUMBER'];
+		}
+		
+		return $results;
+	}
+	static public function getAircraft($tail_number, AircraftType $aircraftType) {
+		
+		// TODO - get from rtc
+		$criteria = new Criteria ();
+		$criteria->add ( AircraftPeer::TAIL_NUMBER, $tail_number );
+		$aircraft = AircraftPeer::doSelectOne ( $criteria );
+		
+		if ($aircraft == null) {			
+			$aircraft = new Aircraft ();			
+			$aircraft->setTailNumber ( $tail_number );
+			$aircraft->setTypeId ( $aircraftType->getId () );			
+			$aircraft->save ();
+		}
+		
+		return $aircraft;
+	}
+	
+	static public function getAircraftByTailNumber($tail_number) {	 
+		$criteria = new Criteria ();
+		$criteria->add ( AircraftPeer::TAIL_NUMBER, $tail_number );
+		$aircraft = AircraftPeer::doSelectOne ( $criteria );
+		return $aircraft;
+	}
 } // AircraftPeer

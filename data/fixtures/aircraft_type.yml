@@ -1,0 +1,31 @@
+AircraftType:
+  ac1:
+    name:                     'B737_300'
+    hlc_id:                   10
+    long_fatigue_limit_value: 21
+    long_static_limit_value:  81.81
+    lat_static_limit_value:   48.93
+  ac2:
+    name:                     'B737_400'
+    hlc_id:                   11
+    long_fatigue_limit_value: 21
+    long_static_limit_value:  81.81
+    lat_static_limit_value:   48.93
+  ac3:
+    name:                     'B737_500'
+    hlc_id:                   12
+    long_fatigue_limit_value: 21
+    long_static_limit_value:  81.81
+    lat_static_limit_value:   48.93
+  ac4:
+    name:                     'A320_100'
+    hlc_id:                   3
+    long_fatigue_limit_value: 22
+    long_static_limit_value:  76
+    lat_static_limit_value:   57
+  ac5:
+    name:                     'A320_200'
+    hlc_id:                   54
+    long_fatigue_limit_value: 22
+    long_static_limit_value:  76
+    lat_static_limit_value:   57

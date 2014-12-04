@@ -1,12 +1,14 @@
 $(document).ready( function() {	
+	var lastcancelId = -1;
 	$("#dialog-alert").hide();
 	//return;
     var timer  = setInterval(function() {				    	
 		$.ajax({
-	    	type: "GET",				    	
-	    	url:  window.Lahav.limitExccedAlertUrl,
+	    	type: "POST",				    	
+	    	url:  window.Lahav.limitExccedAlertUrl + "/lastid/" + lastcancelId,
 	 		success: function (result){
 				var data = $.parseJSON(result);
+				lastcancelId = data.lastIdMessage;
 	 			if (data.isError) {
 					$( "#dialog-alert" ).dialog({
 						//autoOpen: true,

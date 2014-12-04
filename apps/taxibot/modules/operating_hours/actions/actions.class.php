@@ -15,29 +15,29 @@ class operating_hoursActions extends sfActions {
 	 * @param sfRequest $request
 	 *        	A request object
 	 */
-	public function executeIndex(sfWebRequest $request) {
+	public function executeIndex(sfWebRequest $request) {		
 		// $this->forward('default', 'module');
 		$this->our_string = "Operating Hours";
-		
 		$this->route = $this->getController ()->genUrl ( 'operating_hours/show' );
 	}
-	
-
-	
-	private function saveToXml($times){
-		
-		//XML-Object
-		$xml = new LegosXmlWriter();
+	private function saveToXml($times) {
+		// XML-Object
+		$xml = new LegosXmlWriter ();
 		
 		// Create styles
-		$xml->createStyle( 'headings', 'Font', 'ss:Bold', '1' );
+		$xml->createStyle ( 'headings', 'Font', 'ss:Bold', '1' );
 		
 		// Name Worksheet
-		$xml->setWorksheetName( 'Operating Hours' );
+		$xml->setWorksheetName ( 'Operating Hours' );
 		
 		// Define headings
-		$headings = array( 'Taxibot Number', 'Operating Hours', 'PCM Hours', 'DCM Hours', 'Maint-Tow Hours');
-			
+		$headings = array (
+				'Taxibot Number',
+				'Operating Hours',
+				'PCM Hours',
+				'DCM Hours',
+				'Maint-Tow Hours' 
+		);
 		
 		// Write first row of excel-document (ueberschrift = heading)
 		for($i = 0; $i < count ( $headings ); $i ++) {
@@ -48,32 +48,35 @@ class operating_hoursActions extends sfActions {
 		// Write data
 		foreach ( $times as $id => $t ) {
 			$xml->writeData ( $id, $i, 1 );
-			$xml->writeData ( $t['total']->format("%H:%I:%S"), $i, 2 );
-			$xml->writeData ( $t['pcm']->format("%H:%I:%S"), $i, 3 );
-			$xml->writeData ( $t['dcm']->format("%H:%I:%S"), $i, 4 );
-			$xml->writeData ( $t['maint']->format("%H:%I:%S"), $i, 5 );
+			$xml->writeData ( $t ['total'] , $i, 2 );
+			$xml->writeData ( $t ['pcm'] , $i, 3 );
+			$xml->writeData ( $t ['dcm'] , $i, 4 );
+			$xml->writeData ( $t ['maint'], $i, 5 );
 			$i ++;
 		}
 		
 		$filenameOperatingHours = 'Export_Operating_Hours ' . date ( 'Y-m-d h:i:s' ) . '.xls';
 		
-		file_put_contents( sfConfig::get( 'app_export_path' ). "/". $filenameOperatingHours, $xml->getFile());
+		file_put_contents ( sfConfig::get ( 'app_export_path' ) . "/" . $filenameOperatingHours, $xml->getFile () );
 		
-		unset($xml);
-		unset($headings);
+		unset ( $xml );
+		unset ( $headings );
 		
-		//XML-Object
-		$xml = new LegosXmlWriter();
+		// XML-Object
+		$xml = new LegosXmlWriter ();
 		
 		// Create styles
-		$xml->createStyle( 'headings', 'Font', 'ss:Bold', '1' );
+		$xml->createStyle ( 'headings', 'Font', 'ss:Bold', '1' );
 		
 		// Name Worksheet
-		$xml->setWorksheetName( 'Engines Operating Hours' );
+		$xml->setWorksheetName ( 'Engines Operating Hours' );
 		
 		// Define headings
-		$headings = array( 'Taxibot Number', 'Left Engine Total Hours', 'Right Engine Total Hours');
-			
+		$headings = array (
+				'Taxibot Number',
+				'Left Engine Total Hours',
+				'Right Engine Total Hours' 
+		);
 		
 		// Write first row of excel-document (ueberschrift = heading)
 		for($i = 0; $i < count ( $headings ); $i ++) {
@@ -84,17 +87,19 @@ class operating_hoursActions extends sfActions {
 		// Write data
 		foreach ( $times as $id => $t ) {
 			$xml->writeData ( $id, $i, 1 );
-			$xml->writeData ( $t['Left Hours'], $i, 2 );
-			$xml->writeData ( $t['Right Hours'], $i, 3 );
+			$xml->writeData ( $t ['Left Hours'], $i, 2 );
+			$xml->writeData ( $t ['Right Hours'], $i, 3 );
 			$i ++;
 		}
 		
 		$filenameEngines = 'Export_Engines_Operating_Hours ' . date ( 'Y-m-d h:i:s' ) . '.xls';
 		
-		file_put_contents( sfConfig::get( 'app_export_path' ). "/". $filenameEngines, $xml->getFile());
+		file_put_contents ( sfConfig::get ( 'app_export_path' ) . "/" . $filenameEngines, $xml->getFile () );
 		
-		return array ( $filenameOperatingHours, $filenameEngines );
-		
+		return array (
+				$filenameOperatingHours,
+				$filenameEngines 
+		);
 	}
 	
 	/**
@@ -105,140 +110,123 @@ class operating_hoursActions extends sfActions {
 	 */
 	public function executeShow(sfWebRequest $request) {
 		$this->route = $this->getController ()->genUrl ( 'operating_hours/show' );
-		require_once sfConfig::get( 'app_lib_helper' ). "/TimeHelper.php";
+		require_once sfConfig::get ( 'app_lib_helper' ) . "/TimeHelper.php";
 		
 		// get the 'from' date of time interval string format
-		$this->from_str = $request->getParameter ( 'auswahl[tag_von]' );		
-		//echo " ".$this->from_str;//DEBUG
+		$this->from_str = $request->getParameter ( 'auswahl[tag_von]' );
+		// echo " ".$this->from_str;//DEBUG
 		
 		// get the 'to' date of time interval string format
 		$this->to_str = $request->getParameter ( 'auswahl[tag_bis]' );
-		//echo " ".$this->to_str;//DEBUG
+		// echo " ".$this->to_str;//DEBUG
 		
 		// get the 'from' date of time interval
-		$this->from = date ( "Y-m-d", $request->getParameter ( 'auswahl[von]' ) );	
-		//echo " ".$this->from;//DEBUG
+		$this->from = date ( "Y-m-d", $request->getParameter ( 'auswahl[von]' ) );
+		// echo " ".$this->from;//DEBUG
 		
 		// get the 'to' date of time interval
-		$this->to = date ( "Y-m-d", $request->getParameter ( 'auswahl[bis]' ) );		
-		//echo " ".$this->to;//DEBUG
+		$this->to = date ( "Y-m-d", $request->getParameter ( 'auswahl[bis]' ) );
+		// echo " ".$this->to;//DEBUG
 		
-		$startTimeInterval = new DateTime ( $this->from . " 00:00:00 +00" );		
-		$endTimeIntarval = new DateTime( $this->to . " 23:59:59 +00" );
+		$startTimeInterval = new DateTime ( $this->from . " 00:00:00 +00" );
+		$endTimeIntarval = new DateTime ( $this->to . " 23:59:59 +00" );
 		
-		//die();//DEBUG
+		// die();//DEBUG
 		
 		$criteria = new Criteria ();
-		
 		$criteria->add ( TaxibotMissionPeer::START_TIME, $startTimeInterval, Criteria::GREATER_EQUAL );
 		$criteria->addAnd ( TaxibotMissionPeer::END_TIME, $endTimeIntarval, Criteria::LESS_EQUAL );
-				
-		$this->missions = TaxibotMissionPeer::doSelect( $criteria );
+		$this->missions = TaxibotMissionPeer::doSelect ( $criteria );
 		
-		
-		
-		$this->tractors = array();
-		foreach ($this->missions as  $mission){			
-			$id = $mission->getTractorId();
-			$tractorName = TaxibotTractorPeer::GetTractorName($id);
-						
-			$dcmStart = new DateTime($mission->getDcmStart());
-			$dcmEnd = new DateTime( $mission->getDcmEnd());
+		$this->tractors = array ();
+		foreach ( $this->missions as $mission ) {
+			$id = $mission->getTractorId ();
+			$tractorName = TaxibotTractorPeer::GetTractorName ( $id );
 			
-			if ($mission->getMissionType() == 1){		
-				// regular mission				
-				$pcmStart = new DateTime($mission->getPcmStart());
-				
-				$pcmEnd = new DateTime( $mission->getPcmEnd());
-				
-				$pcmTime = $pcmEnd->diff($pcmStart);
-				$dcmTime1 = $pcmStart->diff($dcmStart);
-					
-				$dcmTime1Sec = DateIntervalToSec($dcmTime1);
-				$dcmTime2 = $dcmEnd->diff($pcmEnd);
-				
-				$dcmTime2Sec = DateIntervalToSec($dcmTime2);
-				$totalDcmSec = $dcmTime1Sec + $dcmTime2Sec;
-				$totalPcmSec = DateIntervalToSec($pcmTime);
-				$totalTimeSec = $totalDcmSec + $totalPcmSec;
+			$loadingTotalTime = TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::LOADING, $mission->getTaxibotPartsMissions () );
+			$unloadingTotalTime = TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::UNLOADING, $mission->getTaxibotPartsMissions () );
+			$missionStartDate = new DateTime($mission->getStartTime());
+			$missionEndDate = new DateTime($mission->getEndTime());
+			$totalTime = $missionEndDate->getTimestamp() - $missionStartDate->getTimestamp();
+			
+			if ($mission->getMissionType () == 1) {
+				$dcmTotalTime = $loadingTotalTime + $unloadingTotalTime;
+				$dcmTotalTime += TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::DCM, $mission->getTaxibotPartsMissions () );				
+				$pcmTotalTime = TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::PCM, $mission->getTaxibotPartsMissions () );
 				$maintTime = 0;
-				$totalTime = $dcmEnd->diff($dcmStart);	
-			}else {
-				// maintanance mission
-
-				$totalPcmSec = 0;
-				$totalDcmSec = 0;
-				$totalTimeSec = $mission->getMaintTime();
-				$maintTime = $mission->getMaintTime();
-			}
-						
-			if (isset($this->tractors[$id])) {
 				
-				$this->tractors[$id]["Left Hours"] += $mission->getLeftEngineHoursPcm() + $mission->getLeftEngineHoursDcm() + $mission->getLeftEngineHoursMaint();
-				$this->tractors[$id]["Right Hours"] += $mission->getRightEngineHoursPcm() + $mission->getRightEngineHoursDcm() + $mission->getRightEngineHoursMaint();
-				$this->tractors[$id]["maint"] += $maintTime;
-				$this->tractors[$id]["pcm"] += $totalPcmSec;
-				$this->tractors[$id]["dcm"] += $totalDcmSec;
-				$this->tractors[$id]["total"] += $totalTimeSec;
+			} else {
+				// maintanance mission
+				$pcmTotalTime = 0;
+				$dcmTotalTime = 0;
+				$maintTime = $totalTime;
 			}
-			else{				
-				$this->tractors[$id] = array
-				(
-						"Left Hours" => $mission->getLeftEngineHoursPcm() + $mission->getLeftEngineHoursDcm() + $mission->getLeftEngineHoursMaint(),
-						"Right Hours" => $mission->getRightEngineHoursPcm() + $mission->getRightEngineHoursDcm() + $mission->getRightEngineHoursMaint(),
-						"maint"=> $maintTime,
-						"dcm"=> $totalDcmSec,
-						"pcm"=> $totalPcmSec ,
-						"total" =>  $totalTimeSec,
-						"Tractor Name" => $tractorName
-				);								
-			}    
+			
+			$leftEngineHours = TaxibotPartsMissionPeer::GetSumHours($mission->getTaxibotPartsMissions (), ENGINE_SIDE::LEFT);
+			$rightEngineHours = TaxibotPartsMissionPeer::GetSumHours($mission->getTaxibotPartsMissions (), ENGINE_SIDE::RIGHT);			
+			
+			if (isset ( $this->tractors [$id] )) {				
+				$this->tractors [$id] ["Left Hours"] += $leftEngineHours;
+				$this->tractors [$id] ["Right Hours"] += $rightEngineHours;
+				$this->tractors [$id] ["maint"] += $maintTime;
+				$this->tractors [$id] ["pcm"] += $pcmTotalTime;
+				$this->tractors [$id] ["dcm"] += $dcmTotalTime;
+				$this->tractors [$id] ["total"] += $totalTime;
+			} else {
+				$this->tractors [$id] = array (
+						"Left Hours" => $leftEngineHours,
+						"Right Hours" => $rightEngineHours,
+						"maint" => $maintTime,
+						"dcm" => $dcmTotalTime,
+						"pcm" => $pcmTotalTime,
+						"total" => $totalTime,
+						"tractorName" => $tractorName 
+				);
+			}
 		}
-
-		
-		if(count($this->tractors) == 0) return;			
-		
-		$this->tractorTimes = array();
-		
 		/* print '<pre>';
-		print_r($this->tractors);
-		print '</pre>';die();
-		 */
+		print_r ( $this->tractors );
+		print '</pre>'; */
+		//die ();
 		
-		foreach($this->tractors as $idd => $tractor){
-						
-			$this->tractorTimes[$idd] = array(
-					"Left Hours" =>$tractor["Left Hours"],
-					"Right Hours" =>$tractor["Right Hours"],				
-					"maint"=> SecToDateInterval($tractor["maint"]),				
-					"dcm"=> SecToDateInterval($tractor["dcm"]),			
-					"pcm"=> SecToDateInterval($tractor["pcm"]),		
-					"total" =>  SecToDateInterval($tractor["total"]),
-					"Tractor Name" => $tractor["Tractor Name"]
+		if (count ( $this->tractors ) == 0) {
+			die ( "No tractor found, please refilter tractors." );
+		}
+		
+		$this->tractorTimes = array ();
+		foreach ( $this->tractors as $idd => $tractor ) {
+			
+			$this->tractorTimes [$idd] = array (
+					"Left Hours" => $tractor ["Left Hours"],
+					"Right Hours" => $tractor ["Right Hours"],
+					"maint" => gmdate ( "H:i:s", $tractor ["maint"] ),
+					"dcm" =>  gmdate ( "H:i:s", $tractor ["dcm"] ),
+					"pcm" =>  gmdate ( "H:i:s", $tractor ["pcm"] ),
+					"total" =>  gmdate ( "H:i:s", $tractor ["total"] ),
+					"TtractorName" => $tractor ["tractorName"] 
 			);
 		}
 		
-		$ExportFilenames =  $this->saveToXml($this->tractorTimes);
+		/* print '<pre>';
+		print_r ( $this->tractorTimes );
+		print '</pre>';
+		die (); */
 		
-		$this->filenameOperatingHours = $ExportFilenames[0];
-		$this->filenameEngines = $ExportFilenames[1];
-		
+		$ExportFilenames = $this->saveToXml ( $this->tractorTimes );
+		$this->filenameOperatingHours = $ExportFilenames [0];
+		$this->filenameEngines = $ExportFilenames [1];
 	}
-	
-	
 	public function executeExport(sfWebRequest $request) {
+		$this->setLayout ( false );
 		
-		$this->setLayout(false);
-			
-		//Data
-		$filename = $request->getParameter('file');
-		
+		// Data
+		$filename = $request->getParameter ( 'file' );
 		
 		// Set content type to XLS although it is an xml-file
 		$this->getResponse ()->setContentType ( 'application/msexcel' );
 		$this->getResponse ()->setHttpHeader ( 'Content-Disposition', sprintf ( 'attachment; filename="%s"', $filename ) );
 		$this->getResponse ()->sendHttpHeaders ();
-		$this->getResponse ()->setContent ( file_get_contents(sfConfig::get( 'app_export_path' ). "/". $filename));
+		$this->getResponse ()->setContent ( file_get_contents ( sfConfig::get ( 'app_export_path' ) . "/" . $filename ) );
 		
 		// Don't return any layout or template
 		return sfView::NONE;

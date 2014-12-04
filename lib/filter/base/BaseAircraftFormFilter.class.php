@@ -13,12 +13,12 @@ abstract class BaseAircraftFormFilter extends BaseFormFilterPropel
   {
     $this->setWidgets(array(
       'tail_number' => new sfWidgetFormFilterInput(array('with_empty' => false)),
-      'type'        => new sfWidgetFormPropelChoice(array('model' => 'AircraftType', 'add_empty' => true, 'key_method' => 'getName')),
+      'type_id'     => new sfWidgetFormPropelChoice(array('model' => 'AircraftType', 'add_empty' => true)),
     ));
 
     $this->setValidators(array(
       'tail_number' => new sfValidatorPass(array('required' => false)),
-      'type'        => new sfValidatorPropelChoice(array('required' => false, 'model' => 'AircraftType', 'column' => 'name')),
+      'type_id'     => new sfValidatorPropelChoice(array('required' => false, 'model' => 'AircraftType', 'column' => 'id')),
     ));
 
     $this->widgetSchema->setNameFormat('aircraft_filters[%s]');
@@ -38,7 +38,7 @@ abstract class BaseAircraftFormFilter extends BaseFormFilterPropel
     return array(
       'id'          => 'Number',
       'tail_number' => 'Text',
-      'type'        => 'ForeignKey',
+      'type_id'     => 'ForeignKey',
     );
   }
 }

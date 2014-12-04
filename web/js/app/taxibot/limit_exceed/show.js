@@ -1,8 +1,7 @@
 $(function(){
-	$(".position-exceed").on("click", function(){
-		var tr = $(this).closest("tr");
-		
-		var lat = tr.prop("");
-		var long = tr.prop("");
+	$("tbody").on("click", ".position-exceed", function(){ 
+		var lat = $(this).attr("data-position-lat");
+		var long = $(this).attr("data-position-long");
+		window.location = 'http://maps.google.com/?q='+ lat + ',' + long + '&t=k';
 	});
 });

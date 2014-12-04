@@ -44,6 +44,9 @@ class LoginForm extends BaseForm {
 	 * Callback-Function des Formular-Post-Validators, die überprüft, ob das Passwort korrekt ist.
 	 */
 	public function checkPassword($validator, $values) {
+		//$e = new Exception;
+		//d($e->getTraceAsString());
+		 //dd($values);
 		// Prüfen, ob der Login-Name bereits vorhanden ist.
 		$crit = new Criteria ();
 		$crit->add ( BenutzerPeer::LOGIN, $values ['name'] );

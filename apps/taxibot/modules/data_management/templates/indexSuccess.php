@@ -3,10 +3,8 @@
 	padding: 3px;
 	float: left;
 	background: gainsboro;
-	width: 300px;
-	height: 375px;
-	margin: 0 40px;
-	width: 300px;
+	width: 300px;	
+	margin: 0 40px; 
 }
 
 .title-cub {
@@ -16,12 +14,26 @@
 	background-color: #FFBA17;
 }
 
+.th-edit-icon{
+	cursor: pointer;
+	text-align: center;
+}
+
+.th-edit-icon:active{
+	width: 20px;
+	height: 20px;
+}
+
 .content-cub {
 	padding: 20px;
 }
 
 .internal-cubs {
 	margin-bottom: 25px;
+}
+
+.first-cell + td{
+	width: 44%;
 }
 
 table,th,td {
@@ -39,6 +51,7 @@ table,th,td {
 .first-cell {
 	background: gray;
 	color: #FFBA17;
+	width:44%;
 }
 
 .rects {
@@ -47,20 +60,10 @@ table,th,td {
 </style>
 
 
-<h1>Data Management</h1>
+<h1>Settings</h1>
 <br />
 
-<div class="rects">
-
-	<div id="uploadCub" class="cub">
-		<div class="title-cub">Upload data from Taxibot to Legos</div>
-		<div class="content-cub"></div>
-	</div>
-
-	<div id="exportCub" class="cub">
-		<div class="title-cub">Export DATABASE to archive</div>
-		<div class="content-cub"></div>
-	</div>
+<div class="rects">	 
 
 	<div id="settingCub" class="cub">
 		<div class="title-cub">Setting</div>
@@ -68,37 +71,50 @@ table,th,td {
 			<div class="internal-cubs">
 				<table style="width: 100%" border="1">
 					<tr class="internal-cub-title">
-						<td colspan="2">Limit Exceed Definitions</td>
+						<td colspan="3">Limit Exceed Definitions</td>
 					</tr>
 					<tr>
-						<td colspan="2">Fatigue:</td>
+						<td colspan="3">Fatigue:</td>
 					</tr>					 
-					<tr>
-						<td class="first-cell">Long Boeing</td>
-						<td><?php echo $boeing->getLongFatigueLimitValue(); ?></td>
+					<tr data-force="f" data-aircraft="b" data-angle="long">
+						<th class="first-cell">Long Boeing</th>
+						<td><span class="limit-value"><?php echo $boeing->getLongFatigueLimitValue(); ?> </span><span> kN</span></td>
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) { 
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'long-fatg-boeing-edit th-edit-icon', 'size' => '15x15')). '</td>'; 
+						}?>
+					</tr>
+					<tr data-force="f" data-aircraft="a" data-angle="long">
+						<th class="first-cell">Long Airbus</th>						
+						<td > <span class="limit-value"><?php echo $airbus->getLongFatigueLimitValue() ?> </span><span> kN</span></td>
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) {
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'long-fatg-airbus-edit th-edit-icon', 'size' => '15x15')). '</td>'; }?>
 					</tr>
 					<tr>
-						<td class="first-cell">Long Airbus</td>
-						<td><?php echo $airbus->getLongFatigueLimitValue(); ?></td>
+						<td colspan="3">Safe:</td>
 					</tr>
-					<tr>
-						<td colspan="2">Safe:</td>
+					<tr data-force="s" data-aircraft="b" data-angle="lat">
+						<th class="first-cell">Lat Boeing</th> 
+						<td><span class="limit-value"><?php echo $boeing->getLatStaticLimitValue(); ?> </span><span> kN</span></td>
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) {
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'lat-safe-boeing-edit th-edit-icon', 'size' => '15x15')). '</td>'; }?>
 					</tr>
-					<tr>
-						<td class="first-cell">Lat Boeing</td>
-						<td><?php  echo $boeing->getLatStaticLimitValue(); ?></td>
+					<tr data-force="s" data-aircraft="a" data-angle="lat">
+						<th class="first-cell">Lat Airbus</th>
+						<td><span class="limit-value"><?php echo $airbus->getLatStaticLimitValue(); ?> </span><span> kN</span></td>						
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) { 
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'lat-safe-airbus-edit th-edit-icon', 'size' => '15x15')). '</td>'; }?>
 					</tr>
-					<tr>
-						<td class="first-cell">Lat Airbus</td>
-						<td><?php echo  $airbus->getLatStaticLimitValue(); ?></td>
+					<tr data-force="s" data-aircraft="b" data-angle="long">
+						<th class="first-cell">Long Boeing</th> 
+						<td><span class="limit-value"><?php echo $boeing->getLongStaticLimitValue(); ?> </span><span> kN</span></td>
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) {
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'long-safe-boeing-edit th-edit-icon', 'size' => '15x15')). '</td>'; }?>
 					</tr>
-					<tr>
-						<td class="first-cell">Long Boeing</td>
-						<td><?php echo  $boeing->getLongStaticLimitValue(); ?></td>
-					</tr>
-					<tr>
-						<td class="first-cell">Long Airbus</td>
-						<td><?php echo  $airbus->getLongStaticLimitValue(); ?></td>
+					<tr data-force="s" data-aircraft="a" data-angle="long" >
+						<th class="first-cell">Long Airbus</th>
+						<td><span class="limit-value"><?php echo $airbus->getLongStaticLimitValue(); ?> </span><span> kN</span></td>
+						<?php  if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) { 
+							echo '<td class="edit-icon-td">'. image_tag( 'edit1.png' , array('class' => 'long-safe-airbus-edit th-edit-icon', 'size' => '15x15')). '</td>'; }?>
 					</tr>
 				</table>
 			</div>
@@ -109,15 +125,15 @@ table,th,td {
 						<td colspan="2">Versions</td>
 					</tr>
 					<tr>
-						<td class="first-cell">AC Data</td>
+						<th class="first-cell">AC Data</th>
 						<td>XXXXXXX</td>
 					</tr>
 					<tr>
-						<td class="first-cell">Air field data</td>
+						<th class="first-cell">Air field data</th>
 						<td>XXXXXXX</td>
 					</tr>
 					<tr>
-						<td class="first-cell">Application</td>
+						<th class="first-cell">Application</th>
 						<td>1.1.2</td>
 					</tr>
 				</table>
@@ -125,3 +141,9 @@ table,th,td {
 		</div>
 	</div>
 </div>
+
+<?php 
+if ($sf_user->getUserGroup() == USER_GROUP::ADMIN || $sf_user->getUserGroup() == USER_GROUP::EDITOR) {
+	use_javascript ( "app/taxibot/setting/index.js" );
+}
+?>

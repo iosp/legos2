@@ -1,91 +1,159 @@
 <?php
-
 abstract class OPTION_TYPE {
 	const AIRCRAFT_TYPES = "Aircraft Types";
 	const ONLY_EXCEEDING = "Only Exceeding";
 	const FILE_UPLOAD = "File Upload";
-	const MISSION =  "Mission";
+	const MISSION = "Mission";
 	const MAINTENANCE = "Maintenance";
 	const LIMIT_EXCEED = "Limit Exceed";
 	const OPERATING_HOURS = "Operating Hours";
 	const IMPORT = "Import";
 	const MISSION_LIST = "Mission List";
+	const FATIGUE_HISTORY = "Fatigue History";
+	const ACCUMULATIVE_DATA = "Accumulative Data";
 }
-
-function getOptionType($zusatz){
-	if ($zusatz && in_array ( "Taxibot", $zusatz )) {
-		if (in_array ( "AircraftTypes", $zusatz )){
-			$optionType = OPTION_TYPE::AIRCRAFT_TYPES;			
+function getOptionType($addition) {
+	if ($addition && in_array ( "Taxibot", $addition )) {
+		if (in_array ( "AircraftTypes", $addition )) {
+			$optionType = OPTION_TYPE::AIRCRAFT_TYPES;
 		}
-		if (in_array ( "OnlyExceeding", $zusatz )){
+		if (in_array ( "OnlyExceeding", $addition )) {
 			$optionType = OPTION_TYPE::ONLY_EXCEEDING;
 		}
-		if (in_array ( "FileUpload", $zusatz )){
+		if (in_array ( "FileUpload", $addition )) {
 			$optionType = OPTION_TYPE::FILE_UPLOAD;
 		}
-		if (in_array ( "Mission", $zusatz )){
+		if (in_array ( "Mission", $addition )) {
 			$optionType = OPTION_TYPE::MISSION;
 		}
-		if (in_array ( "Maintenance", $zusatz )) {
+		if (in_array ( "Maintenance", $addition )) {
 			$optionType = OPTION_TYPE::MAINTENANCE;
 		}
-		if (in_array ( "LimitExceed", $zusatz )) {
+		if (in_array ( "LimitExceed", $addition )) {
 			$optionType = OPTION_TYPE::LIMIT_EXCEED;
 		}
-		if (in_array ( "OperatingHours", $zusatz )) {
+		if (in_array ( "OperatingHours", $addition )) {
 			$optionType = OPTION_TYPE::OPERATING_HOURS;
 		}
-		if (in_array ( "Import", $zusatz )) {
+		if (in_array ( "Import", $addition )) {
 			$optionType = OPTION_TYPE::IMPORT;
 		}
-		if (in_array ( "MissionList", $zusatz )) {
+		if (in_array ( "MissionList", $addition )) {
 			$optionType = OPTION_TYPE::MISSION_LIST;
 		}
-	}	
-	return  $optionType;
+		if (in_array ( "FatigueHistory", $addition )) {
+			$optionType = OPTION_TYPE::FATIGUE_HISTORY;
+		}
+		if (in_array ( "AccumulativeData", $addition )) {
+			$optionType = OPTION_TYPE::ACCUMULATIVE_DATA;
+		}
+	}
+	return $optionType;
 }
-
-function selectionFilter($zeitauswaehler = "Tag", $selectedFahrzeuge = null, $route = "", $zusatz = null, $hinweis = "", $ausgeklappt = true, $isShowOptionOnStart = true) {
-	$optionType = getOptionType($zusatz);
-	$result =  use_javascript('selectionHelper.js');
-	// Beginning of the selection filter
-	$result .= auswahlStart ( $route, $isShowOptionOnStart );
+function selectionFilter($timeSelection = "Tag", $vehiclesSelected = null, $route = "", $addition = null, $reference = "", $expanded = true, $isShowOptionOnStart = true) {
+	$optionType = getOptionType ( $addition );
+	$result = use_javascript ( 'selectionHelper.js' );
 	
-	if (strcmp ( $selectedFahrzeuge, 'file' ) == 0) {
-		$zeitauswaehler = array ();
-		$ausgeklappt = false;
+	// Beginning of the selection filter
+	$result .= selectionStart ( $route, $isShowOptionOnStart );
+	
+	if (strcmp ( $vehiclesSelected, 'file' ) == 0) {
+		$timeSelection = array ();
+		$expanded = false;
 	}
 	
 	// Common filters
-	$result .= optionDate ( $zeitauswaehler , $optionType);
+	$result .= optionDate ( $timeSelection, $optionType );
 	
-	if ($optionType == OPTION_TYPE::AIRCRAFT_TYPES)			
-		$result .= optionAircraftTypes ();			
+	if ($optionType == OPTION_TYPE::AIRCRAFT_TYPES)
+		$result .= optionAircraftTypes ();
 	if ($optionType == OPTION_TYPE::ONLY_EXCEEDING)
-		$result .= optionOnlyExceeding ();					
+		$result .= optionOnlyExceeding ();
 	if ($optionType == OPTION_TYPE::MISSION)
-		$result .= missionOptions ();
+		$result .= flightNumberOptions (false);
 	if ($optionType == OPTION_TYPE::MAINTENANCE) {
-		$result .= optionTailNumber ();			
-		$result .= optionTaxibotNumber ();
-	}	
+		$result .= optionTailNumber ();
+		$result .= optionTaxibotNumber ( false );
+	}
+	if ($optionType == OPTION_TYPE::FATIGUE_HISTORY) {
+		$result .= timeRangeOptions ();
+		$result .= tailNumberOptions ();
+	}
+	if ($optionType == OPTION_TYPE::ACCUMULATIVE_DATA) {
+		$result .= timeRangeOptions ();
+		$result .= optionTaxibotNumber ( false );
+		$result .= operationScenaioFilter();
+	}
+	
+	if ($optionType == OPTION_TYPE::MISSION_LIST) {
+		$result .= missionListFilter();
+	}
 	
 	// Other
-	if ($hinweis != null) {
-		$result .= auswahlHinweis ( $hinweis );
+	if ($reference != null) {
+		$result .= indicationChoice ( $reference );
 	}
 	
 	// Ende des Auswahlfilters
-	$result .= selectionEnd ( $ausgeklappt, $optionType );
+	$result .= selectionEnd ( $expanded, $optionType );
+	$result .= use_javascript ( 'app/SelectionOption.js' );
 	
 	// echo $result;
+	
+	//dd($result);
+	return $result;
+}
+function operationScenaioFilter(){
+   return '<div class="optionen_block">
+				<input type="checkbox" id="operation-checkbox" name="operation-select"/>
+				<label for="operation-checkbox" class="operational-checkbox optionen_title">Operation</label>
+				<input type="checkbox" id="test-checkbox" name="test-select"/>
+				<label for="test-checkbox" class="operational-checkbox optionen_title">Test</label>
+   				<input type="checkbox" id="train-checkbox" name="train-select"/>
+				<label for="train-checkbox" class="operational-checkbox optionen_title">Train</label>
+			</div>';
+}
+function missionListFilter(){
+	$result = timeRangeOptions ();
+	$result .= flightNumberOptions ();
+	$result .= optionTailNumber ();
+	$result .= optionTaxibotNumber ( false );
+	$result .= '<div class="optionen_block">
+					<label class="optionen_title">AC Type</label>
+					<input type="text" name="ac-type-select"/>
+				</div>
+				<div class="optionen_block">
+					<label class="optionen_title">Scenario </label>					
+					<select  name="operational-select">						
+						<option value="0">-- select operational scenario --</option>
+						<option value="1">Operational</option>
+						<option value="2">Test</option>
+						<option value="3">Train</option>        				
+					</select>
+				</div>	
+				<div class="optionen_block">
+					<label class="optionen_title">Mode </label>
+					<select name="mode-select">
+						<option value="0">-- select mode --</option>
+						<option value="1">Regular</option>
+						<option value="2">Maintenance</option>
+					</select>   
+				</div>
+				<div class="optionen_block">
+					<input type="checkbox" name="only-faitgue-select"/>
+					<label class="optionen_title">Show only fatigue exceed - missions</label>
+				</div>
+				<div class="optionen_block">
+					<input type="checkbox" name="unapproved-select"/>
+					<label class="optionen_title">Un-approved - missions</label>
+				</div>';
 	
 	return $result;
 }
 function uploadControl() {
 	
-	// $result = '<form method="post" enctype="multipart/form-data" action="../../import/import">';	
-	$result = '<input type="file" name="auswahl[file]" id="auswahl_file" value="" />';	
+	// $result = '<form method="post" enctype="multipart/form-data" action="../../import/import">';
+	$result = '<input type="file" name="auswahl[file]" id="auswahl_file" value="" />';
 	$result .= '<input type="submit" name="commit" value="Upload" />';
 	
 	return $result;
@@ -116,7 +184,7 @@ function _modalMultiselectEn($fieldname, $label = '', $objekte, $selected = null
 	$result .= '<div class="ms-deselect-all">';
 	$result .= "<a href='#' id='deselect-all_" . $fieldname . "' class='pfeil'>Deselect All</a>";
 	$result .= '</div>';
-	$result .= '</div></div>';	
+	$result .= '</div></div>';
 	return $result;
 }
 
@@ -207,44 +275,64 @@ function optionAircraftTypes() {
 	$result .= js_modalMultiselectEn ( $fieldname, $label );
 	return $result;
 }
-
-function missionOptions() {	
-	$result = "<div><div class='option-line'></div><span class='option-line-and'>AND</span><div class='option-line'></div></div>";		
-	$flight_numbers = TaxibotMissionPeer::GetFlightNumbers();
-	$flight_numbers = adjestKeyArrayToValue($flight_numbers);	 
-	$label = "Flight Number";
-	$fieldname = "FlightNumber";	
-	$result .= _selectOptions($fieldname, $label, $flight_numbers, null);
-	return 	$result;
-}
-function optionTaxibotNumber() {
-	$result = "<div class='option-line-or'></div>";
-	$tractorNames = TaxibotTractorPeer::GetTractorNames();
-	$tractorNames = adjestKeyArrayToValue($tractorNames);
-	$fieldname = "TaxibotNumber";
-	$label = "Taxibot Number";	
-	$result .= _selectOptions($fieldname, $label, $tractorNames, null);	
+function tailNumberOptions() {
+	$result = "<br>";
+	$tail_numbers = AircraftPeer::GetTailNumbers ();
+	$tail_numbers = adjestKeyArrayToValue ( $tail_numbers );
+	$label = "Tail Number";
+	$fieldname = "TailNumber";
+	$result .= _selectOptions ( $fieldname, $label, $tail_numbers, null );
 	return $result;
 }
-function adjestKeyArrayToValue($arr){
-	foreach ($arr as $key => $value){
-		$arr[$value] = $arr[$key];
-		unset($arr[$key]);
-	}	
+function flightNumberOptions($isSetLineSeperate = false) {
+	$result = "";
+	If ($isSetLineSeperate) {
+		$result = "<div><div class='option-line'></div><span class='option-line-and'>AND</span><div class='option-line'></div></div>";
+	}
+	
+	$flight_numbers = TaxibotMissionPeer::GetFlightNumbers ();
+	$flight_numbers = adjestKeyArrayToValue ( $flight_numbers );
+	$label = "Flight Number";
+	$fieldname = "FlightNumber";
+	$result .= _selectOptions ( $fieldname, $label, $flight_numbers, null );
+	return $result;
+}
+function optionTaxibotNumber($isSetLineSeperate) {
+	$result = "";
+	If ($isSetLineSeperate) {
+		$result .= "<div class='option-line-or'></div>";
+	}
+	
+	$tractorNames = TaxibotTractorPeer::GetTractorNames ();
+	$tractorNames = adjestKeyArrayToValue ( $tractorNames );
+	$fieldname = "TaxibotNumber";
+	$label = "Taxibot";
+	$result .= _selectOptions ( $fieldname, $label, $tractorNames, null );
+	return $result;
+}
+function adjestKeyArrayToValue($arr) {
+	foreach ( $arr as $key => $value ) {
+		$arr [$value] = $arr [$key];
+		unset ( $arr [$key] );
+	}
 	return $arr;
 }
-function printArray($array){
+function printArray($array) {
 	print "<pre>";
-	print_r($array);
-	print "</pre>";	
+	print_r ( $array );
+	print "</pre>";
 }
-function optionTailNumber() {
-	$result = "<div class='option-line-or'></div>";
-	$tail_numbers = TaxibotMissionPeer::GetTailNumbers();	
-	$tail_numbers = adjestKeyArrayToValue($tail_numbers);
+function optionTailNumber($isSetLineSeperate = false) {
+	$result ="";
+	if($isSetLineSeperate){
+		$result = "<div class='option-line-or'></div>";
+	}
+	
+	$tail_numbers = TaxibotMissionPeer::GetTailNumbers ();
+	$tail_numbers = adjestKeyArrayToValue ( $tail_numbers );
 	$fieldname = "TailNumber";
-	$label = "Tail Number";	
-	$result .= _selectOptions($fieldname, $label, $tail_numbers, null);	
+	$label = "Tail Number";
+	$result .= _selectOptions ( $fieldname, $label, $tail_numbers, null );
 	return $result;
 }
 function optionOnlyExceeding() {
@@ -264,7 +352,7 @@ function optionOnlyExceeding() {
 /**
  * Startblock für Filter
  */
-function auswahlStart($route, $isShowOptionOnStart = true) {
+function selectionStart($route, $isShowOptionOnStart = true) {
 	// Definition der div-Container für den Ajax-Aufruf des Form-Start-Tags
 	$modulContainer = 'container-modulinhalt';
 	$ajaxLoading = 'ajax_loading';
@@ -286,12 +374,8 @@ function auswahlStart($route, $isShowOptionOnStart = true) {
 	$result .= '<div id="auswahlfilter" style="margin-left: -282px;">';
 	// Im dev-Modus wird auf AJAX verzichtet und stattdessen die komplette Seite neu geladen.
 	// Dadurch können von Symfony die Datenbankabfragen eingesehen werden etc.
-	if (sfConfig::get ( 'sf_environment' ) == "dev") 	// Symfony Dev-Modus
-	{
-		$result .= '<form method="post" enctype="multipart/form-data" action="' . $route . '/id="form" >';
-	} else 	// Symfony Prod-Modus
-	{
-		$result .= '<form method="post" enctype="multipart/form-data" action="' . $route . '" onsubmit="
+	
+	$result .= '<form method="post" enctype="multipart/form-data" action="' . $route . '" onsubmit="
 							jQuery(\'#' . $modulContainer . '\').hide();
 							jQuery(\'#' . $ajaxLoading . '\').show();
 							jQuery.ajax({type:\'POST\',dataType:\'html\',
@@ -315,30 +399,46 @@ function auswahlStart($route, $isShowOptionOnStart = true) {
 							});
 							return true;"
 						/id="form">';
-	}
+	
 	$result .= '<div id="inhalt">';
 	
-	if ($isShowOptionOnStart) { 
+	if ($isShowOptionOnStart) {
 		$result .= '<script type="text/javascript" charset="utf-8">';
-		$result .= ' isShowOptionOnStart = true;';							
+		$result .= ' isShowOptionOnStart = true;';
 		$result .= '</script>';
 	} else {
 		$result .= '<script type="text/javascript" charset="utf-8">';
 		$result .= ' isShowOptionOnStart = false;';
-		$result .= '</script>';		
+		$result .= '</script>';
 	}
 	return $result;
+}
+function timeRangeOptions() {
+	return '<div class="optionen_block" id="time-helper">
+				<label class="optionen_title">From</label>
+				<input name="from-time-selection" type="time">				
+				<label class="optionen_title">To</label>
+				<input name="to-time-selection" type="time" >
+			</div>';
+}
+function tailNumnerOptions() {
+	return '<div id="tail-number-helper">
+				<span id="start-time" class="time-option">
+					<input name="from-time-selection" type="time">
+				</span>
+				
+			</div>';
 }
 
 /**
  * Auswahlkomponenten
  */
-function optionDate($zeitauswaehler, $optionType) {
-	$einzeltag = (in_array ( "Einzeltag", $zeitauswaehler )) ? true : false;
-	$tag = (in_array ( "Tag", $zeitauswaehler )) ? true : false;
-	$woche = (in_array ( "Woche", $zeitauswaehler )) ? true : false;
-	$monat = (in_array ( "Monat", $zeitauswaehler )) ? true : false;
-	$uhrzeit = (in_array ( "Uhrzeit", $zeitauswaehler )) ? true : false;
+function optionDate($timeSelection, $optionType) {
+	$einzeltag = (in_array ( "Einzeltag", $timeSelection )) ? true : false;
+	$tag = (in_array ( "Tag", $timeSelection )) ? true : false;
+	$woche = (in_array ( "Woche", $timeSelection )) ? true : false;
+	$monat = (in_array ( "Monat", $timeSelection )) ? true : false;
+	$uhrzeit = (in_array ( "Uhrzeit", $timeSelection )) ? true : false;
 	$date = $einzeltag || $uhrzeit || $monat || $woche || $tag ? true : false;
 	
 	$tab_start = 0;
@@ -378,8 +478,7 @@ function optionDate($zeitauswaehler, $optionType) {
 	// Tabinhalte
 	$result .= '<div class="optionen_block">';
 	
-	if ($date) {
-		$result .= '<div class="optionen_title">Period Selection</div>';
+	if ($date) {		
 		if ($tag)
 			$result .= optionDateDay ();
 		if ($woche)
@@ -401,52 +500,13 @@ function optionDateDay() {
 	$gestern = date ( "d.m.Y", strtotime ( '-1 day' ) );
 	$result = '<div id="tabs-1">';
 	$result .= '<div class="optionen_zeitauswahl">';
+	$result .= '<label class="optionen_title"> From &nbsp;</label>';
 	$result .= '<input id="auswahl_tag_von" ' . 'class="daterange" ' . 'type="text" ' . 'name="auswahl[tag_von]" ' . 'title="Please Enter Start Date." ' . 'value="Yesterday" ' . 'size="12" ' . 'onChange="validateVon(this, \'' . $gestern . '\')" ' . 'style="display: inline;">';
-	$result .= '&nbsp;';
+	$result .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+	$result .= '<label class="optionen_title"> To&nbsp;</label>';
 	$result .= '<input id="auswahl_tag_bis" ' . 'class="daterange" ' . 'type="text" ' . 'name="auswahl[tag_bis]" ' . 'title="Please Enter End Date." ' . 'value="" ' . 'size="12" ' . 'onChange="validateBis(this, \'' . $gestern . '\')" ' . 'style="display: inline;">';
 	$result .= '</div>';
-	$result .= '<script type="text/javascript" charset="utf-8">';
-	$result .= "jQuery('#auswahl_tag_von, #auswahl_tag_bis').daterangepicker( {
-							dateFormat: 'dd.mm.yy',
-							presetRanges: [
-								{text: 'Yesterday', dateStart: 'yesterday', dateEnd: 'yesterday'},
-								{text: 'Last 7 days', dateStart: 'yesterday-7days', dateEnd: 'yesterday'},
-								{text: 'Month Untill Yesterday', dateStart: function(){ return Date.parse('today').moveToFirstDayOfMonth();  }, dateEnd: 'yesterday' }
-							],
-							presets: {
-								specificDate: 'Specific Date',
-								dateRange: 'Date Range'
-							},
-							posX:7,
-							posY:252,
-							rangeStartTitle: 'From',
-							rangeEndTitle: 'To',
-							doneButtonText: 'OK',
-							datepickerOptions: {
-								showOtherMonths: 'true',
-								selectOtherMonths: 'true',
-								closeText: 'Close',
-								prevText: '&#x3c; Back',
-								nextText: 'Forward &#x3e;',
-								currentText: 'Today',
-								monthNames: ['January','February','March','April','May','June',
-									'July','August','September','October','November','December'],
-								monthNamesShort: ['Jan','Feb','Mar','Apr','May','Jun',
-									'Jul','Aug','Sep','Oct','Nov','Dec'],
-								dayNames: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-								dayNamesShort: ['Su','Mo','Tu','We','Th','Fr','Sa'],
-								dayNamesMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
-								weekHeader: 'Week ',
-								firstDay: 1
-							},
-							onChange: function(){								
-								saveStartDate(); 
-								saveEndDate();
-							}
-						} ); ";
-	$result .= 'setStartDefaultDate(); setEndDefaultDate();';
-	$result .= '</script>';
-	$result .= '</div>';	
+	$result .= '</div>';
 	
 	return $result;
 }
@@ -454,43 +514,9 @@ function optionDateSingleDay() {
 	$gestern = date ( "d.m.Y", strtotime ( '-1 day' ) );
 	$result = '<div style="padding: 0;" id="tabs-4">';
 	$result .= '<div class="optionen_zeitauswahl">';
+	$result .= '<label class="optionen_title"> Mission Date &nbsp;</label>';
 	$result .= '<input id="auswahl_tag_einzeln" class="daterange" type="text" name="auswahl[tag_einzeln]" title="Please Select Date." value="Yesterday" size="12" onChange="validateVon(this, \'' . date ( "d.m.Y", strtotime ( '-1 day' ) ) . '\')" style="display: inline;">';
-	$result .= '</div>';
-	$result .= '<script type="text/javascript" charset="utf-8">';
-	$result .= "jQuery('#auswahl_tag_einzeln').daterangepicker( {
-							dateFormat: 'dd.mm.yy',
-							presetRanges: [
-								{text: 'Yesterday', dateStart: 'gestern', dateEnd: 'gestern'}
-							],
-							presets: {
-								specificDate: 'Date'
-							},
-							posX:7,
-							posY:252,
-							doneButtonText: 'OK',
-							datepickerOptions: {
-								showOtherMonths: 'true',
-								selectOtherMonths: 'true',
-								closeText: 'schließen',
-								prevText: '&#x3c; zurück',
-								nextText: 'Vor &#x3e;',
-								currentText: 'heute',
-								monthNames: ['January','February','March','April','May','June',
-									'July','August','September','October','November','December'],
-								monthNamesShort: ['Jan','Feb','Mar','Apr','May','Jun',
-									'Jul','Aug','Sep','Oct','Nov','Dec'],
-								dayNames: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-								dayNamesShort: ['Su','Mo','Tu','We','Th','Fr','Sa'],
-								dayNamesMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
-								weekHeader: 'Wo',
-								firstDay: 1
-							},
-							onChange: function(){								
-								saveSingleDate();
-							}
-						} ); ";
-	$result .= 'setSingleDate();';
-	$result .= '</script>';	
+	$result .= '</div>'; 
 	$result .= '</div>';
 	return $result;
 }
@@ -646,15 +672,18 @@ function _radiobutton($field, $label = '', $array, $selected_array) {
 	$result .= '</div>';
 	return $result;
 }
-
 function _selectOptions($field, $label = '', $array, $selected_array) {
 	$result = '<div class="optionen_block">';
-	$result .= '<div class="optionen_title">';
+	$result .= '<label class="optionen_title">';
 	$result .= $label;
-	$result .= '</div>';
+	$result .= '</label>';
 	$result .= '<div class="optionen">';
 	$result .= '<div id="' . $field . '" class="liste auswahloption radiobutton">';
-	$result .= select_tag('auswahl[' . $field . ']', options_for_select($array, null, array('include_custom' => '-- Select '.$label .' --')), array('class' => 'flight-number-select'));
+	$result .= select_tag ( 'auswahl[' . $field . ']', options_for_select ( $array, null, array (
+			'include_custom' => '-- Select ' . $label . ' --' 
+	) ), array (
+			'class' => 'flight-number-select' 
+	) );
 	$result .= '</div>';
 	$result .= '</div>';
 	$result .= '</div>';
@@ -940,31 +969,31 @@ function optionStoergruendeSchlepper() {
 	$result .= js_modalMultiselect ( $fieldname, $label );
 	return $result;
 }
-function optionFahrzeugfilter($fahrzeuge, $zusatz) {
+function optionFahrzeugfilter($fahrzeuge, $addition) {
 	$selected = null;
-	if ($zusatz) {
-		if (in_array ( "Schlepper", $zusatz )) {
+	if ($addition) {
+		if (in_array ( "Schlepper", $addition )) {
 			$crit_schlepperreihenfolge = new Criteria ();
 			$crit_schlepperreihenfolge->addAscendingOrderByColumn ( TaxibotTractorPeer::ID );
 			if ($fahrzeuge == null) {
 				$fahrzeuge = TaxibotTractorPeer::doSelect ( $crit_schlepperreihenfolge );
 			}
 			$selected = TaxibotTractorPeer::doSelect ( $crit_schlepperreihenfolge );
-		} elseif (in_array ( "Bus", $zusatz )) {
+		} elseif (in_array ( "Bus", $addition )) {
 			$crit_busreihenfolge = new Criteria ();
 			$crit_busreihenfolge->addAscendingOrderByColumn ( BusPeer::INFOMAN_ID );
 			if ($fahrzeuge == null) {
 				$fahrzeuge = BusPeer::doSelect ( $crit_busreihenfolge );
 			}
 			$selected = BusPeer::doSelectAktiveBusse ( $crit_busreihenfolge );
-		} elseif (in_array ( "WerkstattKunde", $zusatz )) {
+		} elseif (in_array ( "WerkstattKunde", $addition )) {
 			$crit_schlepperreihenfolge = new Criteria ();
 			$crit_schlepperreihenfolge->addAscendingOrderByColumn ( WerkstattKundeFahrzeugPeer::NAME );
 			if ($fahrzeuge == null) {
 				$fahrzeuge = WerkstattKundeFahrzeugPeer::doSelect ( $crit_schlepperreihenfolge );
 			}
 			$selected = $fahrzeuge;
-		} elseif (in_array ( "DUS", $zusatz )) {
+		} elseif (in_array ( "DUS", $addition )) {
 			$crit_schlepperreihenfolge = new Criteria ();
 			$crit_schlepperreihenfolge->addAscendingOrderByColumn ( DusSchlepperPeer::NAME );
 			if ($fahrzeuge == null) {
@@ -1009,16 +1038,16 @@ function optionSchleppertyp($fahrzeuge = null, $selectedSchleppertyp = null, $ge
 	) ), 	// den Punkt 'Alle' mit hinzunehmen
 	array (
 			'onChange' => 'if(this.value != ""){auswahl_fahrzeugFilter.value="Alle";}' 
-	) );	// Wenn ein Schleppertyp ausgewählt wird, die Schlepperauswahl zurücksetzen.
-	
+	) ); // Wenn ein Schleppertyp ausgewählt wird, die Schlepperauswahl zurücksetzen.
+	     
 	// $result.= include_component(
-	// 'startseite', 'schlepperAuswaehlen',
-	// array( 'benutzerdefinierteWerte' => array(
-	// array('include_custom' => 'Alle'),
-	// array( 'onChange' => 'if(this.value != ""){auswahl_fahrzeugFilter.value="Alle";}') ),
-	// // Wenn ein Schlepper ausgewählt wird, die Schleppertyp-Auswahl zurücksetzen.
-	// 'geloeschte_anzeigen' => true )
-	// ); // Die Component macht sein eigenes <th> und <td>
+	     // 'startseite', 'schlepperAuswaehlen',
+	     // array( 'benutzerdefinierteWerte' => array(
+	     // array('include_custom' => 'Alle'),
+	     // array( 'onChange' => 'if(this.value != ""){auswahl_fahrzeugFilter.value="Alle";}') ),
+	     // // Wenn ein Schlepper ausgewählt wird, die Schleppertyp-Auswahl zurücksetzen.
+	     // 'geloeschte_anzeigen' => true )
+	     // ); // Die Component macht sein eigenes <th> und <td>
 	$result .= '</div>';
 	$result .= '</div>';
 	$result .= '</div>';
@@ -1047,23 +1076,24 @@ function optionSchleppertyp($fahrzeuge = null, $selectedSchleppertyp = null, $ge
 /**
  * Endblock für Filter
  */
-function auswahlHinweis($hinweis = "") {
+function indicationChoice($reference = "") {
 	$result = '<div class="optionen_block">';
 	$result .= '<div class="optionen_title">';
 	$result .= 'Hinweise';
 	$result .= '</div>';
 	$result .= '<div class="optionen">';
-	$result .= $hinweis;
+	$result .= $reference;
 	$result .= '</div>';
 	$result .= '</div>';
 	return $result;
 }
-function selectionEnd($ausgeklappt = false, $optionType) {
+function selectionEnd($expanded = false, $optionType) {
 	$result = '';
-	if ($ausgeklappt == true) {
+	if ($expanded == true) {
 		$result .= '<div class="option_actionbuttons">';
 		$result .= submit_tag ( 'Submit', array (
-				'class' => 'abfragebutton', 'id' => $optionType . 'OptionActionSubmit' 
+				'class' => 'abfragebutton',
+				'id' => $optionType . 'OptionActionSubmit' 
 		) );
 		$result .= '</div>';
 	}
@@ -1221,3 +1251,5 @@ function js_modalSelectable($fieldname, $label, $width, $separator) {
 	return $result;
 }
 ?>
+
+

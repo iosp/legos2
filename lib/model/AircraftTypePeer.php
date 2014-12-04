@@ -17,6 +17,11 @@ require 'lib/model/om/BaseAircraftTypePeer.php';
  * @package lib.model
  */
 class AircraftTypePeer extends BaseAircraftTypePeer {
+	static public function getAircraftTypeByName($name) {
+		$criteria = new Criteria ();
+		$criteria->add ( self::name, $name );
+		return AircraftPeer::doSelectOne ( $criteria );
+	}
 	static public function GetBoeingLimits(){
 		$c = new Criteria();
 		$c->add(self::NAME, "B737_300", Criteria::EQUAL);
@@ -30,4 +35,47 @@ class AircraftTypePeer extends BaseAircraftTypePeer {
 		$acType = self::doSelectOne($c);
 		return $acType;
 	}
+	
+	static public function GetAircaftType(Aircraft $aircaft){		
+		$name = $aircaft->getAircraftType()->getName();
+		
+		if($name[0] == "B"){
+			return Ac_Type::Boeing;
+		}
+		elseif($name[0] == 'A'){
+			return  Ac_Type::Airbus;
+		}
+		return null;
+	}
+	
+	static  public function getAircraftTypeByHlcId($hlcId) {
+		$criteria = new Criteria ();
+		$criteria->add ( AircraftTypePeer::HLC_ID, $hlcId );
+		return  AircraftTypePeer::doSelectOne ( $criteria );
+	}
+	
+	static  public function updateAircraftType($data) {
+		$connection = Propel::getConnection ();
+		
+		if($data['angleType'] == 'long' && $data['forceType'] == 'f'){			
+			$query = 'UPDATE `aircraft_type` SET `long_fatigue_limit_value` = ' . $data['value'] . ' WHERE `name` LIKE ' . "'". $data['aricaftType']. '%'. "'";			
+		}
+		
+		if($data['angleType'] == 'long' && $data['forceType'] == 's'){
+			$query = 'UPDATE `aircraft_type` SET `long_static_limit_value` = ' . $data['value'] . ' WHERE `name` LIKE ' . "'". $data['aricaftType']. '%'. "'";
+		}
+		
+		if($data['angleType'] == 'lat' && $data['forceType'] == 's'){
+			$query = 'UPDATE `aircraft_type` SET `lat_static_limit_value` = ' . $data['value'] . ' WHERE `name` LIKE ' . "'". $data['aricaftType']. '%'. "'";
+		}
+		
+		$statement = $connection->prepare ( $query );
+		$statement->execute ();		 
+	}
 } // AircraftTypePeer
+
+
+abstract class Ac_Type{
+	const Airbus = 'Airbus';
+	const Boeing = 'Boeing';
+}

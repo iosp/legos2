@@ -16,12 +16,20 @@ class data_ManagementActions extends sfActions
   * @param sfRequest $request A request object
   */
   public function executeIndex(sfWebRequest $request) {  	
-  	$this->airbus = AircraftTypePeer::GetAirbusLimits();
-  	/* 
-  	print "<pre>";
-  	print_r($this->airbus);
-  	print "</pre>";
-  	die(); */
+  	$this->airbus = AircraftTypePeer::GetAirbusLimits();  	
   	$this->boeing = AircraftTypePeer::GetBoeingLimits();
+  }
+  
+  public function executeSaveForce(sfWebRequest $request) {
+  	$this->forward404Unless ( $request->isMethod ( sfRequest::POST ) || $request->isMethod ( sfRequest::PUT ) );
+  	$data = $request->getParameter ( 'data' ); 
+  	
+  	if(!is_numeric($data['value'])) {
+  		return ;
+  	}
+  	
+  	AircraftTypePeer::updateAircraftType($data);
+  	
+  	return $this->renderText ( json_encode (   $data["aricaftType"] ) );
   }
 }

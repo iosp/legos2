@@ -56,8 +56,8 @@ abstract class  LoggerFields{
 	const  UTC_Year = "UTC_Year";
 	const  Total_engine_hours_Eng_R = "Total_engine_hours_Eng_R";
 	const  Total_engine_hours_Eng_L = "Total_engine_hours_Eng_L";
-	
-	
+	const  Total_Steer_Angle_Demand = "Total_Steer_Angle_Demand";
+	const  Fatigue_flag = "Fatigue_flag";
 }
 
 

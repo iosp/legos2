@@ -1,19 +1,17 @@
 <?php
-abstract class TOW_PHASE {
-	const SOLO = 0;
-	const DCM_LOADING = 1;
-	const DCM_PUSHBACK = 2;
-	const DCM_MISC = 3; // parts of dcm which do not belong to any other phase
-	const PCM = 4;
-	const DCM_UNLOADING = 5;
-	const MAINTENANCE = 6;
-}
-abstract class EXCEED_TYPE {
-	const STATIC_LATERAL = "Static Lateral";
-	const STATIC_LONGITUDAL = "Static Longitudal";
-	const FATIGUE_LONGITUDAL = "Fatigue Longitudal";
-}
 class ImportVectorLog {
+	private $_mission;
+	private $_dcmMissionPart;
+	private $_pcmMissionPart;
+	private $_pushbackMissionPart;
+	private $_culDeSecSeconds;
+	private $_startSingleCulDeSecTime;
+	private $_phaseImport;
+	private $_trails = array ();
+	private $_islocValid = false;
+	private $_lastLatitude;
+	private $_lastLongitude;
+	private $_currentRowDateTime;
 	function __construct($year, $month, $day, $uploaded = false) {
 		/*
 		 * Day, month and year have to be given as string, because they are directly used as parts of the path to the csv-file.
@@ -23,46 +21,14 @@ class ImportVectorLog {
 		$this->day = ( string ) $day;
 		$this->calendar_date = strtotime ( $year . '-' . $month . '-' . $day );
 		$this->uploaded = $uploaded;
-		$this->exceedEventFatigueLongitudal = null;
-		$this->exceedEventStaticLongitudal = null;
-		$this->exceedEventStaticLateral = null;
 		
 		// logfile of the import!!!
-		$this->logfile = sfConfig::get ( 'app_import_taxibot_logfile' );		
+		$this->logfile = sfConfig::get ( 'app_import_taxibot_logfile' );
 	}
 	
 	/**
-	 * Function to write something to STDOUT and append it to the corresponding logfile.
-	 *
-	 * @author Michael
-	 * @param $message (string)
-	 *        	Message to write
-	 */
-	private function report($message) {
-		
-		return ;
-		/*
-		 * Write logfile
-		 */
-		if (isset ( $this->logfile )) {
-			
-			$handle = fopen ( $this->logfile, 'a' );
-			if ($handle) {
-				
-				fwrite ( $handle, "[" . date ( 'Y-m-d H:i:s' ) . "] " . $message . "\n\r" );
-				fclose ( $handle );
-			}
-		}
-	}
-	
-	/**
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * gets the fields of a csv line when there are no whitespaces between commas (e.g. ,,,,)
+	 * gets the fields of a csv line when there are no whitespaces between commas (e.g.
+	 * ,,,,)
 	 *
 	 * @param string $line        	
 	 */
@@ -110,11 +76,11 @@ class ImportVectorLog {
 	 *
 	 * @author Moshe
 	 */
-	public function import($fileName) {		
+	public function import($fileName, $blfName) {
+		$this->_blfName = $blfName;
 		$this->fileName = $fileName;
 		$missionId = - 1;
 		$this->loadingStep = 0;
-		self::report ( "StackLog-import of " . date ( 'Y-m-d', $this->calendar_date ) . " started." );
 		
 		ini_set ( "memory_limit", "1024M" );
 		
@@ -134,15 +100,12 @@ class ImportVectorLog {
 			 * Print error to STDERR and exit the whole script.
 			 */
 			fwrite ( STDERR, "[" . date ( 'Y-m-d H:i:s' ) . "] [stack] Csv-file from " . date ( 'Y-m-d', $this->calendar_date ) . " not found.\n" );
-			self::report ( "Csv-file from " . date ( 'Y-m-d', $this->calendar_date ) . " not found." );
 			
 			return $missionId;
 		}
 		
 		// start working on the file
-		if ($handle) {			
-			// update aircraft types if needed
-			$this->checkAircraftTypeTable ();
+		if ($handle) {
 			
 			/*
 			 * Read csv-file and put contents to the associative array $import_data
@@ -154,20 +117,13 @@ class ImportVectorLog {
 			$fieldnames = fgetcsv ( $handle, 4096, "," );
 			// $this->printArray($fieldnames);
 			
-			$number_of_header_columns = count ( $fieldnames );
-			
 			$dateTimeRow = null;
 			
 			while ( ($line = fgets ( $handle )) !== FALSE ) {
 				$rowData = $this->getCsvWoWhiteSpace ( $line );
 				
-				// $this->printArray($data);die();
-				
 				$row ++;
 				$number_of_columns = count ( $rowData );
-				/*
-				 * if ($number_of_columns != $number_of_header_columns) { echo "row number is $row <br/>"; echo "number_of_columns is $number_of_columns <br/>"; echo "number_of_header_columns is $number_of_header_columns <br/>"; die ( "Csv-file is not consistent. Aborting import!" ); }
-				 */
 				
 				for($i = 0; $i < $number_of_columns; $i ++) {
 					$trimmed = trim ( $rowData [$i] );
@@ -176,7 +132,7 @@ class ImportVectorLog {
 				
 				// $this->printArray($import_data);die();
 				$this->padData ( $import_data );
-				$this->currentRowDateTime = $import_data [LoggerFields::Data_Time_UTC];				
+				$this->_currentRowDateTime = $import_data [LoggerFields::Data_Time_UTC];
 				$this->analyzeRecord ( $import_data );
 			}
 			
@@ -186,7 +142,7 @@ class ImportVectorLog {
 			$number_of_entries = $row;
 		}
 		// echo "import done"; die();
-		return $this->mission;
+		return $this->_mission;
 	}
 	
 	/**
@@ -206,450 +162,116 @@ class ImportVectorLog {
 	 *
 	 * @author Moshe Beutel
 	 * @param array $record        	
-	 * @return TOW_PHASE
-	 */
-	private function getPhase($record) {
-		if (isset ( $this->isMaintenance ) && $this->isMaintenance)
-			return TOW_PHASE::MAINTENANCE;
-		
-		$ld = $record [LoggerFields::Loading_Step]; /* 65 */
-		if ($ld != '') {
-			$this->loadingStep = ( integer ) $ld;
-		} elseif (! isset ( $this->loadingStep )) {
-			$this->loadingStep = 0;
-		}
-		
-		if ($this->loadingStep == 0)
-			return TOW_PHASE::SOLO;
-		
-		if ($this->loadingStep != 48) {
-			
-			if ($this->phase == TOW_PHASE::SOLO || $this->phase == TOW_PHASE::DCM_LOADING)
-				return TOW_PHASE::DCM_LOADING;
-			elseif ($this->phase == TOW_PHASE::DCM_MISC || $this->phase == TOW_PHASE::DCM_UNLOADING)
-				return TOW_PHASE::DCM_UNLOADING;
-		}
-		
-		// if reached this point => $this->loadingStep = 48
-		
-		$dm = $record [LoggerFields::Driving_mode]; /* 48 */
-		if ($dm != '') {
-			$this->drivingMode = ( integer ) $dm;
-			self::report ( "Driving Mode = $this->drivingMode" );
-		} elseif (! isset ( $this->drivingMode )) {
-			$this->drivingMode = 99;
-		}
-		
-		if ($this->drivingMode == 6 || $this->drivingMode == 4) {
-			if (! isset ( $this->pcmOccured ) && $this->isMoving)
-				return TOW_PHASE::DCM_PUSHBACK;
-			else
-				return TOW_PHASE::DCM_MISC;
-		}
-		
-		if ($this->drivingMode == 9 || $this->drivingMode == 10 || $this->drivingMode == 11)
-			return TOW_PHASE::PCM;
-		
-		return $this->phase;
-	}
-	private function examineVelocities($record) {
-		$velNorthCand = $record [LoggerFields::Vel_North_mps]; // 50
-		if ($velNorthCand != '') {
-			$this->velNorthCandidate = $velNorthCand;
-		}
-		
-		$velEastCand = $record [LoggerFields::Vel_East_mps]; // 49
-		if ($velEastCand != '') {
-			$this->velEastCandidate = ( double ) $velEastCand;
-		}
-		
-		$velValidityCand = $record [LoggerFields::Loc_Vel_Validity]; // 59
-		if ($velValidityCand != '') {
-			$velValidity = ( boolean ) $velValidityCand;
-			if ($velValidity && isset ( $this->velNorthCandidate ) && isset ( $this->velNorthCandidate )) {
-				$this->velNorth = $this->velNorthCandidate;
-				$this->velEast = $this->velEastCandidate;
-				$this->isMoving = sqrt ( $this->velNorth * $this->velNorth + $this->velEast * $this->velEast ) > 0.1;
-				
-				unset ( $this->velNorthCandidate );
-				unset ( $this->velNorthCandidate );
-			}
-		}
-	}
-	
-	/**
-	 *
-	 * @author Moshe Beutel
-	 * @param array $record        	
 	 *
 	 */
 	private function saveTrailPosition($record) {
-		if (! isset ( $this->trail ))
-			$this->trail = array ();
-		
-		$posUpdated = false;
-		
 		$latCand = $record [LoggerFields::Latitude_deg]; // 43
-		if ($latCand != '') {
-			$this->latCandidate = ( double ) $latCand;
-		}
-		
 		$lonCand = $record [LoggerFields::Longitude_deg]; // 44
-		if ($lonCand != '') {
-			$this->lonCandidate = ( double ) $lonCand;
-		}
-		
 		$validityCand = $record [LoggerFields::Loc_Pos_Validity]; // 60
+		
+		$isUpdated = false;
+		
 		if ($validityCand != '') {
-			$validity = ( double ) $validityCand;
-			if ($validity && isset ( $this->latCandidate ) && isset ( $this->lonCandidate )) {
-				// echo "latCandidate = $this->latCandidate, lonCandidate = $this->lonCandidate <br/>";
-				$this->latitude = $this->latCandidate;
-				$this->longitude = $this->lonCandidate;
-				
-				$posUpdated = true;
-			}
+			$this->_islocValid = ( bool ) $validityCand;
 		}
 		
-		if (! $posUpdated)
+		if ($latCand != '') {
+			$latCand = ( double ) $latCand;
+			
+			if ($latCand != $this->_lastLatitude) {
+				$isUpdated = true;
+			}
+			$this->_lastLatitude = $latCand;
+		}
+		
+		if ($lonCand != '') {
+			$lonCand = ( double ) $lonCand;
+			
+			if ($lonCand != $this->_lastLongitude) {
+				$isUpdated = true;
+			}
+			$this->_lastLongitude = $lonCand;
+		}
+		
+		if (!$this->_islocValid) {
+			return;
+		}
+		
+		if ($isUpdated) {
+			$trailPos = new TaxibotTrail ();
+			
+			// echo "latitude = $this->latitude, longitude = $this->longitude <br/>";
+			$trailPos->setLongitude ( $this->_lastLongitude );
+			$trailPos->setLatitude ( $this->_lastLatitude );
+			$time = $this->GetDateTimeFromCsvFormat ( $this->_currentRowDateTime );
+			
+			$trailPos->setTime ( $time );
+			$this->_trails [] = $trailPos;
+		}
+	}
+	private function missionStarted() {
+
+		ini_set('memory_limit', '512M');
+
+		$this->__missionStarted = date ( 'Y-m-d H:i:s' );
+		$this->tractor = TaxibotTractorPeer::getTractor ( substr ( $this->fileName, 0, strpos ( $this->fileName, '_' ) ) );
+		$this->_mission->setTaxibotTractor ( $this->tractor );
+	}
+	private function missionEnded() {
+		// die();
+		if (! isset ( $this->_mission ))
 			return;
 		
-		self::report ( "position lat $this->latitude  lon $this->longitude   validity = $validity " );
-		
-		$trailPos = new TaxibotTrail ();
-		
-		// $trailPos->setTaxibotMission($this->mission);
-		// echo "latitude = $this->latitude, longitude = $this->longitude <br/>";
-		$trailPos->setLongitude ( $this->longitude );
-		$trailPos->setLatitude ( $this->latitude );
-		$time = $this->GetDateTimeFromCsvFormat ($this->currentRowDateTime );
-		
-		$trailPos->setTime($time);	
-		$this->trail [] = $trailPos;
-		
-		unset ( $this->latCandidate );
-		unset ( $this->lonCandidate );
-	}
-	
-	private function missionStarted() {
-		$this->tractor = TaxibotTractorPeer::getTractor ( substr ( $this->fileName, 0, strpos ( $this->fileName, '_' ) ) );
-		$this->mission->setTaxibotTractor ( $this->tractor );
-		self::report ( "Mission Started" );
-	}
-	
-	private function missionEnded() {
-		$endDateTime = $this->GetDateTimeFromCsvFormat ( $this->currentRowDateTime );
-		$this->mission->setEndTime ( $endDateTime );
-		$this->mission->save ();
-		
-		if (! isset ( $this->mission ))
-			return;		 
-		
-		if (isset ( $this->exceedEventStaticLateral ))
-			$this->exceedEnded ( $this->exceedEventStaticLateral, EXCEED_TYPE::STATIC_LATERAL );
-		if (isset ( $this->exceedEventStaticLongitudal ))
-			$this->exceedEnded ( $this->exceedEventStaticLongitudal, EXCEED_TYPE::STATIC_LONGITUDAL );
-		if (isset ( $this->exceedEventFatigueLongitudal ))
-			$this->exceedEnded ( $this->exceedEventFatigueLongitudal, EXCEED_TYPE::FATIGUE_LONGITUDAL );
-		
-		if (count ( $this->trail ) > 0) {
-			TaxibotTrailPeer::insertMultipleTrails($this->trail, $this->mission->getId() );			
+		if ($this->_culDeSecSeconds != null) {
+			$this->_mission->setCulDeSacTime ( gmdate ( "H:i:s", $this->_culDeSecSeconds ) );
 		}
 		
-		self::report ( "Mission  $this->missionId Saved with $this->recordNum records" );
-	}
-	private function dcmStarted($currentDateTime) {
-		$this->mission->setDcmStart ( $currentDateTime );
-		$this->mission->save ();
-	}
-	private function dcmEnded($currentDateTime) {
-		$this->mission->setDcmEnd ( $currentDateTime );
-		$this->mission->setLeftEngineFuelDcm ( $this->fuelUsedEngineLeft - $this->fuelUsedEngineLeftDcmStart - $this->fuelUsedEngineLeftPcm );
-		$this->mission->setRightEngineFuelDcm ( $this->fuelUsedEngineRight - $this->fuelUsedEngineRightDcmStart - $this->fuelUsedEngineRightPcm );
-		$this->mission->setLeftEngineHoursDcm ( $this->hoursEngineLeft - $this->hoursEngineLeftDcmStart - $this->hoursEngineLeftPcm );
-		$this->mission->setRightEngineHoursDcm ( $this->hoursEngineRight - $this->hoursEngineRightDcmStart - $this->hoursEngineRightPcm );
-		$this->mission->save ();
-		self::report ( "Dcm Ended" );
-	}
-	private function pushbackStarted($currentDateTime) {
-		if ($this->mission->getPushbackStart () == null) {
-			$this->mission->setPushbackStart ( $currentDateTime );
-			self::report ( "Pushback Started" );
+		$this->finishImportPhase ();
+		
+		$d1 = date ( 'Y-m-d H:i:s' );
+		
+		$endDateTime = $this->GetDateTimeFromCsvFormat ( $this->_currentRowDateTime );
+		$this->_mission->setEndTime ( $endDateTime );
+		$this->_mission->save ();
+		
+		$this->limitExceedImport->SaveAllItems ( $this->_mission->getId () );
+		
+		//dd($this->_trails);
+		if (count ( $this->_trails ) > 0) {
+			TaxibotTrailPeer::insertMultipleTrails ( $this->_trails, $this->_mission->getId () );
 		}
 		
-		if (! isset ( $this->fuelUsedEngineRightPushbackStart ))
-			$this->fuelUsedEngineRightPushbackStart = $this->fuelUsedEngineRight;
-		if (! isset ( $this->fuelUsedEngineLeftPushbackStart ))
-			$this->fuelUsedEngineLeftPushbackStart = $this->fuelUsedEngineLeft;
-		
-		if (! isset ( $this->hoursEngineRightPushbackStart ))
-			$this->hoursEngineRightPushbackStart = $this->hoursEngineRight;
-		if (! isset ( $this->hoursEngineLeftPushbackStart ))
-			$this->hoursEngineLeftPushbackStart = $this->hoursEngineLeft;
-	}
-	private function pushbackPossiblyEnded($currentDateTime) {
-		$this->mission->setPushbackEnd ( $currentDateTime );
-		$this->mission->save ();
-		
-		$this->fuelUsedEngineLeftPushbackEnd = $this->fuelUsedEngineLeft;
-		$this->fuelUsedEngineRightPushbackEnd = $this->fuelUsedEngineRight;
-		
-		self::report ( "Pushback (possibly) Ended" );
-	}
-	private function pushbackEnded($currentDateTime) {
-		$this->mission->setPushbackEnd ( $currentDateTime );
-		$this->mission->setLeftEngineFuelPushback ( $this->fuelUsedEngineLeftPushbackEnd - $this->fuelUsedEngineLeftPushbackStart );
-		$this->mission->setRightEngineFuelPushback ( $this->fuelUsedEngineRightPushbackEnd - $this->fuelUsedEngineRightPushbackStart );
-		$this->mission->save ();
-		
-		self::report ( "Pushback Ended" );
-	}
-	private function pcmStarted($currentDateTime) {
-		$this->pushbackEnded ( $currentDateTime );
-		$this->mission->setPcmStart ( $currentDateTime );
-		$this->fuelUsedEngineRightPcmStart = $this->fuelUsedEngineRight;
-		$this->fuelUsedEngineLeftPcmStart = $this->fuelUsedEngineLeft;
-		$this->hoursEngineRightPcmStart = $this->hoursEngineRight;
-		$this->hoursEngineLeftPcmStart = $this->hoursEngineLeft;
-		$this->pcmOccured = true;
-		self::report ( "Pcm Started" );
-	}
-	private function pcmEnded($currentDateTime) {
-		$this->mission->setPcmEnd ( $currentDateTime );
-		
-		if (isset ( $this->fuelUsedEngineLeftPcmStart )) {
-			$this->fuelUsedEngineLeftPcm = $this->fuelUsedEngineLeft - $this->fuelUsedEngineLeftPcmStart;
-			$this->mission->setLeftEngineFuelPcm ( $this->fuelUsedEngineLeftPcm );
-		}
-		
-		if (isset ( $this->fuelUsedEngineRightPcmStart )) {
-			$this->fuelUsedEngineRightPcm = $this->fuelUsedEngineRight - $this->fuelUsedEngineRightPcmStart;
-			$this->mission->setRightEngineFuelPcm ( $this->fuelUsedEngineRightPcm );
-		}
-		
-		if (isset ( $this->hoursEngineLeftPcmStart )) {
-			$this->hoursEngineLeftPcm = $this->hoursEngineLeft - $this->hoursEngineLeftPcmStart;
-			$this->mission->setLeftEngineHoursPcm ( $this->hoursEngineLeftPcm );
-		}
-		if (isset ( $this->hoursEngineRightPcmStart )) {
-			$this->hoursEngineRightPcm = $this->hoursEngineRight - $this->hoursEngineRightPcmStart;
-			$this->mission->setRightEngineHoursPcm ( $this->hoursEngineRight - $this->hoursEngineRightPcmStart );
-		}
-		
-		self::report ( "Pcm Ended" );
-	}
-	private function maintenanceStarted() {
-		self::report ( "maintenance Started" );
-	}
-	private function maintenanceEnded() {
-		self::report ( "maintenance Ended" );		
-		
-		if (isset ( $this->fuelUsedEngineLeft, $this->fuelUsedEngineLeftDcmStart )) {
-			$this->mission->setLeftEngineFuelMaint ( $this->fuelUsedEngineLeft - $this->fuelUsedEngineLeftDcmStart );
-		}
-		
-		if (isset ( $this->fuelUsedEngineRight, $this->fuelUsedEngineRightDcmStart )) {
-			$this->mission->setRightEngineFuelMaint ( $this->fuelUsedEngineRight - $this->fuelUsedEngineRightDcmStart );
-		}
-		
-		if (isset ( $this->hoursEngineLeft, $this->fuelUsedEngineLeftDcmStart )) {
-			$this->mission->setLeftEngineHoursMaint ( $this->hoursEngineLeft - $this->hoursEngineLeftDcmStart );
-		}
-		
-		if (isset ( $this->hoursEngineRight, $this->hoursEngineRightDcmStart )) {
-			$this->mission->setRightEngineHoursMaint ( $this->hoursEngineRight - $this->hoursEngineRightDcmStart );
-		}
-		
-		$this->mission->save ();
-	}
-	private function phaseChanged($prevPhase, $currPhase, $currentDateTime) {
-		if (isset ( $this->isMaintenance ) && $this->isMaintenance)
-			$this->maintenanceStarted ();
-		
-		if ($prevPhase == TOW_PHASE::SOLO) {
-			$this->dcmStarted ( $currentDateTime );
-		} elseif ($prevPhase == TOW_PHASE::DCM_PUSHBACK) {
-			$this->pushbackPossiblyEnded ( $currentDateTime );
-		} elseif ($currPhase == TOW_PHASE::DCM_PUSHBACK) {
-			$this->pushbackStarted ( $currentDateTime );
-		} elseif ($currPhase == TOW_PHASE::PCM) {
-			$this->pcmStarted ( $currentDateTime );
-		} elseif ($prevPhase == TOW_PHASE::PCM) {
-			$this->pcmEnded ( $currentDateTime );
-		} elseif ($prevPhase == TOW_PHASE::DCM_UNLOADING) {
-			$this->dcmEnded ( $currentDateTime );
-		}
-	}
-	private function exceedStarted($exceedType) {
-		// echo " start exceedType = $exceedType <br/>";
-		$cerruntExceedEvent = new TaxibotExceedEvent ();
-		$cerruntExceedEvent->setStartTime ( $this->GetDateTimeFromCsvFormat ( $this->currentRowDateTime ) );
-		$cerruntExceedEvent->setExceedType ( $exceedType );
-		$cerruntExceedEvent->setTaxibotMission ( $this->mission );
-		$this->exceedPosSaved = false;
-		
-		if (isset ( $this->latitude ) && isset ( $this->longitude )) {
-			$cerruntExceedEvent->setLatitude ( $this->latitude );
-			$cerruntExceedEvent->setLongitude ( $this->longitude );
-			$this->exceedPosSaved = true;
-		}
-		
-		if ($exceedType == EXCEED_TYPE::FATIGUE_LONGITUDAL) {
-			$this->exceedEventFatigueLongitudal = $cerruntExceedEvent;
-		} else if ($exceedType == EXCEED_TYPE::STATIC_LONGITUDAL) {
-			$this->exceedEventStaticLongitudal = $cerruntExceedEvent;
-		} else if ($exceedType == EXCEED_TYPE::STATIC_LATERAL) {
-			$this->exceedEventStaticLateral = $cerruntExceedEvent;
-		}
+		$this->fatigueHistoryImport->SaveAllItems ( $this->_mission->getId () );
 		
 		/*
-		 * if ($exceedType == EXCEED_TYPE::FATIGUE_LONGITUDAL) { ++ $this->exceedEventFatigueLongitudalNum; //$this->exceedEventFatigueLongitudals [$this->exceedEventFatigueLongitudalNum] = $cerruntExceedEvent; } else if ($exceedType == EXCEED_TYPE::STATIC_LATERAL) { ++ $this->exceedEventStaticLateralNum; //$this->exceedEventStaticLaterals [$this->exceedEventStaticLateralNum] = $cerruntExceedEvent; } else if ($exceedType == EXCEED_TYPE::STATIC_LONGITUDAL) { ++ $this->exceedEventStaticLongitudalNum; //$this->exceedEventStaticLongitudals [$this->exceedEventStaticLongitudalNum] = $cerruntExceedEvent; }
+		 * $d2 = date('Y-m-d H:i:s'); require_once sfConfig::get ( 'app_lib_helper' ) . "/TimeHelper.php"; var_dump($this->__missionStarted); echo "<br>"; var_dump($d1); echo "<br>"; var_dump($d2); echo "<br>"; echo (dateDiff($d2, $d1)); echo "<br>"; echo (dateDiff($d2, $this->__missionStarted)); die();
 		 */
 		
-		// $test = $cerruntExceedEvent->getExceedType();echo "exceedStarted TEST = $test<br/>"; //DEBUG
+		$this->fatigueHistoryImport = null;
+		
+		ini_set('memory_limit', '128M');
 	}
-	private function exceedEnded($cerruntExceedEvent, $exceedType) {
-		// $test = $cerruntExceedEvent->getExceedType();echo "exceedEnded TEST = $test<br/>"; //DEBUG
-		$cerruntExceedEvent->setEndTime ( $this->GetDateTimeFromCsvFormat ( $this->currentRowDateTime ) );
-		// $this->printArray($cerruntExceedEvent); die();
-		// echo "</br>StartTime" . $cerruntExceedEvent->getStartTime() . "</br>"; // debug
-		// echo "</br>endTime" . $cerruntExceedEvent->getEndTime() . "</br>"; // debug
-		// die();
+	private function finishImportPhase() {
 		
-		$d1 = new DateTime ( $cerruntExceedEvent->getStartTime () );
-		$d2 = new DateTime ( $cerruntExceedEvent->getEndTime () );
-		
-		$duration = $d2->diff ( $d1 );
-		
-		if ($duration != null) {
-			// echo " duration = " . $duration->format ( "%h:%i:%s" ). " <br/>";
-			$cerruntExceedEvent->setDuration ( $duration->format ( "%H:%I:%S" ) );
-		}
-		
-		if (! $this->exceedPosSaved) {
-			$cerruntExceedEvent->setLatitude ( $this->latitude );
-			$cerruntExceedEvent->setLongitude ( $this->longitude );
-		}
-		
-		// $cerruntExceedEvent->save ();
-		
-		if ($exceedType == EXCEED_TYPE::FATIGUE_LONGITUDAL) {
-			$this->exceedEventFatigueLongitudal = null;
-		} else if ($exceedType == EXCEED_TYPE::STATIC_LONGITUDAL) {
-			$this->exceedEventStaticLongitudal = null;
-		} else if ($exceedType == EXCEED_TYPE::STATIC_LATERAL) {
-			$this->exceedEventStaticLateral = null;
-		}
-		
-		unset ( $this->exceedPosSaved );
-		unset ( $this->exceedStartTime );
-	}
-	private function isExceedStaticLongitudal($nlgLogitudalForceTug) {
-		return abs ( $nlgLogitudalForceTug ) > $this->aircraftType->getLongStaticLimitValue ();
-	}
-	private function isExceedStaticLateral($nlgLateralForce) {
-		return abs ( $nlgLateralForce ) > $this->aircraftType->getLatStaticLimitValue ();
-	}
-	private function isExceedFatigueLongitudal($nlgLogitudalForceTug) {
-		return abs ( $nlgLogitudalForceTug ) > $this->aircraftType->getLongFatigueLimitValue ();
-	}
-	private function handleExceedLimit($isExccedLimit, $exceedType, $cerruntExceedEvent) {
-		// echo "exccedType = $exccedType <br/>"; //debug
-		// $isExccedLimit && $this->currentExceeds
-		if ($isExccedLimit && $cerruntExceedEvent == null) {
-			$this->exceedStarted ( $exceedType );
-		} else if (! $isExccedLimit && $cerruntExceedEvent != null) {
-			// echo "exceedEnded = $exceedType <br/>"; //debug
-			$this->exceedEnded ( $cerruntExceedEvent, $exceedType );
-		}
-	}
-	private function examinForcesAndSave($record) {
-		$forceValidityCand = $record [LoggerFields::NLG_longitudinal_force_validity];
-		if ($forceValidityCand != '') {
-			$this->forceValidity = ( boolean ) $forceValidityCand;
-			self::report ( "forceValidity = " . $this->forceValidity );
-		}
-		
-		if (! isset ( $this->forceValidity ) || ! $this->forceValidity)
-			return;
+		//dd($this->_phaseImport->_currentPartsMission);
+		foreach ( $this->_phaseImport->_currentPartsMission as $partMission ) {
+			if ($partMission == null || $partMission->getType () == PART_MISSION::UNLOADING) {
+				continue;
+			}
 			
-			// forces
-		$nlgLogitudalForceTugCand = $record [LoggerFields::NLG_longTug_force_kN];
-		if ($nlgLogitudalForceTugCand != '') {
-			$this->nlgLogitudalForceTug = ( double ) $nlgLogitudalForceTugCand; // 41
-			self::report ( "nlgLogitudalForceTug = $this->nlgLogitudalForceTug " );
+			$part = $this->_phaseImport->getPartMissionInEndFile ( $partMission->getType (), $partMission->getStart () );
+			$this->_mission->addTaxibotPartsMission ( $part );
+		} 
+		
+		foreach ( $this->_phaseImport->items as $partMission ) {
+			$this->_mission->addTaxibotPartsMission ( $partMission );
 		}
 		
-		$nlgLateralForceCand = $record [LoggerFields::NLG_lateral_force_kN]; // 42
-		if ($nlgLateralForceCand != '') {
-			$this->nlgLateralForce = ( double ) $nlgLateralForceCand;
-			self::report ( "nlgLateralForce = $this->nlgLateralForce " );
-		}
+		$leftFuel = $this->_phaseImport->lastFuelEngineLeft - $this->_phaseImport->firstFuelEngineLeft;
+		$rightFuel = $this->_phaseImport->lastFuelEngineRight - $this->_phaseImport->firstFuelEngineRight;
 		
-		if (! isset ( $this->nlgLateralForce ) || ! isset ( $this->nlgLogitudalForceTug ))
-			return;
-			
-			// new valid forces data
-		self::report ( "forces !!!!! $this->nlgLogitudalForceTug $this->nlgLateralForce  validity = $this->forceValidity" );
-		
-		if (! isset ( $this->aircraftType )) {
-			return;
-		}
-		
-		$this->handleExceedLimit ( $this->isExceedFatigueLongitudal ( $this->nlgLogitudalForceTug ), EXCEED_TYPE::FATIGUE_LONGITUDAL, $this->exceedEventFatigueLongitudal );
-		$this->handleExceedLimit ( $this->isExceedStaticLongitudal ( $this->nlgLogitudalForceTug ), EXCEED_TYPE::STATIC_LONGITUDAL, $this->exceedEventStaticLongitudal );
-		$this->handleExceedLimit ( $this->isExceedStaticLateral ( $this->nlgLateralForce ), EXCEED_TYPE::STATIC_LATERAL, $this->exceedEventStaticLateral );
-		
-		// TODO save fatigue data after quantisation // yakov??
-		
-		unset ( $this->forceValidity );
-		unset ( $this->nlgLogitudalForceTug );
-		unset ( $this->nlgLateralForce );
-	}
-	private function examineFuelUsage($record) {
-		$fuelUsedEngineLeftCand = $record [LoggerFields::Total_fuel_used_Engine_Left]; // 73
-		$fuelUsedEngineRightCand = $record [LoggerFields::Total_fuel_used_Engine_Right]; // 72
-		
-		if ($fuelUsedEngineLeftCand == '' && $fuelUsedEngineLeftCand == '')
-			return;
-		
-		if ($fuelUsedEngineLeftCand != '') {
-			$this->fuelUsedEngineLeft = ( double ) $fuelUsedEngineLeftCand;
-			if (! isset ( $this->fuelUsedEngineLeftDcmStart ))
-				$this->fuelUsedEngineLeftDcmStart = $this->fuelUsedEngineLeft;
-		}
-		
-		if ($fuelUsedEngineRightCand != '') {
-			$this->fuelUsedEngineRight = ( double ) $fuelUsedEngineRightCand;
-			if (! isset ( $this->fuelUsedEngineRightDcmStart ))
-				$this->fuelUsedEngineRightDcmStart = $this->fuelUsedEngineRight;
-		}
-		
-		self::report ( "fuel !!!!  left $this->fuelUsedEngineLeft   right  $this->fuelUsedEngineRight" );
-	}
-	
-	/**
-	 * Check Engine Hours for Left Engine and Right Engine.
-	 *
-	 * @param array $record        	
-	 */
-	private function examineEngineHours($record) {
-		$engineHoursEngRCand = $record [LoggerFields::Total_engine_hours_Eng_R]; // 85
-		$engineHoursEngLCand = $record [LoggerFields::Total_engine_hours_Eng_L]; // 86
-		
-		if ($engineHoursEngRCand == '' && $engineHoursEngLCand == '')
-			return;
-		
-		if ($engineHoursEngRCand != '') {
-			$this->hoursEngineRight = (( double ) $engineHoursEngRCand);
-			if (! isset ( $this->hoursEngineRightDcmStart ))
-				$this->hoursEngineRightDcmStart = $this->hoursEngineRight;
-		}
-		if ($engineHoursEngLCand != '') {
-			$this->hoursEngineLeft = (( double ) $engineHoursEngLCand);
-			if (! isset ( $this->hoursEngineLeftDcmStart ))
-				$this->hoursEngineLeftDcmStart = $this->hoursEngineLeft;
-		}
+		$this->_mission->setLeftEngineFuel ( $leftFuel );
+		$this->_mission->setRightEngineFuel ( $rightFuel );
 	}
 	
 	/**
@@ -660,83 +282,64 @@ class ImportVectorLog {
 	 *        	Those fields does not change durig mission.
 	 */
 	private function examineMissionData($record) {
-		$missionUpdated = false;
-		
 		// mission id
 		$missionIdCand = ( int ) $record [LoggerFields::Mission_ID]; // 71
 		if (! isset ( $this->missionId ) && $missionIdCand != 0) {
 			$this->missionId = $missionIdCand;
-			$this->mission->setMissionId ( $this->missionId );
-			$missionUpdated = true;
+			$this->_mission->setMissionId ( $this->missionId );
+		}
+		
+		// aircraft type
+		if (! isset ( $this->aircraftType ) && array_key_exists ( LoggerFields::Aircraft_Type_Validity, $record ) && ( boolean ) $record [LoggerFields::Aircraft_Type_Validity]) { // 79
+			
+			$this->aircraftType = AircraftTypePeer::getAircraftTypeByHlcId ( $record [LoggerFields::Aircraft_type] ); // 80
+			
+			if ($this->aircraftType == null) {
+				$this->aircraftType = AircraftTypePeer::getAircraftTypeByHlcId ( '10' );
+			}
+			
+			$this->limitExceedImport = new LimitExceedImport ( $this->aircraftType );
 		}
 		
 		// tail number
 		// echo "$record [LoggerFields::Aircraft_TailNo]". $record [LoggerFields::Aircraft_TailNo] .":"; //DEBUG
-		if (! isset ( $this->tail_number ) && array_key_exists ( LoggerFields::Aircraft_TailNo, $record ) && ($tn = $this->mission->GetTextAircraftTailNumberByHex ( $record [LoggerFields::Aircraft_TailNo] )) != '') {
+		if (isset ( $this->aircraftType ) && ! isset ( $this->aircraft ) && array_key_exists ( LoggerFields::Aircraft_TailNo, $record ) && ($tailNumber = $this->_mission->GetTextAircraftTailNumberByHex ( $record [LoggerFields::Aircraft_TailNo] )) != '') {
 			
-			$this->tail_number = $tn;
-			$this->aircraft = $this->getAircraft ( $this->tail_number, isset ( $this->aircraftType ) ? $this->aircraftType : null );
-			
-			$this->mission->setAircraftTailNumber ( $tn );
-			$missionUpdated = true;
+			$this->aircraft = AircraftPeer::getAircraft ( $tailNumber, $this->aircraftType );
+			$this->fatigueHistoryImport = new FatigueHistoryImport ( $this->aircraft );
+			$this->_mission->setAircraft ( $this->aircraft );
 		}
 		
 		// flight number
-		if (! isset ( $this->flight ) && array_key_exists ( LoggerFields::Flight_Number_char1, $record ) && $record [LoggerFields::Flight_Number_char1] != '') {
-			$this->flight = $this->mission->GetTextFlightNumber ( $record [LoggerFields::Flight_Number_char1], $record [LoggerFields::Flight_Number_char2], $record [LoggerFields::Flight_Number_char3], $record [LoggerFields::Flight_Number_char4], $record [LoggerFields::Flight_Number_char5], $record [LoggerFields::Flight_Number_char6], $record [LoggerFields::Flight_Number_char7], $record [LoggerFields::Flight_Number_char8] );
-			
-			$this->mission->setFlightNumber ( $this->flight );
-			$missionUpdated = true;
+		if (! isset ( $this->flight ) && array_key_exists ( LoggerFields::Flight_Number_char1, $record ) && $record [LoggerFields::Flight_Number_char1] != '' && $record [LoggerFields::Flight_Number_char1] != '0') {
+			$this->flight = $this->_mission->GetTextFlightNumber ( $record [LoggerFields::Flight_Number_char1], $record [LoggerFields::Flight_Number_char2], $record [LoggerFields::Flight_Number_char3], $record [LoggerFields::Flight_Number_char4], $record [LoggerFields::Flight_Number_char5], $record [LoggerFields::Flight_Number_char6], $record [LoggerFields::Flight_Number_char7], $record [LoggerFields::Flight_Number_char8] );
+			$this->_mission->setFlightNumber ( $this->flight );
 		}
 		
 		// AC weight
 		if (! isset ( $this->aircraftWeight ) && array_key_exists ( LoggerFields::Aircraft_Weight_Validity, $record ) && ( boolean ) $record [LoggerFields::Aircraft_Weight_Validity] /*77*/) {
 			$this->aircraftWeight = ( double ) $record [LoggerFields::Aircraft_weight]/*78*/;
-			$this->mission->setAircraftWeight ( $this->aircraftWeight );
-			$missionUpdated = true;
+			$this->_mission->setAircraftWeight ( $this->aircraftWeight );
 		}
 		
 		// cg
 		if (! isset ( $this->cg ) && array_key_exists ( LoggerFields::Aircraft_CG_Validity, $record ) && ( boolean ) $record [LoggerFields::Aircraft_CG_Validity]/*75*/) {
 			$this->cg = ( double ) $record [LoggerFields::Aircraft_CenterGravity_pct]/*76*/;
-			$this->mission->setAircraftCg ( $this->cg );
-			$missionUpdated = true;
+			$this->_mission->setAircraftCg ( $this->cg );
 		}
 		
 		// mission type
 		if (! isset ( $this->missionType ) && array_key_exists ( LoggerFields::Mission_Type, $record ) && ($mt = $record [LoggerFields::Mission_Type]/*74*/) != '') {
-			$this->mission->setMissionType ( $mt );
+			$this->_mission->setMissionType ( $mt );
 			$this->missionType = $mt;
-			// mission type = 2 => maintenance
-			$this->isMaintenance = ($mt == 2);
-			$missionUpdated = true;
 		}
-		
-		if (! isset ( $this->aircraftType ) && array_key_exists ( LoggerFields::Aircraft_Type_Validity, $record ) && ( boolean ) $record [LoggerFields::Aircraft_Type_Validity]) { // 79
-			
-			$this->aircraftType = $this->getAircraftType ( $record [LoggerFields::Aircraft_type] ); // 80
-			$this->mission->setAircraftType ( $this->aircraftType->getName () );
-			if ($this->aircraftType == null) {
-				$this->aircraftType = $this->getAircraftType ( 'B737_300' );
-			}
-			
-			if (isset ( $this->aircraft )) {
-				$this->aircraft->setAircraftType ( $this->aircraftType );
-				$this->aircraft->save ();
-			}
-			
-			$missionUpdated = true;
-		}
-		
-		if ($missionUpdated)
-			$this->mission->save ();
 	}
 	private function analyzeRecord($record) {
 		
 		// Initialize record counter and phase
 		if (! isset ( $this->recordNum )) {
 			$this->recordNum = 0;
-			$this->phase = TOW_PHASE::SOLO;
+			$this->_phaseImport = new PhaseImport ();
 		}
 		
 		// count records
@@ -744,171 +347,77 @@ class ImportVectorLog {
 		
 		// echo " recordNum = $this->recordNum <br/>"; //debug
 		
-		if (! isset ( $this->mission )) {			
+		if (! isset ( $this->_mission )) {
 			// start a new mission
-			$this->mission = new TaxibotMission ();
-			$startDateTime = $this->GetDateTimeFromCsvFormat ($this->currentRowDateTime );
-			$this->mission->setStartTime ( $startDateTime );			
+			$this->_mission = new TaxibotMission ();
+			$startDateTime = $this->GetDateTimeFromCsvFormat ( $this->_currentRowDateTime );
+			$this->_mission->setStartTime ( $startDateTime );
+			$this->_mission->setBlfName($this->_blfName);
 			$this->missionStarted ();
-			$this->mission->save ();
 		}
 		
 		// mission non changing data : flight number, tail number, AC weight etc.
 		$this->examineMissionData ( $record );
 		
-		// fuel usage
-		$this->examineFuelUsage ( $record );
-		
-		// engine hours
-		$this->examineEngineHours ( $record );
-		
-		// velocity
-		$this->examineVelocities ( $record );
-		
 		// phase
-		$phase = $this->getPhase ( $record );
-		if ($phase != $this->phase) {
-			$currentDateTime = $this->GetDateTimeFromCsvFormat ( $record [LoggerFields::Data_Time_UTC] );
-			$this->phaseChanged ( $this->phase, $phase, $currentDateTime );
-			$this->phase = $phase;
-		}
+		$this->_phaseImport->readRow ( $record, $this->_currentRowDateTime );
 		
 		// position
 		$this->saveTrailPosition ( $record );
 		
 		// forces on Landing Gear
-		$this->examinForcesAndSave ( $record );
-	}
-	
-	/**
-	 * Delete already existing towing data of the given day.
-	 *
-	 * @author Moshe
-	 *         @logfile integer logfile number
-	 */
-	private function deleteTaxibotLogData($logfile) {
-		/*
-		 * Delete towing activities
-		 */
-		$criteria = new Criteria ();
-		$criteria->add ( TaxibotLogPeer::LOG_FILE, $logfile );
-		TaxibotLogPeer::doDelete ( $criteria );
-		
-		self::report ( "Already existing towing data of log file of Log-File " . $logfile . " deleted." );
-	}
-	private function getAircraft($tail_number, $aircraftType) {
-		
-		// TODO - get from rtc
-		$criteria = new Criteria ();
-		$criteria->add ( AircraftPeer::TAIL_NUMBER, $tail_number );
-		$aircraft = AircraftPeer::doSelectOne ( $criteria );
-		
-		if (! $aircraft) {
-			/*
-			 * Create a new aircraft entry TODO : This should not happen . Aircrafts are updated manually
-			 */
-			
-			$aircraft = new Aircraft ();
-			
-			$aircraft->setTailNumber ( $tail_number );
-			
-			if ($aircraftType != null) {
-				$aircraft->setAircraftType ( $this->getAircraftType ( $aircraftType ) );
-				$aircraft->save ();
-			}
-			
-			self::report ( "Aircraft   " . $tail_number . "   added to database." );
+		if (isset ( $this->limitExceedImport )) {
+			$this->limitExceedImport->readRowData ( $record, $this->_currentRowDateTime, $this->_lastLatitude, $this->_lastLongitude );
 		}
 		
-		return $aircraft;
-	}
-	private function getAircraftType($type) {
-		$criteria = new Criteria ();
-		$criteria->add ( AircraftTypePeer::HLC_ID, $type );
+		/* if($this->_phaseImport->veolcity != null){
+			dd($this->_currentRowDateTime);
+		} */
 		
-		$aircraftType = AircraftTypePeer::doSelectOne ( $criteria );
-		
-		return $aircraftType;
-	}
-	private function checkAircraftTypeTable() {
-		$numOfTypes = 5;
-		
-		$hlc_id = array (
-				10,
-				11,
-				12,
-				3,
-				54 
-		);
-		
-		$name = array (
-				'B737_300',
-				'B737_400',
-				'B737_500',
-				'A320_100',
-				'A320_200' 
-		);
-		
-		$fatigue_longitudal = array (
-				21,
-				21,
-				21,
-				22,
-				22 
-		);
-		
-		$static_lateral = array (
-				
-				48.93,
-				48.93,
-				48.93,
-				57, // kn
-				57 
-		);
-		$static_longitudal = array (
-				81.81,
-				81.81,
-				81.81,
-				76, // kn
-				76 
-		);
-		
-		for($i = 0; $i < $numOfTypes; $i ++) {
-			
-			$criteria = new Criteria ();
-			$criteria->add ( AircraftTypePeer::NAME, $name [$i] );
-			$aircraftType = AircraftTypePeer::doSelectOne ( $criteria );
-			
-			if (! $aircraftType) {
-				$aircraftType = new AircraftType ();
-				$aircraftType->setHlcId ( $hlc_id [$i] );
-				$aircraftType->setName ( $name [$i] );
-				$aircraftType->setLatStaticLimitValue ( $static_lateral [$i] );
-				$aircraftType->setLongStaticLimitValue ( $static_longitudal [$i] );
-				$aircraftType->setLongFatigueLimitValue ( $fatigue_longitudal [$i] );
-				$aircraftType->save ();
-			}
+		if (isset ( $this->fatigueHistoryImport )) {
+			$this->fatigueHistoryImport->readRowData ( $record, $this->_phaseImport->veolcity );
 		}
 	}
-	private function printArray($array) {
+	private function sumCulDeSecTime($record) {
+		$isSegmentValid = $record [LoggerFields::Segment_ID_Validity];
+		$degmentId = $record [LoggerFields::Segment_ID];
+		
+		if ($isSegmentValid == "")
+			return;
+		
+		$isSegmentValid = ( bool ) $isSegmentValid;
+		
+		if ($isSegmentValid && $this->checkIfCulDeSecOccurred ( $degmentId ) && $this->_startSingleCulDeSecTime == null) {
+			
+			// start single cul de sec time
+			$this->_startSingleCulDeSecTime = $this->GetDateTimeFromCsvFormat ( $this->_currentRowDateTime );
+		} else if ($this->_startSingleCulDeSecTime != null) {
+			$endSingleCulDeSecTime = $this->GetDateTimeFromCsvFormat ( $this->_currentRowDateTime );
+			$totalCurruntSingleCulDeSecTime = $endSingleCulDeSecTime->diff ( $this->_startSingleCulDeSecTime ); // DataInterval
+			$curruntSingleCulDeSecSeconds = DateIntervalToSec ( $totalCurruntSingleCulDeSecTime ); // Integer
+			$this->_culDeSecSeconds += $curruntSingleCulDeSecSeconds;
+		}
+	}
+	private function checkIfCulDeSecOccurred($value) {
+		if ($value == 825) {
+			return false;
+		}
+		
+		if (($value >= 822 && $value <= 898) || ($value >= 900 && $value <= 999) || ($value >= 1000 && $value <= 1083) || ($value >= 1116 && $value <= 1160)) {
+			return true;
+		}
+		return false;
+	}
+	private function printObject($obj) {
+		print "</br></br>";
 		print "<pre>";
-		print_r ( $array );
+		print_r ( $obj );
 		print "</pre>";
-		print "</br></br></br></br>";
+		print "</br></br>";
 	}
 	private function GetDateTimeFromCsvFormat($value) {
-		// echo "$value" . "\n";
-		//$format = 'Y-d-m H:i:s.u';
-		//$date = DateTime::createFromFormat ( $format, $value );
-		// echo "Format: $format; " . $date->format('Y-m-d H:i:s.u') . "\n";
-		// echo "</br>". $date->format('Y-m-d H:i:s'). "</br>";
-		// die();
 		$datetime = new DateTime ( $value . "+00" );
-		// echo "</br>" . $datetime->format ( 'Y-m-d H:i:s' ) . "</br>";
 		$datetime->setTimeZone ( new DateTimeZone ( 'Europe/Berlin' ) );
-		
-		// echo "</br>" . $datetime->format ( 'Y-m-d H:i:s' ) . "</br>";
-		// die ();
 		return $datetime;
 	}
 }

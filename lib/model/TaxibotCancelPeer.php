@@ -19,5 +19,13 @@ require 'lib/model/om/BaseTaxibotCancelPeer.php';
  * @package    lib.model
  */
 class TaxibotCancelPeer extends BaseTaxibotCancelPeer {
-
+	static public function GetLastCancel() {
+		$items = self::doSelect ( new Criteria () );
+		$count = count($items);
+		
+		if ($count == 0)
+			return null;
+		
+		return $items[$count- 1];
+	}
 } // TaxibotCancelPeer

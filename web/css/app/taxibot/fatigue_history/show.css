@@ -1,0 +1,35 @@
+#content-chart{
+	 position: relative;
+}
+
+#chart{	 
+	height: 600px;	
+}
+
+.chart-border{
+	position: absolute;
+	height: 14%;	
+	width: 99%;
+	border: 1px solid;	
+	left:10px;	
+}
+
+.long-border{
+	top:7%;	
+}
+
+.lat-border{
+	top:calc(7% + 14%);
+}
+
+.veolcity-border{
+	top:calc(7% + 14% + 14%);
+}
+
+.tiller-border{
+	top:calc(7% + 14% + 14% + 14%);
+}
+
+.break-border{
+	top:calc(7% + 14% + 14% + 14% + 14%);
+} 

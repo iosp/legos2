@@ -19,5 +19,5 @@ require 'lib/model/om/BaseTaxibotAlertPeer.php';
  * @package    lib.model
  */
 class TaxibotAlertPeer extends BaseTaxibotAlertPeer {
-
+	
 } // TaxibotAlertPeer

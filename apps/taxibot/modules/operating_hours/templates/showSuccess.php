@@ -1,8 +1,10 @@
-<?php use_helper( 'Global', 'Javascript',  'Selection' );
+<?php
+use_helper ( 'Global', 'Javascript', 'Selection' );
 echo selectionFilter ( array (
 		'Tag' 
 ), null, $route, array (
-		'Taxibot' , 'OperatingHours'
+		'Taxibot',
+		'OperatingHours' 
 ), '', true, false );
 ?>
 
@@ -25,7 +27,15 @@ set_time_limit ( 1500 );
 				<td> <?php echo $from_str?>
 				
 				
+				
+				
+				
+				
 				<td> <?php echo $to_str?>
+			
+			
+			
+			
 			
 			
 			</tr>
@@ -33,7 +43,15 @@ set_time_limit ( 1500 );
 				<td> <?php echo "00:01"?>
 				
 				
+				
+				
+				
+				
 				<td> <?php echo "23:59"?>
+			
+			
+			
+			
 			
 			
 			</tr>
@@ -43,7 +61,7 @@ set_time_limit ( 1500 );
 </div>
 
 
-<div id="mode_table_container" style="float: left">
+<div id="mode_table_container" class="col-md-6">
 	<h1><?php echo "Taxibot Operating Hours"  ?></h1>
 	<table class="daten" id="taxibot-towing" border="1" cellpadding="5">
 		<thead>
@@ -53,40 +71,35 @@ set_time_limit ( 1500 );
 				<th>DCM Hours</th>
 				<th>PCM Hours</th>
 				<th>Total Work Hours</th>
-
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach( $tractorTimes as $id => $tractorHours): ?>
 			<tr>
-				<td><?php echo $tractorHours['Tractor Name']; ?></td>
-				<td><?php echo $tractorHours['maint']->format("%H:%I:%S");?></td>
-				<td><?php echo $tractorHours['dcm']->format("%H:%I:%S");?></td>
-				<td><?php echo $tractorHours['pcm']->format("%H:%I:%S"); ?></td>
-				<td><?php echo $tractorHours['total']->format("%H:%I:%S");?></td>
+				<td><?php echo $tractorHours['TtractorName']; ?></td>
+				<td><?php echo $tractorHours['maint'] ;?></td>
+				<td><?php echo $tractorHours['dcm'] ;?></td>
+				<td><?php echo $tractorHours['pcm']; ?></td>
+				<td><?php echo $tractorHours['total'];?></td>
 			</tr>
 			<?php endforeach; ?>
-		
 		</tbody>
-
-
-
 	</table>
-	
-<!-- 	Export Button -->
+
+	<!-- 	Export Button -->
 	<div>
 		<br /> 
 		<?php echo link_to( 'Export Data' , "operating_hours/export?file=$filenameOperatingHours")?>
 	</div>
-	
+
 </div>
 
 
 
 
-<div id="engines_table_container" style="float: right">
+<div id="engines_table_container" class="col-md-6">
 	<h1><?php echo "Engines Operating Hours"  ?></h1>
-	<table class="daten" id="taxibot-towing" border="1" >
+	<table class="daten" id="taxibot-towing" border="1">
 		<thead>
 			<tr>
 				<th>Taxibot Number</th>
@@ -97,30 +110,32 @@ set_time_limit ( 1500 );
 		<tbody>
 			<?php foreach( $tractorTimes as $id => $tractorHours): ?>
 			<tr>
-				<td><?php echo $tractorHours['Tractor Name']; ?>
+				<td><?php echo $tractorHours['TtractorName']; ?>
+				
+				
 				
 				
 				<td><?php echo $tractorHours['Left Hours'];?>
 				
 				
-				<td><?php echo $tractorHours['Right Hours'] ; ?>		
+				
+				
+				<td><?php echo $tractorHours['Right Hours'] ; ?>
+			
+			
 			
 			
 			</tr>
 			<?php endforeach; ?>
-		
 		</tbody>
-
-
-
 	</table>
 
-<!-- 	Export Button -->
+	<!-- 	Export Button -->
 	<div>
 		<br /> 
 		<?php echo link_to( 'Export Data' , "operating_hours/export?file=$filenameEngines")?>
 	</div>
-	
-	
+
+
 </div>
 

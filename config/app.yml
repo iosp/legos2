@@ -1,5 +1,10 @@
 # default values
 all:
+  kint:
+    enabled: true
+    max_str_length: 60
+    max_levels: 5
+    skin: kint.css
   loadvalues:
     overload:           5.8                     
   import:

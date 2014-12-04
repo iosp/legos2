@@ -12,9 +12,13 @@ function renderMenu() {
 	
 	// YAML-Datei mit Menüstruktur laden
 	$menu = sfYaml::load ( sfConfig::get ( 'sf_root_dir' ) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'menu.yml' );
-	/*print "<pre>";
-	print_r($topmenu_entry);
-	print "</pre>"; die();*/
+	/* print "<pre>";
+	print_r ( $menu );
+	print_r ( $user );
+	print "</pre>";
+	 
+	d($menu);
+	dd($user); */
 	/*
 	 * Menü je nach Berechtigungen der Nutzers kürzen
 	 */

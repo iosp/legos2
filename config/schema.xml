@@ -87,14 +87,11 @@
 	<table name="taxibot_tractor" phpName="TaxibotTractor"
 		description="Table of taxibot tractors">
 		<column name="id" type="INTEGER" primaryKey="true" required="true"
-			autoIncrement="true" />
-		<column name="tractor_id" type="INTEGER" required="true" />
+			autoIncrement="true" />	
 		<column name="name" type="VARCHAR" size="255"
 			description="Name of the tractor as given in csv-file." />
 		<column name="creation_date" type="TIMESTAMP" defaultExpr="CURRENT_TIMESTAMP"
-			description="Date, when the tractor was added to the database." />
-		<column name="pcm_hours" type="FLOAT" description="Total time of pcm mode" />
-		<column name="dcm_hours" type="FLOAT" description="Total time of dcm mode" />
+			description="Date, when the tractor was added to the database." />		
 	</table>
 
 	<table name="taxibot_activity" phpName="TaxibotActivity"
@@ -120,7 +117,7 @@
 		<column name="checked" type="BOOLEAN" required="true" default="0"
 			description="True, if activity was manually checked." />
 		<foreign-key foreignTable="taxibot_tractor">
-			<reference local="tractor_id" foreign="tractor_id" />
+			<reference local="tractor_id" foreign="id" />
 		</foreign-key>
 	</table>
 	<table name="taxibot_log" phpName="TaxibotLog" description="TaxibotLog">
@@ -134,7 +131,7 @@
 		<column name="load_validity" type="BOOLEAN" description="" />
 		<column name="load_exceeded" type="BOOLEAN" description="" />
 		<foreign-key foreignTable="taxibot_tractor">
-			<reference local="tractor_id" foreign="tractor_id" />
+			<reference local="tractor_id" foreign="id" />
 		</foreign-key>
 	</table>
 	<table name="taxibot_table" phpName="TaxibotTable" description="TaxibotTable">
@@ -158,11 +155,7 @@
 			description="mac percent field 51" />
 		<column name="latitude" type="FLOAT" description="degrees field 8" />
 		<column name="longitude" type="FLOAT" description="degrees field 9" />
-	</table>
-	<table name="taxibot_alert" phpName="TaxibotAlert" description="TaxibotAlert">
-		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
-		<column name="alert" type="VARCHAR" size="255" required="true"/>		
-	</table>
+	</table>	 
 	<table name="taxibot_cancel" phpName="TaxibotCancel" description="TaxibotCancel">
 		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
 		<column name="alert" type="VARCHAR" size="255" required="true"/>
@@ -340,8 +333,8 @@
 			description="total fuel used engine right" required="true" />
 		<column name="total_fuel_used_engine_left" type="FLOAT"
 			description="total fuel used engine left" />				
-		<foreign-key foreignTable="taxibot_tractor"> <reference local="tractor_id" 
-			foreign="tractor_id"/>
+		<foreign-key foreignTable="taxibot_tractor"> 
+			<reference local="tractor_id" foreign="id"/>
 		 </foreign-key> 
 		<foreign-key foreignTable="aircraft_type">
 			<reference local="aircraft_type" foreign="name" />
@@ -544,58 +537,45 @@
 	</table>
 	<table name="taxibot_mission" phpName="TaxibotMission"
 		description="TaxibotMission">
-		<column name="id" type="INTEGER" primaryKey="true" required="true"
-			autoIncrement="true" />
+		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
 		<column name="mission_id" type="INTEGER" required="true" />
-		<column name="mission_type" type="VARCHAR" description="Mission Type"
-			required="true" />
-		<column name="aircraft_tail_number" type="VARCHAR" description="Tail Number"
-			required="true" />
-		<column name="aircraft_type" type="VARCHAR" description="Aircraft Type"
-			required="true" />
+		<column name="mission_type" type="VARCHAR" description="Mission Type" required="true" />
+		<column name="aircraft_id" type="INTEGER" description="Aircraft Id" required="true" />		
 		<column name="start_time" type="TIMESTAMP" required="true" />
 		<column name="end_time" type="TIMESTAMP" required="true" />
-		<column name="flight_number" type="VARCHAR" description="Flight Number"
-			required="true" />
-		<column name="aircraft_weight" type="FLOAT" description="A/C weight"
-			required="true" />
-		<column name="aircraft_cg" type="FLOAT" description="A/C C.G."
-			required="true" />
-		<column name="tractor_id" type="INTEGER"
-			description="Foreign key to the tractor-table." required="true" />
-		<column name="driver_name" type="VARCHAR" description="Flight Number"
-			required="true" />
-	
-		<column name="cellulr_ip" type="VARCHAR"
-			description="Cellular IP Address -  a.b.c.d (reference to Tractor ID)"
-			required="true" />
-		
-		<column name="pcm_start" type="TIMESTAMP" required="true" />
-		<column name="pcm_end" type="TIMESTAMP" required="true" />
-		<column name="dcm_start" type="TIMESTAMP" required="true" />
-		<column name="dcm_end" type="TIMESTAMP" required="true" />
-		<column name="pushback_start" type="TIMESTAMP" required="true" />
-		<column name="pushback_end" type="TIMESTAMP" required="true" />
-		<column name="left_engine_fuel_dcm" type="FLOAT" required="true" />
-		<column name="right_engine_fuel_dcm" type="FLOAT" required="true" />
-		<column name="left_engine_fuel_pcm" type="FLOAT" required="true" />
-		<column name="right_engine_fuel_pcm" type="FLOAT" required="true" />
-		<column name="left_engine_fuel_pushback" type="FLOAT" required="true" />
-		<column name="right_engine_fuel_pushback" type="FLOAT" required="true" />
-		<column name="left_engine_fuel_maint" type="FLOAT" required="true" />
-		<column name="right_engine_fuel_maint" type="FLOAT" required="true" />		
-		<column name="left_engine_hours_pcm" type="FLOAT" required="true" />
-		<column name="right_engine_hours_pcm" type="FLOAT" required="true" />
-		<column name="left_engine_hours_dcm" type="FLOAT" required="true" />
-		<column name="right_engine_hours_dcm" type="FLOAT" required="true" />
-		<column name="left_engine_hours_maint" type="FLOAT" required="true" />
-		<column name="right_engine_hours_maint" type="FLOAT" required="true" />
+		<column name="flight_number" type="VARCHAR" description="Flight Number" required="true" />
+		<column name="aircraft_weight" type="FLOAT" description="A/C weight" required="true" />
+		<column name="aircraft_cg" type="FLOAT" description="A/C C.G." required="true" />
+		<column name="tractor_id" type="INTEGER" required="true" />
+		<column name="driver_name" type="VARCHAR" description="Flight Number" required="true" />	
+		<column name="cellulr_ip" type="VARCHAR" required="true" />
+		<column name="cul_de_sac_time" type="TIME" />
+		<column name="left_engine_fuel" type="FLOAT" />
+		<column name="right_engine_fuel" type="FLOAT" />
 		<column name="blf_name" type="VARCHAR" size="255" />
-		<column name="join_after_mission_id" type="INTEGER" />
-		<column name="operational_scenario" type="INTEGER" />
-		
+		<column name="operational_scenario" type="INTEGER" />	
+		<column name="is_commited" type="BOOLEAN" required="true" default="0"/>	
 		<foreign-key foreignTable="taxibot_tractor">
-			<reference local="tractor_id" foreign="tractor_id" />
+			<reference local="tractor_id" foreign="id" />
+		</foreign-key>
+		<foreign-key foreignTable="aircraft">
+			<reference local="aircraft_id" foreign="id" />
+		</foreign-key>
+	</table>
+	<table name="taxibot_parts_mission" phpName="TaxibotPartsMission" >
+		<column name="id" type="INTEGER" primaryKey="true" required="true"
+			autoIncrement="true" />	
+		<column name="mission_id" type="INTEGER" description="Mission ID"
+			required="true" />
+	    <column name="start" type="TIMESTAMP" required="true" />
+		<column name="end" type="TIMESTAMP" required="true" />
+		<column name="left_engine_fuel" type="FLOAT" required="true" />
+		<column name="right_engine_fuel" type="FLOAT" required="true" />		
+		<column name="left_engine_hours" type="FLOAT" required="true" />
+		<column name="right_engine_hours" type="FLOAT" required="true" />
+		<column name="type" type="VARCHAR" size="25" required="true" />
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="id" />
 		</foreign-key>
 	</table>
 	<table name="taxibot_exceed_event" phpName="TaxibotExceedEvent"
@@ -608,6 +588,8 @@
 			required="true" />
 		<column name="end_time" type="TIMESTAMP" description="Event End Time"
 			required="true" />
+		<column name="start_milisecond" type="INTEGER" required="true" />
+		<column name="end_milisecond" type="INTEGER" required="true" />
 		<column name="duration" type="TIME" description="Event Duration" />
 		<column name="mission_id" type="INTEGER" description="Mission ID"
 			required="true" />
@@ -624,10 +606,10 @@
 			autoIncrement="true" />
 		<column name="tail_number" type="VARCHAR" description="Tail Number"
 			required="true" />
-		<column name="type" type="VARCHAR" description="Aircraft Type"
+		<column name="type_id" type="INTEGER" description="Aircraft Type"
 			required="true" />
 		<foreign-key foreignTable="aircraft_type">
-			<reference local="type" foreign="name" />
+			<reference local="type_id" foreign="id" />
 		</foreign-key>
 	</table>
 	<table name="aircraft_type" phpName="AircraftType" description="AircraftType">
@@ -661,7 +643,25 @@
 			<reference local="mission" foreign="id" />
 		</foreign-key>
 	</table>
-	
+	<table name="taxibot_fatigue_history" phpName="TaxibotFatigueHistory" description="TaxibotFatigueHistory">
+		<column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+		<column name="aircraft_id" type="INTEGER" required="true" />
+		<column name="date" type="TIMESTAMP" required="true" />
+		<column name="milisecond" type="INTEGER" required="true" />
+		<column name="long_force_kn" type="FLOAT" required="true" />
+		<column name="lat_force_kn" type="FLOAT" required="true" />				
+		<column name="veolcity" type="FLOAT" required="true" description="Knot"/>
+		<column name="tiller" type="FLOAT" required="true" />
+		<column name="break_event" type="BOOLEAN" required="true" />
+		<column name="mission_id" type="INTEGER" required="true" />
+		<foreign-key foreignTable="aircraft">
+			<reference local="aircraft_id" foreign="id" />
+		</foreign-key>
+		<foreign-key foreignTable="taxibot_mission">
+			<reference local="mission_id" foreign="id" />
+		</foreign-key>
+	</table>
+		
 	<!-- 
 		####################################################
 		# Tables for IAI-API #
@@ -676,6 +676,6 @@
 		<column name="engine_temperature" type="INTEGER"/>
 		<column name="tire_pressure" type="INTEGER"/>
 		<foreign-key foreignTable="taxibot_tractor">
-			<reference local="tractor_id" foreign="tractor_id"/>
+			<reference local="tractor_id" foreign="id"/>
 		</foreign-key></table>
 </database>

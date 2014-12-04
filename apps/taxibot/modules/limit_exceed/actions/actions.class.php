@@ -47,12 +47,12 @@ class limit_exceedActions extends sfActions {
 			
 			$this->missionExceeds [$mission->getId()] = array (				
 					"flightnumber" => $mission->getFlightNumber (),
-					"tailNumber" => $mission->getAircraftTailNumber (),
+					"tailNumber" => $mission->getAircraft()->getTailNumber(),
 					"CG" => $mission->getAircraftCg (),
 					"aircraftWeight" => $mission->getAircraftWeight (),
 					"exceeds" => $exceeds,
 					"tractor" => $tractorName,
-					"AcType" => $mission->getAircraftType () 
+					"AcType" => $mission->getAircraft()->getAircraftType()->getName()
 			);
 		}
 		
@@ -81,10 +81,6 @@ class limit_exceedActions extends sfActions {
 			return $this->renderText('0');
 		}
 		
-		$alert = new TaxibotAlert ();
-		$alert->setAlert ( $data );
-		$alert->save ();
-		
 		$cancel = new TaxibotCancel ();
 		$cancel->setAlert ( $data );
 		$cancel->setTime ( time () );
@@ -101,6 +97,17 @@ class limit_exceedActions extends sfActions {
 	
 	private function checkCancelMessage($message, $checkSumRequest){
 		$checkSumServerSide = $this->string_to_ascii($message);
+		
+		//HACK TO TEST!!!!!
+		/* $r = rand ( 0 ,  100 );		
+		if($r == 9){
+			return true;
+		}
+		else{
+			return false;
+		} */
+		//END HACK TO TEST!!!!!
+		
 		
 		if($checkSumServerSide == $checkSumRequest){
 			return true;
@@ -122,14 +129,24 @@ class limit_exceedActions extends sfActions {
 	}
 		
 	public function executeAlert(sfWebRequest $request) {
-		$criteria = new Criteria ();
-		$this->alert = TaxibotAlertPeer::doSelectOne ( $criteria );
-		if ($this->alert != null) {
-			// alert client about cancel flight event	
-
-			$data = $this->alert->getAlert();			
-			$this->alert->delete ();
-			$jsonData = json_decode('{'.$data.'}',true);
+		
+		if($this->getUser()->getUserGroup() != USER_GROUP::ADMIN && $this->getUser()->getUserGroup() != USER_GROUP::EDITOR){
+			return;
+		}
+		
+		$this->forward404Unless ( $request->isMethod ( sfRequest::POST ) || $request->isMethod ( sfRequest::PUT ) );
+		
+		$lastId = $request->getParameter ( "lastid" );
+		
+		$this->lastCancel = TaxibotCancelPeer::GetLastCancel ( );
+		
+		if($lastId == -1 && $this->lastCancel != null){
+			$lastId = $this->lastCancel->getId();
+		}
+		
+		if ($this->lastCancel != null && $this->lastCancel->getId() > $lastId) {
+			$data = $this->lastCancel->getAlert();
+			$jsonData = json_decode('{' . $data . '}',true);
 			echo '{"isError": true,"dataCancel":{';			 
 			echo '"date":"'.$jsonData['date'].'"' ; 
 			echo ',"time":"'.$jsonData['time'].'"' ;
@@ -141,9 +158,9 @@ class limit_exceedActions extends sfActions {
 			echo ',"position_lat":"'.$jsonData['position_lat'].'"' ;			
 			echo ',"position_lon":"'.$jsonData['position_lon'].'"' ;
 			echo ',"additional_information":"'.$jsonData['additional_information'].'"' ;
-			echo '}}';			
+			echo '}, "lastIdMessage": ' . $this->lastCancel->getId().' }';			
 		} else {
-			echo '{"isError": false}';
+			echo '{"isError": false, "lastIdMessage": ' . $lastId . '}';
 		}
 	}
 	public function executeLastcancels(sfWebRequest $request) {
@@ -256,3 +273,25 @@ class limit_exceedActions extends sfActions {
 		return sfView::NONE;
 	}
 }
+
+
+/* 
+http://taxibot.lht-portal.de/taxibot.php/limit_exceed/online/data/%22date%22:%222014-10-14%22,%22time%22:%2207:18%22,%22airline%22:%22LUFTHANSA%22,%22ac_type%22:%22asas%22,%22tail_number%22:%22asdasd%22,%22taxibot_id%22:%22PR80%22,%22driver_id%22:%22asdasdasd%22,%22position_lat%22:%2250.0333%22,%22position_lon%22:%228.57057%22,%22event_type%22:%221%22,%22additional_information%22:%22%22/cs/18564
+
+
+function string_to_ascii($string)
+{
+	$ascii = NULL;
+	$strlen =  strlen($string);
+
+	for ($i = 0; $i < $strlen; $i++)
+	{
+	$ascii += ord($string[$i]);
+	}
+
+	return($ascii);
+}
+
+
+$data = '"date":"2014-10-14","time":"07:18","airline":"LUFTHANSA","ac_type":"asas","tail_number":"asdasd","taxibot_id":"PR80","driver_id":"asdasdasd","position_lat":"50.0333","position_lon":"8.57057","event_type":"1","additional_information":""';
+echo string_to_ascii($data); */

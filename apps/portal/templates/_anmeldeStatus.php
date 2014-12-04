@@ -1,8 +1,8 @@
 <div class="anmeldestatus">
 	<?php if ( $sf_user->isAuthenticated() ): ?>
-		Angemeldet als: <?php echo $sf_user->getAttribute( 'name', '', 'benutzer' ); ?> &nbsp
-		<?php echo link_to( 'Abmelden ', sfConfig::get('app_url_portal'). "/logout", array( 'class' => 'pfeil' ) ); ?>
+		Logged in as: <?php echo $sf_user->getAttribute( 'name', '', 'benutzer' ); ?> &nbsp
+		<?php echo link_to( 'Logout ', sfConfig::get('app_url_portal'). "/logout", array( 'class' => 'pfeil' ) ); ?>
 	<?php else: ?>
-		<?php echo link_to( 'Anmelden ', sfConfig::get('app_url_portal'). "/login", array( 'class' => 'pfeil' ) ); ?>
+		<?php echo link_to( 'Login ', sfConfig::get('app_url_portal'). "/login", array( 'class' => 'pfeil' ) ); ?>
 	<?php endif; ?>
 </div>

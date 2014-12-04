@@ -13,7 +13,7 @@ abstract class BaseTaxibotActivityFormFilter extends BaseFormFilterPropel
   {
     $this->setWidgets(array(
       'csv_file_date'   => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
-      'tractor_id'      => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true, 'key_method' => 'getTractorId')),
+      'tractor_id'      => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true)),
       'trip'            => new sfWidgetFormFilterInput(),
       'ac_registration' => new sfWidgetFormFilterInput(),
       'position_from'   => new sfWidgetFormFilterInput(),
@@ -26,7 +26,7 @@ abstract class BaseTaxibotActivityFormFilter extends BaseFormFilterPropel
 
     $this->setValidators(array(
       'csv_file_date'   => new sfValidatorDateRange(array('required' => false, 'from_date' => new sfValidatorDate(array('required' => false)), 'to_date' => new sfValidatorDate(array('required' => false)))),
-      'tractor_id'      => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'tractor_id')),
+      'tractor_id'      => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'id')),
       'trip'            => new sfValidatorSchemaFilter('text', new sfValidatorInteger(array('required' => false))),
       'ac_registration' => new sfValidatorPass(array('required' => false)),
       'position_from'   => new sfValidatorPass(array('required' => false)),

@@ -132,11 +132,11 @@ use_javascript ( 'jquery.min.js' );
 			
 			<?php foreach ($mainTows as $maint) : ?>
 					<tr style="background: #DDDDDD;">						 
-						<td><?php echo $maint['Start'];?></td>				 
-						<td><?php echo $maint['End']?></td>				 
-						<td><?php echo $maint['Time']?></td>				 
-						<td><?php echo $maint['LeftEngineFuel']?></td>
-						<td><?php echo $maint['RightEngineFuel']?></td>
+						<td><?php echo $maint->maintStartDate;?></td>				 
+						<td><?php echo $maint->maintEndDate;?></td>				 
+						<td><?php echo $maint->maintTotalTime;?></td>				 
+						<td><?php echo $maint->leftEngineFuel;?></td>
+						<td><?php echo $maint->rightEngineFuel;?></td>
 					</tr>
 				<?php endforeach;?>		
 			</tbody>

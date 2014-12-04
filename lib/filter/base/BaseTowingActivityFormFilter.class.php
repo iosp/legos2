@@ -14,7 +14,7 @@ abstract class BaseTowingActivityFormFilter extends BaseFormFilterPropel
     $this->setWidgets(array(
       'order_id'           => new sfWidgetFormFilterInput(),
       'timestamp'          => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
-      'tractor_id'         => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true, 'key_method' => 'getTractorId')),
+      'tractor_id'         => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true)),
       'driver_id'          => new sfWidgetFormFilterInput(),
       'engine_temperature' => new sfWidgetFormFilterInput(),
       'tire_pressure'      => new sfWidgetFormFilterInput(),
@@ -23,7 +23,7 @@ abstract class BaseTowingActivityFormFilter extends BaseFormFilterPropel
     $this->setValidators(array(
       'order_id'           => new sfValidatorPass(array('required' => false)),
       'timestamp'          => new sfValidatorDateRange(array('required' => false, 'from_date' => new sfValidatorDate(array('required' => false)), 'to_date' => new sfValidatorDate(array('required' => false)))),
-      'tractor_id'         => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'tractor_id')),
+      'tractor_id'         => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'id')),
       'driver_id'          => new sfValidatorPass(array('required' => false)),
       'engine_temperature' => new sfValidatorSchemaFilter('text', new sfValidatorInteger(array('required' => false))),
       'tire_pressure'      => new sfValidatorSchemaFilter('text', new sfValidatorInteger(array('required' => false))),

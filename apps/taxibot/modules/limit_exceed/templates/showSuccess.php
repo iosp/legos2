@@ -63,3 +63,7 @@ set_time_limit ( 1500 );
 		
 	</div>
 </div>
+
+<?php
+	use_javascript("app/taxibot/limit_exceed/show.js");	 
+?>

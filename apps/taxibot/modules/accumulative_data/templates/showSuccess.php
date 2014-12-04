@@ -1,146 +1,128 @@
-<table>
-  <tbody>
-    <tr>
-      <th>Id:</th>
-      <td><?php echo $TaxibotMission->getId() ?></td>
-    </tr>
-    <tr>
-      <th>Mission:</th>
-      <td><?php echo $TaxibotMission->getMissionId() ?></td>
-    </tr>
-    <tr>
-      <th>Mission type:</th>
-      <td><?php echo $TaxibotMission->getMissionType() ?></td>
-    </tr>
-    <tr>
-      <th>Aircraft tail number:</th>
-      <td><?php echo $TaxibotMission->getAircraftTailNumber() ?></td>
-    </tr>
-    <tr>
-      <th>Aircraft type:</th>
-      <td><?php echo $TaxibotMission->getAircraftType() ?></td>
-    </tr>
-    <tr>
-      <th>Start time:</th>
-      <td><?php echo $TaxibotMission->getStartTime() ?></td>
-    </tr>
-    <tr>
-      <th>End time:</th>
-      <td><?php echo $TaxibotMission->getEndTime() ?></td>
-    </tr>
-    <tr>
-      <th>Flight number:</th>
-      <td><?php echo $TaxibotMission->getFlightNumber() ?></td>
-    </tr>
-    <tr>
-      <th>Aircraft weight:</th>
-      <td><?php echo $TaxibotMission->getAircraftWeight() ?></td>
-    </tr>
-    <tr>
-      <th>Aircraft cg:</th>
-      <td><?php echo $TaxibotMission->getAircraftCg() ?></td>
-    </tr>
-    <tr>
-      <th>Tractor:</th>
-      <td><?php echo $TaxibotMission->getTractorId() ?></td>
-    </tr>
-    <tr>
-      <th>Driver name:</th>
-      <td><?php echo $TaxibotMission->getDriverName() ?></td>
-    </tr>
-    <tr>
-      <th>Cellulr ip:</th>
-      <td><?php echo $TaxibotMission->getCellulrIp() ?></td>
-    </tr>
-    <tr>
-      <th>Pcm start:</th>
-      <td><?php echo $TaxibotMission->getPcmStart() ?></td>
-    </tr>
-    <tr>
-      <th>Pcm end:</th>
-      <td><?php echo $TaxibotMission->getPcmEnd() ?></td>
-    </tr>
-    <tr>
-      <th>Dcm start:</th>
-      <td><?php echo $TaxibotMission->getDcmStart() ?></td>
-    </tr>
-    <tr>
-      <th>Dcm end:</th>
-      <td><?php echo $TaxibotMission->getDcmEnd() ?></td>
-    </tr>
-    <tr>
-      <th>Pushback start:</th>
-      <td><?php echo $TaxibotMission->getPushbackStart() ?></td>
-    </tr>
-    <tr>
-      <th>Pushback end:</th>
-      <td><?php echo $TaxibotMission->getPushbackEnd() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine fuel dcm:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineFuelDcm() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine fuel dcm:</th>
-      <td><?php echo $TaxibotMission->getRightEngineFuelDcm() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine fuel pcm:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineFuelPcm() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine fuel pcm:</th>
-      <td><?php echo $TaxibotMission->getRightEngineFuelPcm() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine fuel pushback:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineFuelPushback() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine fuel pushback:</th>
-      <td><?php echo $TaxibotMission->getRightEngineFuelPushback() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine fuel maint:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineFuelMaint() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine fuel maint:</th>
-      <td><?php echo $TaxibotMission->getRightEngineFuelMaint() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine hours pcm:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineHoursPcm() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine hours pcm:</th>
-      <td><?php echo $TaxibotMission->getRightEngineHoursPcm() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine hours dcm:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineHoursDcm() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine hours dcm:</th>
-      <td><?php echo $TaxibotMission->getRightEngineHoursDcm() ?></td>
-    </tr>
-    <tr>
-      <th>Left engine hours maint:</th>
-      <td><?php echo $TaxibotMission->getLeftEngineHoursMaint() ?></td>
-    </tr>
-    <tr>
-      <th>Right engine hours maint:</th>
-      <td><?php echo $TaxibotMission->getRightEngineHoursMaint() ?></td>
-    </tr>
-    <tr>
-      <th>Blf name:</th>
-      <td><?php echo $TaxibotMission->getBlfName() ?></td>
-    </tr>
-  </tbody>
-</table>
+<?php
 
-<hr />
+use_helper ( 'Global', 'Javascript', 'Selection' );
 
-<a href="<?php echo url_for('accumulative_data/edit?id='.$TaxibotMission->getId()) ?>">Edit</a>
-&nbsp;
-<a href="<?php echo url_for('accumulative_data/index') ?>">List</a>
+echo selectionFilter ( array (
+		'Tag' 
+), null, $route, array (
+		'Taxibot',
+		'AccumulativeData' 
+), '', true, false );
+
+if ($data == null) {
+	?><h2><?php echo "No find data.. please change filter";?></h2><?php
+	return;
+}
+?>
+
+<h1>Accumulative Data</h1>
+
+<hr>
+
+
+<div class="row">
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">From</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $from_str . " " . $from_time?></h6>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">To</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $to_str . " " . $to_time;?></h6>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-2">
+		<div class="panel panel-default ">
+			<div class="panel-heading">
+				<h3 class="panel-title">Taxibot Number</h3>
+			</div>
+			<div class="panel-body">
+				<h6><?php echo $selected_taxibot_number?></h6>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="row">
+	<div class="col-md-4" >
+		<table id="data-table" class="table table-bordered">			 
+			<tbody>
+				<tr>
+					<th>Mission time average</th>
+					<td><?php echo $data->MissionTimeAvg;?></td>
+				</tr>
+				<tr>
+					<th>PCM time in single mission</th>
+					<td><?php echo $data->PcmTimeAvg; ?></td>
+				</tr>
+				<tr>
+					<th>Pushback time average</th>
+					<td><?php  echo $data->PushbackTimeAvg; ?></td>
+				</tr>
+				<tr>
+					<th>Cul –De- Sac time average</th>
+					<td><?php  echo $data->CulDeSecTimeAvg; ?></td>
+				</tr>
+				<tr>
+					<th>Speed in PCM average</th>
+					<td><?php  echo $data->PcmSpeedAvg; ?></td>
+				</tr>
+				<tr>
+					<th>Mission interruptions</th>
+					<td>Z</td>
+				</tr>
+				<tr>
+					<th>Degraded mode missions</th>
+					<td>Z</td>
+				</tr>
+				<tr>
+					<th>Fuel per mission –Average</th>
+					<td><?php  echo $data->FuelPerMissionAvg ?></td>
+				</tr>
+				<tr>
+					<th>Total amount of missions</th>
+					<td><?php  echo $data->TotalAmountMissions ?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div id="content-chart">
+	<div id="missions-chart"></div>
+</div>
+
+
+<script type="text/javascript">
+
+	window.Lahav = window.Lahav || {};
+	Lahav.accumulativeData= {};
+	Lahav.accumulativeData.items = <?php echo json_encode($data->amountMissionPerDay);  ?>;	
+
+</script>
+<?php
+echo use_javascript ( 'jquery.min.js' );
+use_javascript ( 'jquery-ui.custom.min.js' );
+use_stylesheet ( 'jquery-ui-1.8.16.custom.css' );
+use_stylesheet ( "app/taxibot/accumulative_data/show.css" );
+?>
+
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+<?php
+echo use_javascript ( "app/taxibot/accumulative_data/show.js" );
+?>

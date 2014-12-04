@@ -1,0 +1,9 @@
+#data-filter{
+	clear: both;
+	margin-top: 80px;
+	margin-left: 33px;
+}
+
+ #data-table th, #data-table td{	
+	font-size: 14px;
+}

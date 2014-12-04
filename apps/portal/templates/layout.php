@@ -4,6 +4,7 @@
 	<?php include_http_metas()?>
 	<?php include_metas()?>
 	<?php include_title()?>
+	<?php use_stylesheet("bootstrap.css" );?> 
 	<link rel="shortcut icon" href="/favicon.ico" />
 </head>
 
@@ -38,5 +39,6 @@
 		</div>
 
 	</div>
+	<?php use_javascript ( "bootstrap.min.js" );?>  
 </body>
 </html>

@@ -1,6 +1,6 @@
 <h1>TaxibotMissions List</h1>
 
-<table border>
+<table border="1" class="daten">
   <thead>
     <tr>
       <th>Id</th>

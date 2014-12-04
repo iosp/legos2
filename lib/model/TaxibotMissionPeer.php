@@ -17,117 +17,342 @@ require 'lib/model/om/BaseTaxibotMissionPeer.php';
  * @package lib.model
  */
 class TaxibotMissionPeer extends BaseTaxibotMissionPeer {
-	
 	static public function GetFlightNumbers() {
-		$c = new Criteria();
-		$c->clearSelectColumns();
-		$c->setDistinct(); 
-		$c->addSelectColumn(self::FLIGHT_NUMBER);
-		$rs = self::doSelectStmt($c); 
-		$results = array();
+		$c = new Criteria ();
+		$c->clearSelectColumns ();
+		$c->setDistinct ();
+		$c->addSelectColumn ( self::FLIGHT_NUMBER );
+		$rs = self::doSelectStmt ( $c );
+		$results = array ();
 		
-		while($row = $rs->fetch(PDO::FETCH_BOTH))
-		{
-			$results[] = $row['FLIGHT_NUMBER'];
-		}	
-	
+		while ( $row = $rs->fetch ( PDO::FETCH_BOTH ) ) {
+			$results [] = $row ['FLIGHT_NUMBER'];
+		}
+		
 		return $results;
 	}
-	
 	static public function GetTailNumbers() {
-		$c = new Criteria();
-		$c->clearSelectColumns();
-		$c->setDistinct();
-		$c->addSelectColumn(self::AIRCRAFT_TAIL_NUMBER);
-		$rs = self::doSelectStmt($c);
-		$results = array();
-	
-		while($row = $rs->fetch(PDO::FETCH_BOTH))
-		{
-			$results[] = $row['AIRCRAFT_TAIL_NUMBER'];
+		$c = new Criteria ();
+		$c->clearSelectColumns ();
+		$c->setDistinct ();
+		$c->addSelectColumn ( AircraftPeer::TAIL_NUMBER );
+		$rs = self::doSelectStmt ( $c );
+		$results = array ();
+		
+		while ( $row = $rs->fetch ( PDO::FETCH_BOTH ) ) {
+			$results [] = $row ['TAIL_NUMBER'];
 		}
-	
+		
 		return $results;
 	}
-	
 	static public function GetLastMission() {
-		$taxibotMissions = TaxibotMissionPeer::doSelect ( new Criteria () );		
-		$count = count($taxibotMissions);
-		return $taxibotMissions[$count- 1]; 
+		$taxibotMissions = self::doSelect ( new Criteria () );
+		$count = count ( $taxibotMissions );
+		return $taxibotMissions [$count - 1];
 	}
-	
-	static public function MargeMissions($missionsIds) {		
-		$missionsCount = count($missionsIds);
-		
-		$criteria = new Criteria ();		
-		foreach ($missionsIds as $missionId){
-			$cton2 = $criteria->getNewCriterion(TaxibotMissionPeer::ID, $missionId, Criteria::EQUAL);
-			$criteria->addOr($cton2);
+	static public function GetMissionsByBlfName($blfNames) {
+		$mainCriteria = new Criteria ();
+		foreach ( $blfNames as $blfName ) {
+			$c = $mainCriteria->getNewCriterion ( self::BLF_NAME, $blfName, Criteria::EQUAL );
+			$mainCriteria->addOr ( $c );
 		}
 		
-		$taxibotMissions = TaxibotMissionPeer::doSelect( $criteria );		
-		$singleMission = array_shift($taxibotMissions);
+		return self::doSelect ( $mainCriteria );
+	}	
+	static public function GetUncommitedMissions() {
+		$mainCriteria = new Criteria ();
+		$mainCriteria->add(self::IS_COMMITED, false);
+		return self::doSelect ( $mainCriteria );
+	}	
+	static public function CommitMissions($missionsId) {
+		$mainCriteria = new Criteria ();
+		foreach ( $missionsId as $id ) {
+			$c = $mainCriteria->getNewCriterion ( self::ID, $id );
+			$mainCriteria->addOr ( $c );
+		}
 		
-		$pcm_start = $singleMission->getPcmStart();
-		$pcm_end =  $singleMission->getPcmEnd();
-		$dcm_start  = $singleMission->getDcmStart();
-		$dcm_end =  $singleMission->getDcmEnd();
-		$pushback_start  =  $singleMission->getPushbackStart();
-		$pushback_end =  $singleMission->getPushbackEnd();
+		$missions = self::doSelect ( $mainCriteria );
 		
+		foreach ($missions as $mission)
+		{
+			$mission->setIsCommited(true);
+			$mission->save();
+		}
+	}
+	static public function MergeMissions($missionsIds) {
+		require_once sfConfig::get ( 'app_lib_helper' ) . "/TimeHelper.php";
+		$criteria = new Criteria ();
+		foreach ( $missionsIds as $missionId ) {
+			$cton2 = $criteria->getNewCriterion ( TaxibotMissionPeer::ID, $missionId );
+			$criteria->addOr ( $cton2 );
+		}
+		$criteria->addAscendingOrderByColumn ( self::START_TIME );
 		
+		// print '<pre>'; print_r ( $criteria); print '</pre>'; die ();
 		
-		foreach ($taxibotMissions as $nextMission){
+		$taxibotMissions = TaxibotMissionPeer::doSelect ( $criteria );
+		$firstMission = array_shift ( $taxibotMissions );
+		// $firstMission = new TaxibotMission();
+		$lastMission = end ( $taxibotMissions );
+		
+		$firstMission->setEndTime ( $lastMission->getEndTime () );
+		reset ( $taxibotMissions );
+		
+		$firstMissionId = $firstMission->getId ();
+		
+		foreach ( $taxibotMissions as $nextMission ) {
+			$cds1 = $firstMission->getCulDeSacTime ();
+			$cds2 = $nextMission->getCulDeSacTime ();
 			
-			if($singleMission->getPcmStart() == null && $nextMission->getPcmStart() != "") {
-				
-				
-				 
+			if ($cds1 == null && $cds2 != null) {
+				$firstMission->setCulDeSacTime ( $cds2 );
 			}
-		
-			$left_engine_fuel_dcm =  $singleMission->getLeftEngineFuelDcm();
-			$right_engine_fuel_dcm =  $singleMission->getRightEngineFuelDcm();
-			$left_engine_fuel_pcm =  $singleMission->getLeftEngineFuelPcm();
-			$right_engine_fuel_pcm =  $singleMission->getRightEngineFuelPcm();
-			$left_engine_fuel_pushback =  $singleMission->getLeftEngineFuelPushback();
-			$right_engine_fuel_pushback =  $singleMission->getRightEngineFuelPushback();
-			$left_engine_fuel_maint =  $singleMission->getLeftEngineFuelMaint();
-			$right_engine_fuel_maint =  $singleMission->getRightEngineFuelMaint();
-			$left_engine_hours_pcm =  $singleMission->getLeftEngineHoursPcm();
-			$right_engine_hours_pcm =  $singleMission->getRightEngineHoursPcm();
-			$left_engine_hours_dcm =  $singleMission->getLeftEngineHoursDcm();
-			$right_engine_hours_dcm =  $singleMission->getRightEngineHoursDcm();
-			$left_engine_hours_maint =  $singleMission->getLeftEngineHoursMaint();
-			$right_engine_hours_maint =  $singleMission->getRightEngineHoursMaint();
-			$blf_name  =  $singleMission->getBlfName();
+			else if($cds1 != null && $cds2 != null){
+				$firstMission->setCulDeSacTime ( getSumOfTowTimes ( $cds1, $cds2 ) );
+			}			
 			
-			$singleMission->setPcmStart($pcm_start);	
-			$singleMission->getPcmEnd();
-			$singleMission->getDcmStart();
-			$singleMission->getDcmEnd();
-			$singleMission->getPushbackStart();
-			$singleMission->getPushbackEnd();
-			$singleMission->getLeftEngineFuelDcm();
-			$singleMission->getRightEngineFuelDcm();
-			$singleMission->getLeftEngineFuelPcm();
-			$singleMission->getRightEngineFuelPcm();
-			$singleMission->getLeftEngineFuelPushback();
-			$singleMission->getRightEngineFuelPushback();
-			$singleMission->getLeftEngineFuelMaint();
-			$singleMission->getRightEngineFuelMaint();
-			$singleMission->getLeftEngineHoursPcm();
-			$singleMission->getRightEngineHoursPcm();
-			$singleMission->getLeftEngineHoursDcm();
-			$singleMission->getRightEngineHoursDcm();
-			$singleMission->getLeftEngineHoursMaint();
-			$singleMission->getRightEngineHoursMaint();
-			$singleMission->getBlfName();
+			TaxibotTrailPeer::updateMissionId ( $nextMission->getId (), $firstMissionId );
+			TaxibotFatigueHistoryPeer::updateMissionId ( $nextMission->getId (), $firstMissionId );
+			TaxibotPartsMissionPeer::updateMissionId ( $nextMission->getId (), $firstMissionId );
+			TaxibotExceedEventPeer::updateMissionId ( $nextMission->getId (), $firstMissionId );
+			$nextMission->delete ();
+		}
+		
+		$firstMission->save ();
+	}
+	function AddDateTime($first_time, $second_time) {
+		$diff = $first_time->diff ( $second_time );
+		$first_time->add ( $diff );
+		return $first_time->format ( "Y-m-d H:i:s" );
+	}
+	static public function GetAccumulativeData($taxibotNumber, $startDate, $endDate, $operationChecked, $testChecked, $trainChecked) {
+		$taxibot = TaxibotTractorPeer::GetTractorByName ( $taxibotNumber );
+		
+		$criteria = new Criteria ();
+		$criteria->add ( self::TRACTOR_ID, $taxibot->getId () );
+		$criteria->addAnd ( self::START_TIME, $startDate, Criteria::GREATER_THAN );
+		$criteria->addAnd ( self::END_TIME, $endDate, Criteria::LESS_THAN );
+		
+		if($operationChecked != null || $testChecked != null || $trainChecked != null){
+			
+			if($operationChecked != null){
+				$c1 = $criteria->getNewCriterion(self::OPERATIONAL_SCENARIO, OPERATIONAL_SCENARIO::OPERATION);
+			}
+			
+			if($testChecked != null){
+				if(!isset($c1)){
+					$c1 = $criteria->getNewCriterion(self::OPERATIONAL_SCENARIO, OPERATIONAL_SCENARIO::TEST);
+				}
+				else {
+					$c2 = $criteria->getNewCriterion(self::OPERATIONAL_SCENARIO, OPERATIONAL_SCENARIO::TEST);
+					$c1->addOr($c2);
+				}				
+			}
+			
+			if($trainChecked != null){
+				if(!isset($c1)){
+					$c1 = $criteria->getNewCriterion(self::OPERATIONAL_SCENARIO, OPERATIONAL_SCENARIO::TRAIN);
+				}
+				else {
+					$c2 = $criteria->getNewCriterion(self::OPERATIONAL_SCENARIO, OPERATIONAL_SCENARIO::TRAIN);
+					$c1->addOr($c2);
+				}
+			}
+			
+			$criteria->addAnd($c1);
+		}
+		
+		//dd($criteria->getMap());
+		
+		$missions = self::doSelect ( $criteria );
+		
+		
+		$accumulativeData = new AccumulativeDataViewModel ();
+		$amountMissions = count ( $missions );
+		$accumulativeData->TotalAmountMissions = $amountMissions;
+		
+		if ($amountMissions == 0) {
+			return null;
+		}
+		
+		$missionsSeconds = 0;
+		$pcmSeconds = array ();
+		$pushBackSeconds = array ();
+		$culdesecSeconds = array ();
+		$pcmSpeed = array ();
+		$fuelMissions = array ();
+		$amountMissionPerDay = array ();
+		
+		require_once sfConfig::get ( 'app_lib_helper' ) . "/TimeHelper.php";
+		
+		
+		foreach ( $missions as $mission ) {			
+			$missionsSeconds += getSecondsBetweenDates( $mission->getStartTime (), $mission->getEndTime());
+			
+			$pcmSeconds[] = TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::PCM, $mission->getTaxibotPartsMissions () ) ;
+			
+			$pushBackSeconds[] = TaxibotPartsMissionPeer::GetPartMissionSeconds ( PART_MISSION::PUSHBACK, $mission->getTaxibotPartsMissions () ) ;
+			
+			$culdesecSeconds[] = DateIntervalToSec ( DateInterval::createFromDateString ( $mission->getCulDeSacTime () ) ) ;
+			
+			$pcmSpeed[] = self::getSpeedPcmsMode ( $mission ) ;
+			
+			$fuelMissions[] = self::getFuelMission ( $mission ) ;
+			
+			
+			$date = new DateTime ( $mission->getStartTime () );
+			$key = $date->format ( "Y-m-d" );
+			
+			if (! array_key_exists ( $key, $amountMissionPerDay )) {
+				$amountMissionPerDay [$key] = 1;
+			} else {
+				$amountMissionPerDay [$key] ++;
+			}
 		} 
+		
+		// print "<pre>"; print_r ( $amountMissionPerDay ); print "</pre>"; die();
+		
+		$accumulativeData->amountMissionPerDay = array ();
+		foreach ( $amountMissionPerDay as $key => $value ) {
+			
+			array_push ( $accumulativeData->amountMissionPerDay, array (
+					$key,
+					$value 
+			) );
+		}
+		
+		
+		
+		$accumulativeData->MissionTimeAvg = gmdate ( "H:i:s", $missionsSeconds / $amountMissions );
+		
+		$sumAllPcmSeconds = self::sumArrayData ( $pcmSeconds, 0 );
+		$sumAllPushBackSeconds = self::sumArrayData ( $pushBackSeconds, 0 );
+		$sumAllCuldesecSeconds = self::sumArrayData ( $culdesecSeconds, 0 );
+		$sumAllPcmSpeed = self::sumArrayData ( $pcmSpeed, 0 );
+		$sumAllFuelMissions = self::sumArrayData ( $fuelMissions, 0 );
+				
+		if ($sumAllPcmSeconds [0] == 0) {
+			$accumulativeData->PcmTimeAvg = gmdate ( "H:i:s", 0 );
+		} else {
+			$accumulativeData->PcmTimeAvg = gmdate ( "H:i:s", $sumAllPcmSeconds [0] / $sumAllPcmSeconds [1] );
+		}
+		
+		if ($sumAllPushBackSeconds [0] == 0) {
+			$accumulativeData->PushbackTimeAvg = gmdate ( "H:i:s", 0 );
+		} else {
+			$accumulativeData->PushbackTimeAvg = gmdate ( "H:i:s", $sumAllPushBackSeconds [0] / $sumAllPushBackSeconds [1] );
+		}
+		
+		if ($sumAllCuldesecSeconds [0] == 0) {
+			$accumulativeData->CulDeSecTimeAvg = gmdate ( "H:i:s", 0 );
+		} else {
+			$accumulativeData->CulDeSecTimeAvg = gmdate ( "H:i:s", $sumAllCuldesecSeconds [0] / $sumAllCuldesecSeconds [1] );
+		}
+		
+		if ($sumAllPcmSpeed [0] == 0) {
+			$accumulativeData->PcmSpeedAvg = 0;
+		} else {
+			$accumulativeData->PcmSpeedAvg = $sumAllPcmSpeed [0] / $sumAllPcmSpeed [1];
+		}
+		
+		if ($sumAllFuelMissions [0] == 0) {
+			$accumulativeData->FuelPerMissionAvg = gmdate ( "H:i:s", 0 );
+		} else {
+			$accumulativeData->FuelPerMissionAvg = $sumAllFuelMissions [0] / $sumAllFuelMissions [1];
+		}
+		
+		/*
+		 * print "<pre>"; print_r ( $accumulativeData ); print "</pre>"; die();
+		 */
+		return $accumulativeData;
+	}
+	private static function sumArrayData($array, $predicate) {
+		$sumData = 0;
+		$index = 0;
+		
+		foreach ( $array as $item ) {
+			if ($item != $predicate) {
+				$sumData += $item;
+				$index ++;
+			}
+		}
+		return array (
+				$sumData,
+				$index 
+		);
+	}
+	private static function getFuelMission(TaxibotMission $mission) { 
+		if ($mission->getMissionType () == 1) {
+			//  TaxibotPartsMissionPeer::GetAmountOfCoulmn ( PART_MISSION::DCM, $mission->getTaxibotPartsMissions (), PART_COULMN::LEFT_FUEL );
+			return $mission->getLeftEngineFuel() + $mission->getRightEngineFuel();
+		} else if ($mission->getMissionType () == 2) {
+			return $mission->getLeftEngineFuel() + $mission->getRightEngineFuel();
+		}
+		return 0;
+	}
+	private static function getSpeedPcmsMode(TaxibotMission $mission) {
+		$parts = $mission->getTaxibotPartsMissions ();
+		$pcmParts = array ();
+		
+		foreach ( $parts as $part ) {			
+			if ($part->getType () == PART_MISSION::PCM) {
+				$pcmParts[] = $part ;
+			}
+		}
+		
+		$pcmVeolcity = 0;
+		foreach ( $pcmParts as $pcmPart ) {	
+			$pcmVeolcity += TaxibotFatigueHistoryPeer::getAvgVeolcityByMission($mission->getId(), $pcmPart->getStart(), $pcmPart->getEnd());
+			//dd($pcmVeolcity);			
+		}
+		
+		if (count ( $pcmParts ) > 0 && $pcmVeolcity > 0) {
+			//dd($pcmVeolcity);
+			return $pcmVeolcity / count ( $pcmParts );
+		}
+		return $pcmVeolcity;
+	}
+	private static function getSecondsDiff($start, $end) {
+		require_once sfConfig::get ( 'app_lib_helper' ) . "/TimeHelper.php";
+		$startDateTime = new DateTime ( $start );
+		$endDateTime = new DateTime ( $end );
+		return DateIntervalToSec ( $endDateTime->diff ( $startDateTime ) );
 	}
 	
-	function AddDateTime($first_time, $second_time){	 
-		$diff=$first_time->diff($second_time);
-		$first_time->add($diff);
-		return  $first_time->format("Y-m-d H:m:s");
+	public static function getMaintenanceByTailNumber($date, $tailNumber, $tractorId){
+		$startTimeInterval = strtotime ( $date . " 00:00:00" );
+		$endTimeIntarval = strtotime ( $date . " 23:59:00" );
+		
+		// echo $startTimeInterval. "<br/>";
+		// echo $endTimeIntarval. "<br/>";
+		// echo $tractorId. "<br/>";
+		// echo $tailNumber. "<br/>";
+		// die();	
+		
+		$aircraft = AircraftPeer::getAircraftByTailNumber($tailNumber);
+		$mainCriteria = new Criteria ();
+		$mainCriteria->add ( TaxibotMissionPeer::MISSION_TYPE, 2 );
+		$mainCriteria->add(TaxibotMissionPeer::START_TIME, $startTimeInterval, Criteria::GREATER_THAN );
+		$mainCriteria->add(TaxibotMissionPeer::START_TIME, $endTimeIntarval, Criteria::LESS_THAN );
+		
+		$criterion = $mainCriteria->getNewCriterion ( TaxibotMissionPeer::ID, $tractorId );
+		$criterion->addOr ( $mainCriteria->getNewCriterion ( TaxibotMissionPeer::AIRCRAFT_ID, $aircraft->getId()) );	
+		$mainCriteria->addAnd ( $criterion );
+		
+		$missions = TaxibotMissionPeer::doSelect ( $mainCriteria );
+		
+		$maintenances = array();
+		foreach ($missions as $mission){ 
+			array_push($maintenances, new MaintenanceViewModel($mission));
+		}
+		
+		return $maintenances;
 	}
 } // TaxibotMissionPeer
+
+
+abstract class OPERATIONAL_SCENARIO{
+	const OPERATION = 1;
+	const TEST = 2;
+	const TRAIN = 3;
+}

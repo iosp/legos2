@@ -27,7 +27,6 @@ default:
     - jquery.dataTables.min.js
     - make_dataTable.js
     - autowidth.js
-    - highcharts.js
     
 
   has_layout:     true

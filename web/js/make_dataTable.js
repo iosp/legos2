@@ -63,10 +63,16 @@
 			} );
 		}
 		
+		order = [];
+		if(this.attr('data-order') != undefined){
+			order = [this.attr('data-order') * 1 ,this.attr('data-order-type')];
+		}		 
+		
 		// Daten-Tabelle laden
-		$(this).dataTable({
+		var datatable = $(this).dataTable({
 				"sDom": '<"table_title"<"table_top"f>>rt' + footer + '<"clear">',
 				"bScrollCollapse": true,
+				"order": order,
 				"oLanguage": {
 					"sProcessing": "Please Wait ...",
 					"sLengthMenu": "_MENU_ Records Shown",

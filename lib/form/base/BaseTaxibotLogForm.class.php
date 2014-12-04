@@ -16,7 +16,7 @@ abstract class BaseTaxibotLogForm extends BaseFormPropel
     $this->setWidgets(array(
       'log_id'        => new sfWidgetFormInputHidden(),
       'log_file'      => new sfWidgetFormInputText(),
-      'tractor_id'    => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true, 'key_method' => 'getTractorId')),
+      'tractor_id'    => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true)),
       'load'          => new sfWidgetFormInputText(),
       'date'          => new sfWidgetFormDateTime(),
       'load_validity' => new sfWidgetFormInputCheckbox(),
@@ -26,7 +26,7 @@ abstract class BaseTaxibotLogForm extends BaseFormPropel
     $this->setValidators(array(
       'log_id'        => new sfValidatorChoice(array('choices' => array($this->getObject()->getLogId()), 'empty_value' => $this->getObject()->getLogId(), 'required' => false)),
       'log_file'      => new sfValidatorInteger(array('min' => -2147483648, 'max' => 2147483647, 'required' => false)),
-      'tractor_id'    => new sfValidatorPropelChoice(array('model' => 'TaxibotTractor', 'column' => 'tractor_id', 'required' => false)),
+      'tractor_id'    => new sfValidatorPropelChoice(array('model' => 'TaxibotTractor', 'column' => 'id', 'required' => false)),
       'load'          => new sfValidatorNumber(array('required' => false)),
       'date'          => new sfValidatorDateTime(array('required' => false)),
       'load_validity' => new sfValidatorBoolean(array('required' => false)),

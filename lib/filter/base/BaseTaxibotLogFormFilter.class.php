@@ -13,7 +13,7 @@ abstract class BaseTaxibotLogFormFilter extends BaseFormFilterPropel
   {
     $this->setWidgets(array(
       'log_file'      => new sfWidgetFormFilterInput(),
-      'tractor_id'    => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true, 'key_method' => 'getTractorId')),
+      'tractor_id'    => new sfWidgetFormPropelChoice(array('model' => 'TaxibotTractor', 'add_empty' => true)),
       'load'          => new sfWidgetFormFilterInput(),
       'date'          => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
       'load_validity' => new sfWidgetFormChoice(array('choices' => array('' => 'yes or no', 1 => 'yes', 0 => 'no'))),
@@ -22,7 +22,7 @@ abstract class BaseTaxibotLogFormFilter extends BaseFormFilterPropel
 
     $this->setValidators(array(
       'log_file'      => new sfValidatorSchemaFilter('text', new sfValidatorInteger(array('required' => false))),
-      'tractor_id'    => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'tractor_id')),
+      'tractor_id'    => new sfValidatorPropelChoice(array('required' => false, 'model' => 'TaxibotTractor', 'column' => 'id')),
       'load'          => new sfValidatorSchemaFilter('text', new sfValidatorNumber(array('required' => false))),
       'date'          => new sfValidatorDateRange(array('required' => false, 'from_date' => new sfValidatorDate(array('required' => false)), 'to_date' => new sfValidatorDate(array('required' => false)))),
       'load_validity' => new sfValidatorChoice(array('required' => false, 'choices' => array('', 1, 0))),

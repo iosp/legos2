@@ -1,24 +1,4 @@
 <?php
-function selectionFilter($zeitauswaehler = "Tag", $selectedFahrzeuge = null, $route = "", $zusatz = null, $hinweis = "", $ausgeklappt = true) {
-	
-	// Beginning of the selection filter
-	$result = auswahlStart ( $route );
-	
-	// Common filters
-	$result .= optionDatum ( $zeitauswaehler, true );
-	
-	if ($zusatz && in_array ( "Taxibot", $zusatz )) {
-	}
-	// Other
-	
-	if ($hinweis != null) {
-		$result .= auswahlHinweis ( $hinweis );
-	}
-	
-	// Ende des Auswahlfilters
-	$result .= auswahlEnde ( $ausgeklappt );
-	return $result;
-}
 function auswahlFilter($zeitauswaehler = "Tag", $selectedFahrzeuge = null, $route = "", $zusatz = null, $hinweis = "", $ausgeklappt = true) {
 	// Beginn des Auswahlfilters
 	$result = auswahlStart ( $route );

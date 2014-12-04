@@ -143,13 +143,9 @@ DROP TABLE IF EXISTS `taxibot_tractor`;
 CREATE TABLE `taxibot_tractor`
 (
 	`id` INTEGER  NOT NULL AUTO_INCREMENT,
-	`tractor_id` INTEGER  NOT NULL,
 	`name` VARCHAR(255) COMMENT 'Name of the tractor as given in csv-file.',
 	`creation_date` TIMESTAMP NULL default CURRENT_TIMESTAMP COMMENT 'Date, when the tractor was added to the database.',
-	`pcm_hours` FLOAT COMMENT 'Total time of pcm mode',
-	`dcm_hours` FLOAT COMMENT 'Total time of dcm mode',
-	PRIMARY KEY (`id`),
-	INDEX `I_referenced_taxibot_activity_FK_1_1` (`tractor_id`)
+	PRIMARY KEY (`id`)
 )Engine=InnoDB COMMENT='Table of taxibot tractors';
 
 #-----------------------------------------------------------------------------
@@ -176,7 +172,7 @@ CREATE TABLE `taxibot_activity`
 	INDEX `taxibot_activity_FI_1` (`tractor_id`),
 	CONSTRAINT `taxibot_activity_FK_1`
 		FOREIGN KEY (`tractor_id`)
-		REFERENCES `taxibot_tractor` (`tractor_id`)
+		REFERENCES `taxibot_tractor` (`id`)
 )Engine=InnoDB COMMENT='Taxibot towing activities.';
 
 #-----------------------------------------------------------------------------
@@ -199,7 +195,7 @@ CREATE TABLE `taxibot_log`
 	INDEX `taxibot_log_FI_1` (`tractor_id`),
 	CONSTRAINT `taxibot_log_FK_1`
 		FOREIGN KEY (`tractor_id`)
-		REFERENCES `taxibot_tractor` (`tractor_id`)
+		REFERENCES `taxibot_tractor` (`id`)
 )Engine=InnoDB COMMENT='TaxibotLog';
 
 #-----------------------------------------------------------------------------
@@ -226,20 +222,6 @@ CREATE TABLE `taxibot_table`
 	`longitude` FLOAT COMMENT 'degrees field 9',
 	PRIMARY KEY (`id`)
 )Engine=InnoDB COMMENT='TaxibotTable';
-
-#-----------------------------------------------------------------------------
-#-- taxibot_alert
-#-----------------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `taxibot_alert`;
-
-
-CREATE TABLE `taxibot_alert`
-(
-	`id` INTEGER  NOT NULL AUTO_INCREMENT,
-	`alert` VARCHAR(255)  NOT NULL,
-	PRIMARY KEY (`id`)
-)Engine=InnoDB COMMENT='TaxibotAlert';
 
 #-----------------------------------------------------------------------------
 #-- taxibot_cancel
@@ -356,7 +338,7 @@ CREATE TABLE `taxibot_vector`
 	INDEX `taxibot_vector_FI_1` (`tractor_id`),
 	CONSTRAINT `taxibot_vector_FK_1`
 		FOREIGN KEY (`tractor_id`)
-		REFERENCES `taxibot_tractor` (`tractor_id`),
+		REFERENCES `taxibot_tractor` (`id`),
 	INDEX `taxibot_vector_FI_2` (`aircraft_type`),
 	CONSTRAINT `taxibot_vector_FK_2`
 		FOREIGN KEY (`aircraft_type`)
@@ -499,46 +481,57 @@ CREATE TABLE `taxibot_mission`
 	`id` INTEGER  NOT NULL AUTO_INCREMENT,
 	`mission_id` INTEGER  NOT NULL,
 	`mission_type` VARCHAR(255)  NOT NULL COMMENT 'Mission Type',
-	`aircraft_tail_number` VARCHAR(255)  NOT NULL COMMENT 'Tail Number',
-	`aircraft_type` VARCHAR(255)  NOT NULL COMMENT 'Aircraft Type',
+	`aircraft_id` INTEGER  NOT NULL COMMENT 'Aircraft Id',
 	`start_time` DATETIME  NOT NULL,
 	`end_time` DATETIME  NOT NULL,
 	`flight_number` VARCHAR(255)  NOT NULL COMMENT 'Flight Number',
 	`aircraft_weight` FLOAT  NOT NULL COMMENT 'A/C weight',
 	`aircraft_cg` FLOAT  NOT NULL COMMENT 'A/C C.G.',
-	`tractor_id` INTEGER  NOT NULL COMMENT 'Foreign key to the tractor-table.',
+	`tractor_id` INTEGER  NOT NULL,
 	`driver_name` VARCHAR(255)  NOT NULL COMMENT 'Flight Number',
-	`cellulr_ip` VARCHAR(255)  NOT NULL COMMENT 'Cellular IP Address -  a.b.c.d (reference to Tractor ID)',
-	`pcm_start` DATETIME  NOT NULL,
-	`pcm_end` DATETIME  NOT NULL,
-	`dcm_start` DATETIME  NOT NULL,
-	`dcm_end` DATETIME  NOT NULL,
-	`pushback_start` DATETIME  NOT NULL,
-	`pushback_end` DATETIME  NOT NULL,
-	`left_engine_fuel_dcm` FLOAT  NOT NULL,
-	`right_engine_fuel_dcm` FLOAT  NOT NULL,
-	`left_engine_fuel_pcm` FLOAT  NOT NULL,
-	`right_engine_fuel_pcm` FLOAT  NOT NULL,
-	`left_engine_fuel_pushback` FLOAT  NOT NULL,
-	`right_engine_fuel_pushback` FLOAT  NOT NULL,
-	`left_engine_fuel_maint` FLOAT  NOT NULL,
-	`right_engine_fuel_maint` FLOAT  NOT NULL,
-	`left_engine_hours_pcm` FLOAT  NOT NULL,
-	`right_engine_hours_pcm` FLOAT  NOT NULL,
-	`left_engine_hours_dcm` FLOAT  NOT NULL,
-	`right_engine_hours_dcm` FLOAT  NOT NULL,
-	`left_engine_hours_maint` FLOAT  NOT NULL,
-	`right_engine_hours_maint` FLOAT  NOT NULL,
+	`cellulr_ip` VARCHAR(255)  NOT NULL,
+	`cul_de_sac_time` TIME,
+	`left_engine_fuel` FLOAT,
+	`right_engine_fuel` FLOAT,
 	`blf_name` VARCHAR(255),
-	`join_after_mission_id` INTEGER,
 	`operational_scenario` INTEGER,
+	`is_commited` TINYINT default 0 NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `I_referenced_taxibot_vector_FK_3_1` (`mission_id`),
 	INDEX `taxibot_mission_FI_1` (`tractor_id`),
 	CONSTRAINT `taxibot_mission_FK_1`
 		FOREIGN KEY (`tractor_id`)
-		REFERENCES `taxibot_tractor` (`tractor_id`)
+		REFERENCES `taxibot_tractor` (`id`),
+	INDEX `taxibot_mission_FI_2` (`aircraft_id`),
+	CONSTRAINT `taxibot_mission_FK_2`
+		FOREIGN KEY (`aircraft_id`)
+		REFERENCES `aircraft` (`id`)
 )Engine=InnoDB COMMENT='TaxibotMission';
+
+#-----------------------------------------------------------------------------
+#-- taxibot_parts_mission
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `taxibot_parts_mission`;
+
+
+CREATE TABLE `taxibot_parts_mission`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`mission_id` INTEGER  NOT NULL COMMENT 'Mission ID',
+	`start` DATETIME  NOT NULL,
+	`end` DATETIME  NOT NULL,
+	`left_engine_fuel` FLOAT  NOT NULL,
+	`right_engine_fuel` FLOAT  NOT NULL,
+	`left_engine_hours` FLOAT  NOT NULL,
+	`right_engine_hours` FLOAT  NOT NULL,
+	`type` VARCHAR(25)  NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `taxibot_parts_mission_FI_1` (`mission_id`),
+	CONSTRAINT `taxibot_parts_mission_FK_1`
+		FOREIGN KEY (`mission_id`)
+		REFERENCES `taxibot_mission` (`id`)
+)Engine=InnoDB;
 
 #-----------------------------------------------------------------------------
 #-- taxibot_exceed_event
@@ -553,6 +546,8 @@ CREATE TABLE `taxibot_exceed_event`
 	`exceed_type` VARCHAR(255)  NOT NULL COMMENT 'Event Type',
 	`start_time` DATETIME  NOT NULL COMMENT 'Event Start Time',
 	`end_time` DATETIME  NOT NULL COMMENT 'Event End Time',
+	`start_milisecond` INTEGER  NOT NULL,
+	`end_milisecond` INTEGER  NOT NULL,
 	`duration` TIME COMMENT 'Event Duration',
 	`mission_id` INTEGER  NOT NULL COMMENT 'Mission ID',
 	`latitude` VARCHAR(20)  NOT NULL COMMENT 'Latitude (Inertial Sys)',
@@ -575,13 +570,13 @@ CREATE TABLE `aircraft`
 (
 	`id` INTEGER  NOT NULL AUTO_INCREMENT,
 	`tail_number` VARCHAR(255)  NOT NULL COMMENT 'Tail Number',
-	`type` VARCHAR(255)  NOT NULL COMMENT 'Aircraft Type',
+	`type_id` INTEGER  NOT NULL COMMENT 'Aircraft Type',
 	PRIMARY KEY (`id`),
 	INDEX `I_referenced_taxibot_vector_FK_4_1` (`tail_number`),
-	INDEX `aircraft_FI_1` (`type`),
+	INDEX `aircraft_FI_1` (`type_id`),
 	CONSTRAINT `aircraft_FK_1`
-		FOREIGN KEY (`type`)
-		REFERENCES `aircraft_type` (`name`)
+		FOREIGN KEY (`type_id`)
+		REFERENCES `aircraft_type` (`id`)
 )Engine=InnoDB COMMENT='Aircraft';
 
 #-----------------------------------------------------------------------------
@@ -627,6 +622,36 @@ CREATE TABLE `taxibot_failure`
 )Engine=InnoDB COMMENT='TaxibotFailure';
 
 #-----------------------------------------------------------------------------
+#-- taxibot_fatigue_history
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `taxibot_fatigue_history`;
+
+
+CREATE TABLE `taxibot_fatigue_history`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`aircraft_id` INTEGER  NOT NULL,
+	`date` DATETIME  NOT NULL,
+	`milisecond` INTEGER  NOT NULL,
+	`long_force_kn` FLOAT  NOT NULL,
+	`lat_force_kn` FLOAT  NOT NULL,
+	`veolcity` FLOAT  NOT NULL COMMENT 'Knot',
+	`tiller` FLOAT  NOT NULL,
+	`break_event` TINYINT  NOT NULL,
+	`mission_id` INTEGER  NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `taxibot_fatigue_history_FI_1` (`aircraft_id`),
+	CONSTRAINT `taxibot_fatigue_history_FK_1`
+		FOREIGN KEY (`aircraft_id`)
+		REFERENCES `aircraft` (`id`),
+	INDEX `taxibot_fatigue_history_FI_2` (`mission_id`),
+	CONSTRAINT `taxibot_fatigue_history_FK_2`
+		FOREIGN KEY (`mission_id`)
+		REFERENCES `taxibot_mission` (`id`)
+)Engine=InnoDB COMMENT='TaxibotFatigueHistory';
+
+#-----------------------------------------------------------------------------
 #-- towing_activity
 #-----------------------------------------------------------------------------
 
@@ -646,7 +671,7 @@ CREATE TABLE `towing_activity`
 	INDEX `towing_activity_FI_1` (`tractor_id`),
 	CONSTRAINT `towing_activity_FK_1`
 		FOREIGN KEY (`tractor_id`)
-		REFERENCES `taxibot_tractor` (`tractor_id`)
+		REFERENCES `taxibot_tractor` (`id`)
 )Engine=InnoDB COMMENT='Table for a client to read or write data.';
 
 # This restores the fkey checks, after having unset them earlier

@@ -34,14 +34,14 @@
 	text-align: left;
 	color: #333333;
 	margin: 5px 0px 5px 5px;
+	float: left;
 }
 
 .optionen_block {
-	text-align: left;
-	/*border-bottom: 1px solid #CCCCCC;*/
-	padding-bottom: 5px;
-	min-height: 50px;
-	margin: 30px 5px 5px 5px;
+	clear: both;
+	text-align: left;	
+	padding-bottom: 5px;	
+	margin: 10px 5px;
 }
 
 .option-line{
@@ -63,12 +63,35 @@
 	margin: 0 15px;
 	margin-top: 5px;
 }
+ 
+#time-helper input[type=time]{
+	 height: 18px;
+}
+
+.optionen_block input{
+	float:left;
+}
+
+.time-option input{
+	height: 20px;
+	width: 85px;
+}
+
+.time-option {	
+	float: left;
+}
 
 .optionen_block label,.optionen_block select {
 	/* Erlaubt width-Änderung von labels */
 	display: inline-block;
 }
 
+.operational-checkbox{
+	padding-right: 25px;
+	margin: 5px 1px;
+	
+}
+ 
 #inhalt {
 	width: 280px;
 	float: left;

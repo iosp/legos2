@@ -17,6 +17,8 @@ class Login {
 		$criteria->addJoin ( Gruppe_ModulPeer::MODUL_ID, ModulPeer::ID, Criteria::LEFT_JOIN );
 		$criteria->add ( Benutzer_GruppePeer::BENUTZER_ID, $benutzer->getId () );
 		$module = ModulPeer::doSelect ( $criteria );
+		
+		
 		foreach ( $module as $modul ) {
 			sfContext::getInstance ()->getUser ()->addCredential ( $modul->getName () );
 			$credential = explode ( '-', $modul->getName () );
@@ -35,11 +37,15 @@ class Login {
 		}
 		
 		// Evtl. doppelte Einträge entfernen (entstanden aus Gruppenzuordnung und Einzelberechtigung)
-		$erlaubteModule = array_unique ( $erlaubteModule );
-		
+		$erlaubteModule = array_unique ( $erlaubteModule );	
+				
+		$group = BenutzerPeer::GetGroupByUserId($benutzer->getID ());
+		$group = array($group->getId(), $group->getName());
+				
 		// Credentials setzen
 		sfContext::getInstance ()->getUser ()->setAttribute ( 'name', $benutzer->getName (), 'benutzer' );
 		sfContext::getInstance ()->getUser ()->setAttribute ( 'id', $benutzer->getID (), 'benutzer' );
 		sfContext::getInstance ()->getUser ()->setAttribute ( 'applikationen', $erlaubteModule, 'benutzer' );
+		sfContext::getInstance ()->getUser ()->setAttribute ( 'group', $group, 'benutzer' );
 	}
 }

@@ -1,5 +1,8 @@
-#buttons .disabled{
+.yellow-button.disabled{
 	background: #BBBBBB;
+}
+.mission-button.disabled{
+	color: #CCCCCC;
 }
 .mission-button{ 
 	height: 30px;
@@ -8,7 +11,7 @@
 	border: black 1px solid;
 	display: flex;
 	align-items: center;	
-	font-size: 17px;
+	font-size: 12px;
 	cursor: pointer;
 	font-weight: bold;
 }
@@ -25,8 +28,8 @@
 	background: #FFBA17;
 }
 
-#mission-confirm{
-	margin-top:80px;
+#mission-confirm, #mission-delete{
+	margin-top:60px;
 }
 
 .checkbox-row{
@@ -51,6 +54,7 @@
 	border: red 0 solid;
 	background: transparent;
 	cursor: pointer;
+	width: 180px;
 }
 
 .th-operational{
@@ -75,3 +79,14 @@
     appearance: none;
 }
 
+ 
+.table-selected{
+	float: left;
+	line-height: 35px;
+	padding-left: 25%;
+}
+
+#taxibot-missions-list tr[data-is-approved="0"]{
+	font-weight: bold;
+	font-size: 12px;
+}
